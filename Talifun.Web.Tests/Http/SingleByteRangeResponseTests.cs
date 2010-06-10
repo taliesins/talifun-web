@@ -18,12 +18,13 @@ namespace Talifun.Web.Tests.Http
 
             var startRange = 0l;
             var endRange = 499l;
+            var rangeItem = new RangeItem
+            {
+                StartRange = startRange,
+                EndRange = endRange
+            };
             var contentLength = endRange - startRange + 1;
-
-            var rangeItem = MockRepository.GenerateMock<RangeItem>();
-            rangeItem.Stub(x => x.StartRange).Return(startRange);
-            rangeItem.Stub(x => x.EndRange).Return(endRange);
-
+   
             httpResponseHeaderHelper.Expect(x => x.AppendHeader(httpResponse, SingleByteRangeResponse.HTTP_HEADER_CONTENT_LENGTH, contentLength.ToString()));
 
             //Act
@@ -48,10 +49,11 @@ namespace Talifun.Web.Tests.Http
 
             var startRange = 0l;
             var endRange = 499l;
-
-            var rangeItem = MockRepository.GenerateMock<RangeItem>();
-            rangeItem.Stub(x => x.StartRange).Return(startRange);
-            rangeItem.Stub(x => x.EndRange).Return(endRange);
+            var rangeItem = new RangeItem
+            {
+                StartRange = startRange,
+                EndRange = endRange
+            };
 
             var contentType = "image/gif";
             var contentLength = 1000l;
@@ -84,11 +86,12 @@ namespace Talifun.Web.Tests.Http
 
             var startRange = 0l;
             var endRange = 499l;
+            var rangeItem = new RangeItem
+            {
+                StartRange = startRange,
+                EndRange = endRange
+            };
             var bytesToRead = endRange - startRange + 1;
-
-            var rangeItem = MockRepository.GenerateMock<RangeItem>();
-            rangeItem.Stub(x => x.StartRange).Return(startRange);
-            rangeItem.Stub(x => x.EndRange).Return(endRange);
 
             //Act
             var singleByteRangeResponse = new SingleByteRangeResponse(httpResponseHeaderHelper, rangeItem);
@@ -109,11 +112,13 @@ namespace Talifun.Web.Tests.Http
 
             var startRange = 0l;
             var endRange = 499l;
-            var bytesToRead = endRange - startRange + 1;
+            var rangeItem = new RangeItem
+            {
+                StartRange = startRange,
+                EndRange = endRange
+            };
 
-            var rangeItem = MockRepository.GenerateMock<RangeItem>();
-            rangeItem.Stub(x => x.StartRange).Return(startRange);
-            rangeItem.Stub(x => x.EndRange).Return(endRange);
+            var bytesToRead = endRange - startRange + 1;
 
             //Act
             var singleByteRangeResponse = new SingleByteRangeResponse(httpResponseHeaderHelper, rangeItem);

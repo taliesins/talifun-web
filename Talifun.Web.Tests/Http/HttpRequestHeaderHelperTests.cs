@@ -18,104 +18,120 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var userAgent = "Unknown User Agent";
-            var userAgentSent = "Talifun Browser";
+            var headerDefaultValue = "Unknown User Agent";
+            var headerValue = "Talifun Browser";
+            var headerType = HttpRequestHeader.UserAgent;
+            var headerName =  StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.UserAgent)]).Return(userAgentSent);
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
-            var userAgentValue = httpRequestHeaderHelper.GetHttpHeaderValue(httpRequest, HttpRequestHeader.UserAgent, userAgent);
+            var userAgentValue = httpRequestHeaderHelper.GetHttpHeaderValue(httpRequest, headerType, headerDefaultValue);
 
             //Assert
             httpRequest.VerifyAllExpectations();
-            Assert.AreEqual(userAgentSent, userAgentValue);
+            Assert.AreEqual(headerValue, userAgentValue);
         }
 
         public void GetHttpHeaderValue_HttpRequestHeaderNotFound_DefaultValue()
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var userAgent = "Unknown User Agent";
-            var userAgentSent = string.Empty;
+            var headerDefaultValue = "Unknown User Agent";
+            var headerValue = string.Empty; //means that header was not set
+            var headerType = HttpRequestHeader.UserAgent;
+            var headerName =  StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.UserAgent)]).Return(userAgentSent);
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
-            var userAgentValue = httpRequestHeaderHelper.GetHttpHeaderValue(httpRequest, HttpRequestHeader.UserAgent, userAgent);
+            var userAgentValue = httpRequestHeaderHelper.GetHttpHeaderValue(httpRequest, headerType, headerDefaultValue);
 
             //Assert
             httpRequest.VerifyAllExpectations();
-            Assert.AreEqual(userAgent, userAgentValue);
+            Assert.AreEqual(headerDefaultValue, userAgentValue);
         }
 
         public void GetHttpHeaderValue_HttpRequestHeaderStringFound_HeaderValue()
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var userAgent = "Unknown User Agent";
-            var userAgentSent = "Talifun Browser";
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.UserAgent)]).Return(userAgentSent);
+            var headerDefaultValue = "Unknown User Agent";
+            var headerValue = "Talifun Browser";
+            var headerType = HttpRequestHeader.UserAgent;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
+   
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
-            var userAgentValue = httpRequestHeaderHelper.GetHttpHeaderValue(httpRequest, StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.UserAgent), userAgent);
+            var userAgentValue = httpRequestHeaderHelper.GetHttpHeaderValue(httpRequest, headerName, headerDefaultValue);
 
             //Assert
             httpRequest.VerifyAllExpectations();
-            Assert.AreEqual(userAgentSent, userAgentValue);
+            Assert.AreEqual(headerValue, userAgentValue);
         }
 
         public void GetHttpHeaderValue_HttpRequestHeaderStringNotFound_DefaultValue()
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var userAgent = "Unknown User Agent";
-            var userAgentSent = string.Empty;
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.UserAgent)]).Return(userAgentSent);
+            var headerDefaultValue = "Unknown User Agent";
+            var headerValue = string.Empty;
+            var headerType = HttpRequestHeader.UserAgent;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
-            var userAgentValue = httpRequestHeaderHelper.GetHttpHeaderValue(httpRequest, StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.UserAgent), userAgent);
+            var userAgentValue = httpRequestHeaderHelper.GetHttpHeaderValue(httpRequest, headerName, headerDefaultValue);
 
             //Assert
             httpRequest.VerifyAllExpectations();
-            Assert.AreEqual(userAgent, userAgentValue);
+            Assert.AreEqual(headerDefaultValue, userAgentValue);
         }
 
         public void GetHttpHeaderValue_HttpRequestHeaderQuotedStringFound_HeaderValue()
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var userAgent = "Unknown User Agent";
-            var userAgentSent = @"""Talifun Browser""";
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.UserAgent)]).Return(userAgentSent);
+            var headerDefaultValue = "Unknown User Agent";
+            var headerValue = @"""Talifun Browser""";
+            var headerType = HttpRequestHeader.UserAgent;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
-            var userAgentValue = httpRequestHeaderHelper.GetHttpHeaderValue(httpRequest, StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.UserAgent), userAgent);
+            var userAgentValue = httpRequestHeaderHelper.GetHttpHeaderValue(httpRequest, headerName, headerDefaultValue);
 
             //Assert
             httpRequest.VerifyAllExpectations();
-            Assert.AreEqual(userAgentSent, userAgentValue);
+            Assert.AreEqual(headerValue, userAgentValue);
         }
 
         public void GetHttpHeaderValue_IsCaseSensitive_HeaderValue()
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var userAgent = "abcdef";
-            var userAgentSent = "abcdeF";
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.UserAgent)]).Return(userAgentSent);
+            var headerDefaultValue = "abcdef";
+            var headerValue = "abcdeF";
+            var headerType = HttpRequestHeader.UserAgent;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
-            var userAgentValue = httpRequestHeaderHelper.GetHttpHeaderValue(httpRequest, StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.UserAgent), userAgent);
+            var userAgentValue = httpRequestHeaderHelper.GetHttpHeaderValue(httpRequest, headerName, headerDefaultValue);
 
             //Assert
             httpRequest.VerifyAllExpectations();
-            Assert.AreEqual(userAgentSent, userAgentValue);
+            Assert.AreEqual(headerValue, userAgentValue);
         }
         #endregion
 
@@ -125,12 +141,15 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var ifMatchSent = string.Empty;
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.IfMatch)]).Return(ifMatchSent);
+            var headerValue = string.Empty;
+            var headerType = HttpRequestHeader.IfMatch;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
-            var headerValues = httpRequestHeaderHelper.GetHttpHeaderValues(httpRequest, HttpRequestHeader.IfMatch);
+            var headerValues = httpRequestHeaderHelper.GetHttpHeaderValues(httpRequest, headerType);
 
             //Assert
             httpRequest.VerifyAllExpectations();
@@ -142,17 +161,20 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var ifMatchSent = "1234567";
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.IfMatch)]).Return(ifMatchSent);
+            var headerValue = "1234567";
+            var headerType = HttpRequestHeader.IfMatch;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
-            var headerValues = httpRequestHeaderHelper.GetHttpHeaderValues(httpRequest, HttpRequestHeader.IfMatch);
+            var headerValues = httpRequestHeaderHelper.GetHttpHeaderValues(httpRequest, headerType);
 
             //Assert
             httpRequest.VerifyAllExpectations();
             Assert.AreEqual(1, headerValues.Count);
-            Assert.AreEqual(ifMatchSent.ToLowerInvariant(), headerValues[0]);
+            Assert.AreEqual(headerValue.ToLowerInvariant(), headerValues[0]);
         }
 
         [Test]
