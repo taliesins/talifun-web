@@ -1,0 +1,174 @@
+﻿/* Grid View
+================================== */
+
+.AspNet-GridView table {
+	border-top: 1px solid #AFAFAF;
+	border-left: 1px solid #AFAFAF;
+	}
+
+.AspNet-GridView table td, .AspNet-GridView table th {
+	padding: 0.5em;
+	border-bottom: 1px solid #AFAFAF;
+	border-right: 1px solid #AFAFAF;
+	}
+	
+.AspNet-GridView th {
+	background-color: #6F6F6F;
+	text-align: center;
+	}
+	
+.AspNet-GridView th a {
+	color: #FFF;
+	font-weight: bold;
+	}
+	
+.AspNet-GridView th {
+	background-color: #6F6F6F;
+	}	
+	
+.AspNet-GridView .AspNet-GridView-Alternate {
+	background-color: #EFEFEF;
+	}	
+	
+/* Login
+================================== */
+
+.AspNet-Login-UserPanel label, 
+.AspNet-Login-PasswordPanel label,
+.AspNet-PasswordRecovery-UserName-UserPanel label {
+	font-weight: bold;
+	display: block;
+	float: left;
+	margin-right: 0.5em;
+	}
+
+.AspNet-Login-UserPanel label, 
+.AspNet-Login-PasswordPanel label,
+.AspNet-PasswordRecovery-UserName-UserPanel label {
+	width: 8em;
+	}
+	
+.AspNet-Login label em,
+.AspNet-PasswordRecovery  label em {
+	font-style: normal;
+	}
+
+.AspNet-Login div, 
+.AspNet-PasswordRecovery div {
+	margin: 0.5em 0;
+	}
+	
+.AspNet-Login-TitlePanel,
+.AspNet-PasswordRecovery-UserName-TitlePanel {
+	font-family:Georgia, serif;
+	font-weight:normal;
+	display:block;
+	font-size: 1.64em;
+	margin:0;
+	}
+	
+	
+/* Form View
+================================== */
+
+.AspNet-FormView-Data .form-row {
+	clear: both;
+	padding: 5px 0;
+	}
+
+.AspNet-FormView-Data label {
+	float:left;
+	font-weight: bold;
+	text-align: right;
+	padding-right: 10px;
+	display: block;
+	width: 125px; 
+	}
+	
+.AspNet-FormView-Data input, .AspNet-FormView-Data textarea, .AspNet-FormView-Data select {
+	width: 275px;
+	font-size: 1.1em;
+	}
+	
+.AspNet-FormView-Data .checkbox input {
+	width: auto;
+	}
+	
+.AspNet-FormView-Pagination {
+	margin-top: 1.5em;
+	}
+
+.MaskedEditFocus {
+	background-color: #FDFDFD;
+	}
+
+.MaskedEditError {
+	background-color: #FFB4BB;
+	}
+	
+.required p, .required li {
+	color: #CC0000;
+	}
+
+/* EDF from buttons */	
+
+.AspNet-FormView-Data a.contact-us, .AspNet-FormView-Data a.register {
+	margin: 10px 0 20px 0;
+	text-indent: -9999px;
+	display: block;
+	float: right;
+	}
+	
+.AspNet-FormView-Data a.contact-us {
+	height: 22px;
+	width: 110px;
+	background: url(/images/css-images/buttons/contact-us.jpg) no-repeat;
+	}
+	
+.AspNet-FormView-Data a.register {
+	height: 22px;
+	width: 81px;
+	background: url(/images/css-images/buttons/register.jpg) no-repeat;
+	}
+	
+.AspNet-FormView-Data .label-long {
+	width: auto;
+	} 
+
+/* Fix for calendar extender appearing underneath other form objects */
+.ajax__calendar_container { 
+	z-index : 1000; 
+	}
+		
+
+/* Deatails View
+================================== */
+
+.AspNet-DetailsView .AspNet-DetailsView-Data li {
+    list-style-type: none;
+	padding: 0.25em 0;
+	}
+
+.AspNet-DetailsView .AspNet-DetailsView-Name {
+	float:left;
+	font-weight: bold;
+	text-align: left;
+	padding-right: 0.5em;
+	display: block;
+	width: 4em;
+	}
+	
+.AspNet-DetailsView .AspNet-DetailsView-Name a {
+	background-color: #6F6F6F;
+	color: #FFF;
+	padding: 0.25em 0.75em;
+	text-align: center;
+	margin-right: 0.25em;
+	position: relative;
+	top: 0.75em;
+	}
+	
+.AspNet-DetailsView .AspNet-DetailsView-Name a:hover {
+	background-color: #8F8F8F;
+	text-decoration: none;
+	}

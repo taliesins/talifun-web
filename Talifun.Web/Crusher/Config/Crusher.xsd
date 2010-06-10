@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="urn:crusher"
+    elementFormDefault="qualified"
+    xmlns="urn:crusher"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>
+
+	<xs:attributeGroup name="typeGroup">
+		<xs:attribute name="name" type="xs:string" use="required">
+		</xs:attribute>
+		<xs:attribute name="outputFilePath" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>
+					The file path for the output file
+
+					This is used as the unique identifier for the group so ensure that it is unique,
+					as cache key is based on it.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="url" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>
+					The url for output file.
+
+					Use this to set the url to a CDN. Leave it blank to use file on server.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+
+		<xs:attribute name="debug" type="xs:boolean" use="required">
+			<xs:annotation>
+				<xs:documentation>
+					Should the crushed version of the file be used.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:attributeGroup>
+
+	<xs:complexType name="cssGroup">
+		<xs:all>
+			<xs:element name="files">
+				<xs:complexType>
+					<xs:sequence minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="file">
+							<xs:complexType>
+								<xs:attribute name="name" type="xs:string" use="required" />
+								<xs:attribute name="filePath" type="xs:string" use="required">
+									<xs:annotation>
+										<xs:documentation>
+											The file path for the generated css file.
+										</xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
+								<xs:attribute name="compressionType" type="cssCompressionType" default="Hybrid" >
+									<xs:annotation>
+										<xs:documentation>
+											The compression method to use when adding a css file to the generated css file.
+										</xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:all>
+		<xs:attributeGroup ref="typeGroup"></xs:attributeGroup>
+		<xs:attribute name="media" type="xs:string" default="screen">
+			<xs:annotation>
+				<xs:documentation>
+					The css media to use for the stylesheet.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="jsGroup">
+		<xs:all>
+			<xs:element name="files">
+				<xs:complexType>
+					<xs:sequence minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="file">
+							<xs:complexType>
+								<xs:attribute name="name" type="xs:string" use="required" />
+								<xs:attribute name="filePath" type="xs:string" use="required">
+									<xs:annotation>
+										<xs:documentation>
+											The file path for the generated js file.
+										</xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
+								<xs:attribute name="compressionType" type="jsCompressionType" default="Min" >
+									<xs:annotation>
+										<xs:documentation>
+											The compression method to use when adding a js file to the generated js file.
+										</xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
+
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:all>
+		<xs:attributeGroup ref="typeGroup"></xs:attributeGroup>
+	</xs:complexType>
+
+	<xs:simpleType name="jsCompressionType" >
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="None" >
+				<xs:annotation>
+					<xs:documentation>
+						Do not use any compression at all on js file.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Min" >
+				<xs:annotation>
+					<xs:documentation>
+						Compress js using jsmin method.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="cssCompressionType" >
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="None" >
+				<xs:annotation>
+					<xs:documentation>
+						Do not compress css file.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="StockYuiCompressor">
+				<xs:annotation>
+					<xs:documentation>
+						Compress css using Stock Yui Compressor method.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MichaelAshRegexEnhancements">
+				<xs:annotation>
+					<xs:documentation>
+						Compress css using Miachael Ash Regex Enhancements method.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Hybrid">
+				<xs:annotation>
+					<xs:documentation>Compress css using a combinitation of Stock Yui Compressor and Michael Ash Regex Enhancements Compressor methods.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:element name="Crusher">
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="cssGroups">
+					<xs:complexType >
+						<xs:sequence>
+							<xs:element name="cssGroup"  type="cssGroup"  minOccurs="0" maxOccurs="unbounded"></xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="jsGroups">
+					<xs:complexType >
+						<xs:sequence>
+							<xs:element name="jsGroup"  type="jsGroup"  minOccurs="0" maxOccurs="unbounded"></xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
