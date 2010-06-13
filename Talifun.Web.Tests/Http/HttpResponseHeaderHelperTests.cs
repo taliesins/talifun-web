@@ -16,14 +16,15 @@ namespace Talifun.Web.Tests.Http
             //Arrange
             var httpResponse = MockRepository.GenerateMock<HttpResponseBase>();
             var httpStatus = HttpStatus.OK;
-            var statusCode = StringifyHttpHeaders.HttpStatusCodeFromHttpStatus(httpStatus);
+            var statusCode = (int)StringifyHttpHeaders.HttpStatusCodeFromHttpStatus(httpStatus);
             var statusDescription = StringifyHttpHeaders.StringFromHttpStatus(httpStatus);
+            var webServerType = WebServerType.Unknown;
 
-            httpResponse.Expect(x => x.StatusCode = (int)statusCode);
+            httpResponse.Expect(x => x.StatusCode = statusCode);
             httpResponse.Expect(x => x.StatusDescription = statusDescription);
 
             //Act
-            var httpResponseHeaderHelper = new HttpResponseHeaderHelper(WebServerType.Unknown);
+            var httpResponseHeaderHelper = new HttpResponseHeaderHelper(webServerType);
             httpResponseHeaderHelper.SendHttpStatusHeaders(httpResponse, httpStatus);
 
             //Assert
@@ -41,11 +42,12 @@ namespace Talifun.Web.Tests.Http
             var httpResponseHeader = HttpResponseHeader.ETag;
             var headerName = StringifyHttpHeaders.StringFromResponseHeader(httpResponseHeader);
             var headerValue = "Test";
+            var webServerType = WebServerType.Unknown;
 
             httpResponse.Expect(x => x.AddHeader(headerName, headerValue));
 
             //Act
-            var httpResponseHeaderHelper = new HttpResponseHeaderHelper(WebServerType.Unknown);
+            var httpResponseHeaderHelper = new HttpResponseHeaderHelper(webServerType);
             httpResponseHeaderHelper.AppendHeader(httpResponse, httpResponseHeader, headerValue);
 
             //Assert
@@ -61,11 +63,12 @@ namespace Talifun.Web.Tests.Http
             var httpResponseHeader = HttpResponseHeader.ETag;
             var headerName = StringifyHttpHeaders.StringFromResponseHeader(httpResponseHeader);
             var headerValue = "Test";
+            var webServerType = WebServerType.Unknown;
 
             httpResponse.Expect(x => x.AddHeader(headerName, headerValue));
 
             //Act
-            var httpResponseHeaderHelper = new HttpResponseHeaderHelper(WebServerType.Unknown);
+            var httpResponseHeaderHelper = new HttpResponseHeaderHelper(webServerType);
             httpResponseHeaderHelper.AppendHeader(httpResponse, headerName, headerValue);
 
             //Assert
@@ -81,11 +84,12 @@ namespace Talifun.Web.Tests.Http
             var httpResponseHeader = HttpResponseHeader.ETag;
             var headerName = StringifyHttpHeaders.StringFromResponseHeader(httpResponseHeader);
             var headerValue = "Test";
+            var webServerType = WebServerType.IIS7;
 
             httpResponse.Expect(x => x.AppendHeader(headerName, headerValue));
 
             //Act
-            var httpResponseHeaderHelperIis7 = new HttpResponseHeaderHelper(WebServerType.IIS7);
+            var httpResponseHeaderHelperIis7 = new HttpResponseHeaderHelper(webServerType);
             httpResponseHeaderHelperIis7.AppendHeader(httpResponse, httpResponseHeader, headerValue);
 
             //Assert
@@ -101,11 +105,12 @@ namespace Talifun.Web.Tests.Http
             var httpResponseHeader = HttpResponseHeader.ETag;
             var headerName = StringifyHttpHeaders.StringFromResponseHeader(httpResponseHeader);
             var headerValue = "Test";
+            var webServerType = WebServerType.IIS7;
 
             httpResponse.Expect(x => x.AppendHeader(headerName, headerValue));
 
             //Act
-            var httpResponseHeaderHelperIis7 = new HttpResponseHeaderHelper(WebServerType.IIS7);
+            var httpResponseHeaderHelperIis7 = new HttpResponseHeaderHelper(webServerType);
             httpResponseHeaderHelperIis7.AppendHeader(httpResponse, headerName, headerValue);
 
             //Assert
@@ -125,9 +130,10 @@ namespace Talifun.Web.Tests.Http
             var httpResponseHeader = HttpResponseHeader.ContentEncoding;
             var headerName = StringifyHttpHeaders.StringFromResponseHeader(httpResponseHeader);
             var headerValue = responseCompressionType.ToString().ToLower();
+            var webServerType = WebServerType.Unknown;
 
             //Act
-            var httpResponseHeaderHelper = new HttpResponseHeaderHelper(WebServerType.Unknown);
+            var httpResponseHeaderHelper = new HttpResponseHeaderHelper(webServerType);
             httpResponseHeaderHelper.SetContentEncoding(httpResponse, responseCompressionType);
 
             //Assert
@@ -145,11 +151,12 @@ namespace Talifun.Web.Tests.Http
             var httpResponseHeader = HttpResponseHeader.ContentEncoding;
             var headerName = StringifyHttpHeaders.StringFromResponseHeader(httpResponseHeader);
             var headerValue = responseCompressionType.ToString().ToLower();
+            var webServerType = WebServerType.Unknown;
 
             httpResponse.Expect(x => x.AddHeader(headerName, headerValue));
 
             //Act
-            var httpResponseHeaderHelper = new HttpResponseHeaderHelper(WebServerType.Unknown);
+            var httpResponseHeaderHelper = new HttpResponseHeaderHelper(webServerType);
             httpResponseHeaderHelper.SetContentEncoding(httpResponse, responseCompressionType);
 
             //Assert
@@ -166,11 +173,12 @@ namespace Talifun.Web.Tests.Http
             var httpResponseHeader = HttpResponseHeader.ContentEncoding;
             var headerName = StringifyHttpHeaders.StringFromResponseHeader(httpResponseHeader);
             var headerValue = responseCompressionType.ToString().ToLower();
+            var webServerType = WebServerType.Unknown;
 
             httpResponse.Expect(x => x.AddHeader(headerName, headerValue));
 
             //Act
-            var httpResponseHeaderHelper = new HttpResponseHeaderHelper(WebServerType.Unknown);
+            var httpResponseHeaderHelper = new HttpResponseHeaderHelper(webServerType);
             httpResponseHeaderHelper.SetContentEncoding(httpResponse, responseCompressionType);
 
             //Assert
@@ -187,11 +195,12 @@ namespace Talifun.Web.Tests.Http
 
             var headerName = StringifyHttpHeaders.StringFromResponseHeader(HttpResponseHeader.AcceptRanges);
             var headerValue = HttpResponseHeaderHelper.HTTP_HEADER_ACCEPT_RANGES_BYTES;
+            var webServerType = WebServerType.Unknown;
 
             httpResponse.Expect(x => x.AddHeader(headerName, headerValue));
 
             //Act
-            var httpResponseHeaderHelper = new HttpResponseHeaderHelper(WebServerType.Unknown);
+            var httpResponseHeaderHelper = new HttpResponseHeaderHelper(webServerType);
             httpResponseHeaderHelper.SetResponseResumable(httpResponse);
 
             //Assert
@@ -210,19 +219,25 @@ namespace Talifun.Web.Tests.Http
             httpResponse.Stub(x => x.Cache).Return(cache);
 
             var now = DateTime.Now;
-            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
             var etag = "1234567";
             var maxAge = new TimeSpan(1, 0, 0, 0);
+            
+            var expiryDate = now.Add(maxAge);
+            var cachability = HttpCacheability.Public;
+            var cacheExtensions = "must-revalidate, proxy-revalidate";
+            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
 
-            httpResponse.Cache.Expect(x => x.SetExpires(now.Add(maxAge)));
-            httpResponse.Cache.Expect(x => x.SetCacheability(HttpCacheability.Public));
-            httpResponse.Cache.Expect(x => x.AppendCacheExtension("must-revalidate, proxy-revalidate"));
+            var webServerType = WebServerType.Unknown;
+            
+            httpResponse.Cache.Expect(x => x.SetExpires(expiryDate));
+            httpResponse.Cache.Expect(x => x.SetCacheability(cachability));
+            httpResponse.Cache.Expect(x => x.AppendCacheExtension(cacheExtensions));
             httpResponse.Cache.Expect(x => x.SetLastModified(lastModified));
             httpResponse.Cache.Expect(x => x.SetETag(etag));
             httpResponse.Cache.Expect(x => x.SetMaxAge(maxAge));
 
             //Act
-            var httpResponseHeaderHelper = new HttpResponseHeaderHelper(WebServerType.Unknown);
+            var httpResponseHeaderHelper = new HttpResponseHeaderHelper(webServerType);
             httpResponseHeaderHelper.SetResponseCachable(httpResponse, now, lastModified, etag, maxAge);
 
             //Assert
