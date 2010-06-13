@@ -184,13 +184,15 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var identity1 = "gzip";
             var identity2 = "deflate";
+            var headerValue = identity1 + "," + identity2;
+            var headerType = HttpRequestHeader.IfMatch;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            var ifMatchSent = identity1 + "," + identity2;
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.IfMatch)]).Return(ifMatchSent);
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
-            var headerValues = httpRequestHeaderHelper.GetHttpHeaderValues(httpRequest, HttpRequestHeader.IfMatch);
+            var headerValues = httpRequestHeaderHelper.GetHttpHeaderValues(httpRequest, headerType);
 
             //Assert
             httpRequest.VerifyAllExpectations();
@@ -205,13 +207,15 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var identity1 = "gzip";
             var identity2 = "deflate";
+            var headerValue = identity1 + " , " + identity2;
+            var headerType = HttpRequestHeader.IfMatch;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            var ifMatchSent = identity1 + " , " + identity2;
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.IfMatch)]).Return(ifMatchSent);
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
-            var headerValues = httpRequestHeaderHelper.GetHttpHeaderValues(httpRequest, HttpRequestHeader.IfMatch);
+            var headerValues = httpRequestHeaderHelper.GetHttpHeaderValues(httpRequest, headerType);
 
             //Assert
             httpRequest.VerifyAllExpectations();
@@ -226,13 +230,15 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var identity1 = "deflate";
             var identity2 = "gzip, hello";
+            var headerValue = identity1 + " , \"" + identity2 + "\"";
+            var headerType = HttpRequestHeader.IfMatch;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            var ifMatchSent = identity1 + " , \"" + identity2 + "\"";
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.IfMatch)]).Return(ifMatchSent);
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
-            var headerValues = httpRequestHeaderHelper.GetHttpHeaderValues(httpRequest, HttpRequestHeader.IfMatch);
+            var headerValues = httpRequestHeaderHelper.GetHttpHeaderValues(httpRequest, headerType);
 
             //Assert
             httpRequest.VerifyAllExpectations();
@@ -246,17 +252,20 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var ifMatchSent = "abcdeF";
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.IfMatch)]).Return(ifMatchSent);
+            var headerValue = "abcdeF";
+            var headerType = HttpRequestHeader.IfMatch;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
+           
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
-            var headerValues = httpRequestHeaderHelper.GetHttpHeaderValues(httpRequest, HttpRequestHeader.IfMatch);
+            var headerValues = httpRequestHeaderHelper.GetHttpHeaderValues(httpRequest, headerType);
 
             //Assert
             httpRequest.VerifyAllExpectations();
             Assert.AreEqual(1, headerValues.Count);
-            Assert.AreEqual(ifMatchSent, headerValues[0]);
+            Assert.AreEqual(headerValue, headerValues[0]);
         }
         #endregion
 
@@ -266,12 +275,15 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var accepEncodingSent = string.Empty;
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.AcceptEncoding)]).Return(accepEncodingSent);
+            var headerValue = string.Empty;
+            var headerType = HttpRequestHeader.AcceptEncoding;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
+            
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
-            var headerValueWithQValues = httpRequestHeaderHelper.GetHttpHeaderWithQValues(httpRequest, HttpRequestHeader.AcceptEncoding);
+            var headerValueWithQValues = httpRequestHeaderHelper.GetHttpHeaderWithQValues(httpRequest, headerType);
 
             //Assert
             httpRequest.VerifyAllExpectations();
@@ -283,17 +295,20 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var accepEncodingSent = "gzip";
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.AcceptEncoding)]).Return(accepEncodingSent);
+            var headerValue = "gzip";
+            var headerType = HttpRequestHeader.AcceptEncoding;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
-            var headerValueWithQValues = httpRequestHeaderHelper.GetHttpHeaderWithQValues(httpRequest, HttpRequestHeader.AcceptEncoding);
+            var headerValueWithQValues = httpRequestHeaderHelper.GetHttpHeaderWithQValues(httpRequest, headerType);
 
             //Assert
             httpRequest.VerifyAllExpectations();
             Assert.AreEqual(1, headerValueWithQValues.Count);
-            Assert.AreEqual(accepEncodingSent.ToLowerInvariant(), headerValueWithQValues[0].Identity);
+            Assert.AreEqual(headerValue.ToLowerInvariant(), headerValueWithQValues[0].Identity);
             Assert.IsNull(headerValueWithQValues[0].QValue);
         }
 
@@ -304,12 +319,15 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var identity = "gzip";
             var qValue = 0.5f;
-            var accepEncodingSent = identity + ";q=" + qValue.ToString("N1");
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.AcceptEncoding)]).Return(accepEncodingSent);
+            var headerValue = identity + ";q=" + qValue.ToString("N1");
+            var headerType = HttpRequestHeader.AcceptEncoding;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
-            var headerValueWithQValues = httpRequestHeaderHelper.GetHttpHeaderWithQValues(httpRequest, HttpRequestHeader.AcceptEncoding);
+            var headerValueWithQValues = httpRequestHeaderHelper.GetHttpHeaderWithQValues(httpRequest, headerType);
 
             //Assert
             httpRequest.VerifyAllExpectations();
@@ -330,12 +348,15 @@ namespace Talifun.Web.Tests.Http
             var identity2 = "deflate";
             var qValue2 = 0.8f;
 
-            var accepEncodingSent = identity1 + ";q=" + qValue1.ToString("N1") + "," + identity2 + ";q=" + qValue2.ToString("N1");
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.AcceptEncoding)]).Return(accepEncodingSent);
+            var headerValue = identity1 + ";q=" + qValue1.ToString("N1") + "," + identity2 + ";q=" + qValue2.ToString("N1");
+            var headerType = HttpRequestHeader.AcceptEncoding;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
-            var headerValueWithQValues = httpRequestHeaderHelper.GetHttpHeaderWithQValues(httpRequest, HttpRequestHeader.AcceptEncoding);
+            var headerValueWithQValues = httpRequestHeaderHelper.GetHttpHeaderWithQValues(httpRequest, headerType);
 
             //Assert
             httpRequest.VerifyAllExpectations();
@@ -360,12 +381,15 @@ namespace Talifun.Web.Tests.Http
             var identity2 = "deflate";
             var qValue2 = 0.8f;
 
-            var accepEncodingSent = identity1 + " ; q = " + qValue1.ToString("N1") + " , " + identity2 + "; q=" + qValue2.ToString("N1");
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.AcceptEncoding)]).Return(accepEncodingSent);
+            var headerValue = identity1 + " ; q = " + qValue1.ToString("N1") + " , " + identity2 + "; q=" + qValue2.ToString("N1");
+            var headerType = HttpRequestHeader.AcceptEncoding;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
-            var headerValueWithQValues = httpRequestHeaderHelper.GetHttpHeaderWithQValues(httpRequest, HttpRequestHeader.AcceptEncoding);
+            var headerValueWithQValues = httpRequestHeaderHelper.GetHttpHeaderWithQValues(httpRequest, headerType);
 
             //Assert
             httpRequest.VerifyAllExpectations();
@@ -390,12 +414,15 @@ namespace Talifun.Web.Tests.Http
             var identity2 = "deflate, test";
             var qValue2 = 0.8f;
 
-            var accepEncodingSent = identity1 + ";q=" + qValue1.ToString("N1") + ",\"" + identity2 + "\";q=" + qValue2.ToString("N1");
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.AcceptEncoding)]).Return(accepEncodingSent);
+            var headerValue = identity1 + ";q=" + qValue1.ToString("N1") + ",\"" + identity2 + "\";q=" + qValue2.ToString("N1");
+            var headerType = HttpRequestHeader.AcceptEncoding;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
-            var headerValueWithQValues = httpRequestHeaderHelper.GetHttpHeaderWithQValues(httpRequest, HttpRequestHeader.AcceptEncoding);
+            var headerValueWithQValues = httpRequestHeaderHelper.GetHttpHeaderWithQValues(httpRequest, headerType);
 
             //Assert
             httpRequest.VerifyAllExpectations();
@@ -415,17 +442,20 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var accepEncodingSent = "abcdeF";
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.AcceptEncoding)]).Return(accepEncodingSent);
+            var headerValue = "abcdeF";
+            var headerType = HttpRequestHeader.AcceptEncoding;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
-            var headerValueWithQValues = httpRequestHeaderHelper.GetHttpHeaderWithQValues(httpRequest, HttpRequestHeader.AcceptEncoding);
+            var headerValueWithQValues = httpRequestHeaderHelper.GetHttpHeaderWithQValues(httpRequest, headerType);
 
             //Assert
             httpRequest.VerifyAllExpectations();
             Assert.AreEqual(1, headerValueWithQValues.Count);
-            Assert.AreEqual(accepEncodingSent, headerValueWithQValues[0].Identity);
+            Assert.AreEqual(headerValue, headerValueWithQValues[0].Identity);
             Assert.IsNull(headerValueWithQValues[0].QValue);
         }
         #endregion
@@ -436,9 +466,12 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var acceptEncodingSent = string.Empty;
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.AcceptEncoding)]).Return(acceptEncodingSent);
+            var headerValue = string.Empty;
+            var headerType = HttpRequestHeader.AcceptEncoding;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
+            
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
             var compressionMode = httpRequestHeaderHelper.GetCompressionMode(httpRequest);
@@ -453,8 +486,11 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var acceptEncodingSent = "compression, test, testdeflater";
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.AcceptEncoding)]).Return(acceptEncodingSent);
+            var headerValue = "compression, test, testdeflater";
+            var headerType = HttpRequestHeader.AcceptEncoding;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -470,8 +506,11 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var acceptEncodingSent = "deflate";
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.AcceptEncoding)]).Return(acceptEncodingSent);
+            var headerValue = "deflate";
+            var headerType = HttpRequestHeader.AcceptEncoding;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -487,8 +526,11 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var acceptEncodingSent = "gzip";
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.AcceptEncoding)]).Return(acceptEncodingSent);
+            var headerValue = "gzip";
+            var headerType = HttpRequestHeader.AcceptEncoding;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -504,8 +546,11 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var acceptEncodingSent = "gzip, deflate";
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.AcceptEncoding)]).Return(acceptEncodingSent);
+            var headerValue = "gzip, deflate";
+            var headerType = HttpRequestHeader.AcceptEncoding;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -521,8 +566,11 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var acceptEncodingSent = "deflate;q=0.5, gzip;q=0.9, compress";
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.AcceptEncoding)]).Return(acceptEncodingSent);
+            var headerValue = "deflate;q=0.5, gzip;q=0.9, compress";
+            var headerType = HttpRequestHeader.AcceptEncoding;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -538,8 +586,11 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var acceptEncodingSent = "*";
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.AcceptEncoding)]).Return(acceptEncodingSent);
+            var headerValue = "*";
+            var headerType = HttpRequestHeader.AcceptEncoding;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -555,8 +606,11 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var acceptEncodingSent = "*, gzip";
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.AcceptEncoding)]).Return(acceptEncodingSent);
+            var headerValue = "*, gzip";
+            var headerType = HttpRequestHeader.AcceptEncoding;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -572,8 +626,11 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var acceptEncodingSent = " * , gzip ; q = 0.5, deflate; q=0.9";
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.AcceptEncoding)]).Return(acceptEncodingSent);
+            var headerValue = " * , gzip ; q = 0.5, deflate; q=0.9";
+            var headerType = HttpRequestHeader.AcceptEncoding;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -590,8 +647,11 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var acceptEncodingSent = "Gzip";
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.AcceptEncoding)]).Return(acceptEncodingSent);
+            var headerValue = "Gzip";
+            var headerType = HttpRequestHeader.AcceptEncoding;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -609,11 +669,11 @@ namespace Talifun.Web.Tests.Http
         public void GetHttpMethod_GetRequest_Get()
         {
             //Arrange
-            var requestHttpMethod = HttpMethod.Get;
-            var requestHttpMethodString = StringifyHttpHeaders.StringFromHttpMethod(requestHttpMethod);
+            var httpMethodType = HttpMethod.Get;
+            var httpMethodValue = StringifyHttpHeaders.StringFromHttpMethod(httpMethodType);
 
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            httpRequest.Expect(x => x.HttpMethod).Return(requestHttpMethodString);
+            httpRequest.Expect(x => x.HttpMethod).Return(httpMethodValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -621,7 +681,7 @@ namespace Talifun.Web.Tests.Http
 
             //Assert
             httpRequest.VerifyAllExpectations();
-            Assert.AreEqual(requestHttpMethod, result);
+            Assert.AreEqual(httpMethodType, result);
         }
         #endregion
 
@@ -631,8 +691,11 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var rangeRequestSent = "bytes=500-600,601-999";
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.Range)]).Return(rangeRequestSent);
+            var headerValue = "bytes=500-600,601-999";
+            var headerType = HttpRequestHeader.Range;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -648,8 +711,11 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var rangeRequestSent = string.Empty;
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.Range)]).Return(rangeRequestSent);
+            var headerValue = string.Empty; 
+            var headerType = HttpRequestHeader.Range;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -668,10 +734,12 @@ namespace Talifun.Web.Tests.Http
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
-            var lastModifiedSent = string.Empty;
+            var headerValue = string.Empty;
+            var headerType = HttpRequestHeader.IfModifiedSince;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.IfModifiedSince)]).Return(lastModifiedSent);
-            
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
+
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
             var hasBeenModifiedSince = httpRequestHeaderHelper.CheckIfModifiedSince(httpRequest, lastModified);
@@ -687,9 +755,12 @@ namespace Talifun.Web.Tests.Http
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
-            var lastModifiedSent = lastModified.AddSeconds(-1).ToString("r");
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.IfModifiedSince)]).Return(lastModifiedSent);
-            
+            var headerValue = lastModified.AddSeconds(-1).ToString("r");
+            var headerType = HttpRequestHeader.IfModifiedSince;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
+
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
             var hasBeenModifiedSince = httpRequestHeaderHelper.CheckIfModifiedSince(httpRequest, lastModified);
@@ -706,9 +777,12 @@ namespace Talifun.Web.Tests.Http
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
-            var lastModifiedSent = lastModified.AddSeconds(1).ToString("r");
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.IfModifiedSince)]).Return(lastModifiedSent);
-            
+            var headerValue = lastModified.AddSeconds(1).ToString("r");
+            var headerType = HttpRequestHeader.IfModifiedSince;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
+
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
             var hasBeenModifiedSince = httpRequestHeaderHelper.CheckIfModifiedSince(httpRequest, lastModified);
@@ -728,10 +802,12 @@ namespace Talifun.Web.Tests.Http
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
-            var lastModifiedSent = string.Empty;
+            var headerValue = string.Empty;
+            var headerType = HttpRequestHeader.IfUnmodifiedSince;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.IfUnmodifiedSince)]).Return(lastModifiedSent);
-            
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
+
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
             var hasNotBeenModifiedSince = httpRequestHeaderHelper.CheckIfUnmodifiedSince(httpRequest, lastModified);
@@ -747,10 +823,12 @@ namespace Talifun.Web.Tests.Http
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
-            var lastModifiedSent = lastModified.AddSeconds(1).ToString("r");
+            var headerValue = lastModified.AddSeconds(1).ToString("r");
+            var headerType = HttpRequestHeader.IfUnmodifiedSince;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.IfUnmodifiedSince)]).Return(lastModifiedSent);
-            
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
+
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
             var hasNotBeenModifiedSince = httpRequestHeaderHelper.CheckIfUnmodifiedSince(httpRequest, lastModified);
@@ -767,9 +845,12 @@ namespace Talifun.Web.Tests.Http
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
-            var lastModifiedSent = lastModified.AddSeconds(-1).ToString("r");
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.IfUnmodifiedSince)]).Return(lastModifiedSent);
-            
+            var headerValue = lastModified.AddSeconds(-1).ToString("r");
+            var headerType = HttpRequestHeader.IfUnmodifiedSince;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
+
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
             var hasNotBeenModifiedSince = httpRequestHeaderHelper.CheckIfUnmodifiedSince(httpRequest, lastModified);
@@ -788,10 +869,11 @@ namespace Talifun.Web.Tests.Http
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
-            var lastModifiedSent = string.Empty;
+            var headerValue = string.Empty;
+            var headerName = HttpRequestHeaderHelper.HTTP_HEADER_UNLESS_MODIFIED_SINCE;
 
-            httpRequest.Expect(x => x.Headers[HttpRequestHeaderHelper.HTTP_HEADER_UNLESS_MODIFIED_SINCE]).Return(lastModifiedSent);
-            
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
+
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
             var hasNotBeenModifiedSince = httpRequestHeaderHelper.CheckUnlessModifiedSince(httpRequest, lastModified);
@@ -807,10 +889,11 @@ namespace Talifun.Web.Tests.Http
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
-            var lastModifiedSent = lastModified.AddSeconds(1).ToString("r");
-            
-            httpRequest.Expect(x => x.Headers[HttpRequestHeaderHelper.HTTP_HEADER_UNLESS_MODIFIED_SINCE]).Return(lastModifiedSent);
+            var headerValue = lastModified.AddSeconds(1).ToString("r");
+            var headerName = HttpRequestHeaderHelper.HTTP_HEADER_UNLESS_MODIFIED_SINCE;
 
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
+            
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
             var hasNotBeenModifiedSince = httpRequestHeaderHelper.CheckUnlessModifiedSince(httpRequest, lastModified);
@@ -827,10 +910,11 @@ namespace Talifun.Web.Tests.Http
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
-            var lastModifiedSent = lastModified.AddSeconds(-1).ToString("r");
+            var headerValue = lastModified.AddSeconds(-1).ToString("r");
+            var headerName = HttpRequestHeaderHelper.HTTP_HEADER_UNLESS_MODIFIED_SINCE;
 
-            httpRequest.Expect(x => x.Headers[HttpRequestHeaderHelper.HTTP_HEADER_UNLESS_MODIFIED_SINCE]).Return(lastModifiedSent);
-            
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
+
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
             var hasNotBeenModifiedSince = httpRequestHeaderHelper.CheckUnlessModifiedSince(httpRequest, lastModified);
@@ -850,14 +934,14 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var headers = MockRepository.GenerateMock<NameValueCollection>();
             httpRequest.Stub(x => x.Headers).Return(headers);
-
             var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
             var etag = "1234567";
+            var headerValue = string.Empty;
+            var headerType = HttpRequestHeader.Range;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            var rangeRequestSent = string.Empty;
+            httpRequest.Headers.Expect(x => x[headerName]).Return(headerValue);
 
-            httpRequest.Headers.Expect(x => x[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.Range)]).Return(rangeRequestSent);
-            
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
             var satisfiesRangeCheck = httpRequestHeaderHelper.CheckIfRange(httpRequest, etag, lastModified);
@@ -879,11 +963,16 @@ namespace Talifun.Web.Tests.Http
             var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
             var etag = "1234567";
 
-            var rangeRequestSent = "bytes=500-600,601-999";
-            var IfRangeSent = string.Empty;
-            
-            httpRequest.Headers.Expect(x => x[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.Range)]).Return(rangeRequestSent);
-            httpRequest.Headers.Expect(x => x[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.IfRange)]).Return(IfRangeSent);
+            var rangeRequestHeaderValue = "bytes=500-600,601-999";
+            var rangeRequestHeaderType = HttpRequestHeader.Range;
+            var rangeRequestHeaderName = StringifyHttpHeaders.StringFromRequestHeader(rangeRequestHeaderType);
+
+            var ifRangeHeaderValue = string.Empty;
+            var ifRangeHeaderType = HttpRequestHeader.IfRange;
+            var ifRangeHeaderName = StringifyHttpHeaders.StringFromRequestHeader(ifRangeHeaderType);
+
+            httpRequest.Headers.Expect(x => x[rangeRequestHeaderName]).Return(rangeRequestHeaderValue);
+            httpRequest.Headers.Expect(x => x[ifRangeHeaderName]).Return(ifRangeHeaderValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -905,11 +994,16 @@ namespace Talifun.Web.Tests.Http
             var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
             var etag = "1234567";
 
-            var rangeRequestSent = "bytes=500-600,601-999";
-            var IfRangeSent = etag;
+            var rangeRequestHeaderValue = "bytes=500-600,601-999";
+            var rangeRequestHeaderType = HttpRequestHeader.Range;
+            var rangeRequestHeaderName = StringifyHttpHeaders.StringFromRequestHeader(rangeRequestHeaderType);
 
-            httpRequest.Headers.Expect(x => x[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.Range)]).Return(rangeRequestSent);
-            httpRequest.Headers.Expect(x => x[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.IfRange)]).Return(IfRangeSent);
+            var ifRangeHeaderValue = etag;
+            var ifRangeHeaderType = HttpRequestHeader.IfRange;
+            var ifRangeHeaderName = StringifyHttpHeaders.StringFromRequestHeader(ifRangeHeaderType);
+
+            httpRequest.Headers.Expect(x => x[rangeRequestHeaderName]).Return(rangeRequestHeaderValue);
+            httpRequest.Headers.Expect(x => x[ifRangeHeaderName]).Return(ifRangeHeaderValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -932,11 +1026,16 @@ namespace Talifun.Web.Tests.Http
             var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
             var etag = "1234567";
 
-            var rangeRequestSent = "bytes=500-600,601-999";
-            var IfRangeSent = etag + "8";
+            var rangeRequestHeaderValue = "bytes=500-600,601-999";
+            var rangeRequestHeaderType = HttpRequestHeader.Range;
+            var rangeRequestHeaderName = StringifyHttpHeaders.StringFromRequestHeader(rangeRequestHeaderType);
 
-            httpRequest.Headers.Expect(x => x[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.Range)]).Return(rangeRequestSent);
-            httpRequest.Headers.Expect(x => x[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.IfRange)]).Return(IfRangeSent);
+            var ifRangeHeaderValue = etag + "8";
+            var ifRangeHeaderType = HttpRequestHeader.IfRange;
+            var ifRangeHeaderName = StringifyHttpHeaders.StringFromRequestHeader(ifRangeHeaderType);
+
+            httpRequest.Headers.Expect(x => x[rangeRequestHeaderName]).Return(rangeRequestHeaderValue);
+            httpRequest.Headers.Expect(x => x[ifRangeHeaderName]).Return(ifRangeHeaderValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -959,11 +1058,16 @@ namespace Talifun.Web.Tests.Http
             var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
             var etag = "1234567";
 
-            var rangeRequestSent = "bytes=500-600,601-999";
-            var IfRangeSent = lastModified.ToString("r");
+            var rangeRequestHeaderValue = "bytes=500-600,601-999";
+            var rangeRequestHeaderType = HttpRequestHeader.Range;
+            var rangeRequestHeaderName = StringifyHttpHeaders.StringFromRequestHeader(rangeRequestHeaderType);
 
-            httpRequest.Headers.Expect(x => x[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.Range)]).Return(rangeRequestSent);
-            httpRequest.Headers.Expect(x => x[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.IfRange)]).Return(IfRangeSent);
+            var ifRangeHeaderValue = lastModified.ToString("r");
+            var ifRangeHeaderType = HttpRequestHeader.IfRange;
+            var ifRangeHeaderName = StringifyHttpHeaders.StringFromRequestHeader(ifRangeHeaderType);
+
+            httpRequest.Headers.Expect(x => x[rangeRequestHeaderName]).Return(rangeRequestHeaderValue);
+            httpRequest.Headers.Expect(x => x[ifRangeHeaderName]).Return(ifRangeHeaderValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -986,11 +1090,16 @@ namespace Talifun.Web.Tests.Http
             var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
             var etag = "1234567";
 
-            var rangeRequestSent = "bytes=500-600,601-999";
-            var IfRangeSent = lastModified.AddSeconds(-1).ToString("r");
+            var rangeRequestHeaderValue = "bytes=500-600,601-999";
+            var rangeRequestHeaderType = HttpRequestHeader.Range;
+            var rangeRequestHeaderName = StringifyHttpHeaders.StringFromRequestHeader(rangeRequestHeaderType);
 
-            httpRequest.Headers.Expect(x => x[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.Range)]).Return(rangeRequestSent);
-            httpRequest.Headers.Expect(x => x[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.IfRange)]).Return(IfRangeSent);
+            var ifRangeHeaderValue = lastModified.AddSeconds(-1).ToString("r");
+            var ifRangeHeaderType = HttpRequestHeader.IfRange;
+            var ifRangeHeaderName = StringifyHttpHeaders.StringFromRequestHeader(ifRangeHeaderType);
+
+            httpRequest.Headers.Expect(x => x[rangeRequestHeaderName]).Return(rangeRequestHeaderValue);
+            httpRequest.Headers.Expect(x => x[ifRangeHeaderName]).Return(ifRangeHeaderValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -1013,11 +1122,13 @@ namespace Talifun.Web.Tests.Http
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var entityTag = "1234567";
-            var entityTagSent = string.Empty;
             var doesEntityExists = true;
+            var headerValue = string.Empty;
+            var headerType = HttpRequestHeader.IfMatch;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.IfMatch)]).Return(entityTagSent);
-            
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
+
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
             var ifMatchSatisfied = httpRequestHeaderHelper.CheckIfMatch(httpRequest, entityTag, doesEntityExists);
@@ -1033,11 +1144,13 @@ namespace Talifun.Web.Tests.Http
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var entityTag = "1234567";
-            var entityTagSent = entityTag;
             var doesEntityExists = true;
+            var headerValue = entityTag;
+            var headerType = HttpRequestHeader.IfMatch;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.IfMatch)]).Return(entityTagSent);
-            
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
+
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
             var ifMatchSatisfied = httpRequestHeaderHelper.CheckIfMatch(httpRequest, entityTag, doesEntityExists);
@@ -1054,10 +1167,12 @@ namespace Talifun.Web.Tests.Http
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var entityTag = "1234567";
-            var entityTagSent = "7654321," + entityTag;
             var doesEntityExists = true;
+            var headerValue = "7654321," + entityTag;
+            var headerType = HttpRequestHeader.IfMatch;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.IfMatch)]).Return(entityTagSent);
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -1075,10 +1190,12 @@ namespace Talifun.Web.Tests.Http
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var entityTag = "1234567";
-            var entityTagSent = entityTag + "8";
             var doesEntityExists = true;
+            var headerValue = entityTag + "8";
+            var headerType = HttpRequestHeader.IfMatch;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.IfMatch)]).Return(entityTagSent);
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -1096,10 +1213,12 @@ namespace Talifun.Web.Tests.Http
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var entityTag = "1234567";
-            var entityTagSent = "7654321," + entityTag + "8";
             var doesEntityExists = true;
+            var headerValue = "7654321," + entityTag + "8";
+            var headerType = HttpRequestHeader.IfMatch;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.IfMatch)]).Return(entityTagSent);
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -1117,10 +1236,12 @@ namespace Talifun.Web.Tests.Http
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var entityTag = "abcdef";
-            var entityTagSent = "abcdeF";
             var doesEntityExists = true;
+            var headerValue = "abcdeF";
+            var headerType = HttpRequestHeader.IfMatch;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.IfMatch)]).Return(entityTagSent);
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -1138,10 +1259,12 @@ namespace Talifun.Web.Tests.Http
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var entityTag = "abcdef";
-            var entityTagSent = "*";
             var doesEntityExists = true;
+            var headerValue = "*";
+            var headerType = HttpRequestHeader.IfMatch;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.IfMatch)]).Return(entityTagSent);
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -1159,10 +1282,12 @@ namespace Talifun.Web.Tests.Http
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var entityTag = "abcdef";
-            var entityTagSent = "*";
             var doesEntityExists = false;
+            var headerValue = "*";
+            var headerType = HttpRequestHeader.IfMatch;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.IfMatch)]).Return(entityTagSent);
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -1182,10 +1307,12 @@ namespace Talifun.Web.Tests.Http
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var entityTag = "1234567";
-            var entityTagSent = string.Empty;
             var doesEntityExists = true;
+            var headerValue = string.Empty;
+            var headerType = HttpRequestHeader.IfNoneMatch;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.IfNoneMatch)]).Return(entityTagSent);
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -1202,10 +1329,12 @@ namespace Talifun.Web.Tests.Http
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var entityTag = "1234567";
-            var entityTagSent = entityTag;
             var doesEntityExists = true;
+            var headerValue = entityTag;
+            var headerType = HttpRequestHeader.IfNoneMatch;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.IfNoneMatch)]).Return(entityTagSent);
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -1223,11 +1352,13 @@ namespace Talifun.Web.Tests.Http
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var entityTag = "1234567";
-            var entityTagSent = "7654321," + entityTag;
             var doesEntityExists = true;
+            var headerValue = "7654321," + entityTag;
+            var headerType = HttpRequestHeader.IfNoneMatch;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.IfNoneMatch)]).Return(entityTagSent);
-
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
+            
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
             var ifMatchSatisfied = httpRequestHeaderHelper.CheckIfNoneMatch(httpRequest, entityTag, doesEntityExists);
@@ -1244,10 +1375,12 @@ namespace Talifun.Web.Tests.Http
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var entityTag = "1234567";
-            var entityTagSent = entityTag + "8";
             var doesEntityExists = true;
+            var headerValue = entityTag + "8";
+            var headerType = HttpRequestHeader.IfNoneMatch;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.IfNoneMatch)]).Return(entityTagSent);
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -1265,10 +1398,12 @@ namespace Talifun.Web.Tests.Http
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var entityTag = "1234567";
-            var entityTagSent = "7654321," + entityTag + "8";
             var doesEntityExists = true;
+            var headerValue = "7654321," + entityTag + "8";
+            var headerType = HttpRequestHeader.IfNoneMatch;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.IfNoneMatch)]).Return(entityTagSent);
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -1286,10 +1421,12 @@ namespace Talifun.Web.Tests.Http
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var entityTag = "abcdef";
-            var entityTagSent = "abcdeF";
             var doesEntityExists = true;
+            var headerValue = "abcdeF";
+            var headerType = HttpRequestHeader.IfNoneMatch;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.IfNoneMatch)]).Return(entityTagSent);
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -1307,10 +1444,12 @@ namespace Talifun.Web.Tests.Http
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var entityTag = "abcdef";
-            var entityTagSent = "*";
             var doesEntityExists = true;
+            var headerValue = "*";
+            var headerType = HttpRequestHeader.IfNoneMatch;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.IfNoneMatch)]).Return(entityTagSent);
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -1328,10 +1467,12 @@ namespace Talifun.Web.Tests.Http
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var entityTag = "abcdef";
-            var entityTagSent = "*";
             var doesEntityExists = false;
+            var headerValue = "*";
+            var headerType = HttpRequestHeader.IfNoneMatch;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.IfNoneMatch)]).Return(entityTagSent);
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -1350,10 +1491,12 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var rangesSent = string.Empty;
             var contentLength = 10000;
+            var headerValue = string.Empty;
+            var headerType = HttpRequestHeader.Range;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.Range)]).Return(rangesSent);
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -1372,10 +1515,12 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var rangesSent = "bytes=unknown-9999";
             var contentLength = 10000;
+            var headerValue = "bytes=unknown-9999";
+            var headerType = HttpRequestHeader.Range;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.Range)]).Return(rangesSent);
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -1394,11 +1539,13 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var rangesSent = "bytes=0-unknown";
             var contentLength = 10000;
+            var headerValue = "bytes=0-unknown";
+            var headerType = HttpRequestHeader.Range;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.Range)]).Return(rangesSent);
-
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
+            
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
             IEnumerable<RangeItem> ranges;
@@ -1416,10 +1563,12 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var rangesSent = "bytes=0-499,5=100";
             var contentLength = 10000;
+            var headerValue = "bytes=0-499,5=100";
+            var headerType = HttpRequestHeader.Range;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.Range)]).Return(rangesSent);
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -1438,11 +1587,13 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var rangesSent = "bytes=499-0";
             var contentLength = 10000;
+            var headerValue = "bytes=499-0";
+            var headerType = HttpRequestHeader.Range;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.Range)]).Return(rangesSent);
-
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
+            
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
             IEnumerable<RangeItem> ranges;
@@ -1460,10 +1611,12 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var rangesSent = "bytes=0-499";
             var contentLength = 10000;
+            var headerValue = "bytes=0-499";
+            var headerType = HttpRequestHeader.Range;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.Range)]).Return(rangesSent);
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -1487,11 +1640,13 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var rangesSent = "bytes=500-999";
             var contentLength = 10000;
+            var headerValue = "bytes=500-999";
+            var headerType = HttpRequestHeader.Range;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.Range)]).Return(rangesSent);
-
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
+            
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
             IEnumerable<RangeItem> ranges;
@@ -1514,10 +1669,12 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var rangesSent = "bytes=0-499,500-999";
             var contentLength = 10000;
+            var headerValue = "bytes=0-499,500-999";
+            var headerType = HttpRequestHeader.Range;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.Range)]).Return(rangesSent);
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -1544,10 +1701,12 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var rangesSent = "bytes=-500";
             var contentLength = 10000;
+            var headerValue = "bytes=-500";
+            var headerType = HttpRequestHeader.Range;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.Range)]).Return(rangesSent);
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -1571,10 +1730,12 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var rangesSent = "bytes=9500-";
             var contentLength = 10000;
+            var headerValue = "bytes=9500-";
+            var headerType = HttpRequestHeader.Range;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.Range)]).Return(rangesSent);
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -1598,10 +1759,12 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var rangesSent = "bytes=0-0";
             var contentLength = 10000;
+            var headerValue = "bytes=0-0";
+            var headerType = HttpRequestHeader.Range;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.Range)]).Return(rangesSent);
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
@@ -1625,10 +1788,12 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var rangesSent = "bytes=-1";
             var contentLength = 10000;
+            var headerValue = "bytes=-1";
+            var headerType = HttpRequestHeader.Range;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
-            httpRequest.Expect(x => x.Headers[StringifyHttpHeaders.StringFromRequestHeader(HttpRequestHeader.Range)]).Return(rangesSent);
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
