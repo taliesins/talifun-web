@@ -1,4 +1,5 @@
-﻿using System.Web;
+﻿using System;
+using System.Web;
 
 namespace Talifun.Web
 {
@@ -34,6 +35,11 @@ namespace Talifun.Web
             if (requestHttpMethod == HttpMethod.Head)
             {
                 return;
+            }
+
+            if (requestHttpMethod != HttpMethod.Get)
+            {
+                throw new Exception("Unsupported http method");
             }
 
             var bytesToRead = range.EndRange - range.StartRange + 1;

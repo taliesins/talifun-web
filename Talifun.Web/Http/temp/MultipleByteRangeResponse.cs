@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Web;
 
@@ -43,6 +44,11 @@ namespace Talifun.Web
                 return;
             }
 
+            if (requestHttpMethod != HttpMethod.Get)
+            {
+                throw new Exception("Unsupported http method");
+            }
+
             TransmitMultiPartFile(response, transmitEntity.Entity.ContentType, transmitEntity.Entity.ContentLength, Ranges, transmitEntity);
         }
 
@@ -56,7 +62,7 @@ namespace Talifun.Web
         /// <param name="startRange"></param>
         /// <param name="endRange"></param>
         /// <returns></returns>
-        public virtual string GenerateMultiPartHeader(string contentType, long contentLength, long startRange, long endRange)
+        protected virtual string GenerateMultiPartHeader(string contentType, long contentLength, long startRange, long endRange)
         {
             var multiPartHeader = new StringBuilder();
 
@@ -76,7 +82,7 @@ namespace Talifun.Web
         /// Get the multipart footer.
         /// </summary>
         /// <returns></returns>
-        public virtual string GenerateMultiPartFooter()
+        protected virtual string GenerateMultiPartFooter()
         {
             var multiPartFooter = new StringBuilder();
             multiPartFooter.AppendLine();
@@ -91,7 +97,7 @@ namespace Talifun.Web
         /// <param name="contentType">The mime type of the entity</param>
         /// <param name="contentLength">The length of the entity</param>
         /// <returns></returns>
-        public virtual long GetMultipartPartialRequestLength(IEnumerable<RangeItem> ranges, string contentType, long contentLength)
+        protected virtual long GetMultipartPartialRequestLength(IEnumerable<RangeItem> ranges, string contentType, long contentLength)
         {
             var partialContentLength = 0L;
 
@@ -114,7 +120,7 @@ namespace Talifun.Web
         /// <param name="contentLength">The length of the entity.</param>
         /// <param name="ranges">A list of ranges to send to the browser.</param>
         /// <param name="transmitEntity"></param>
-        public virtual void TransmitMultiPartFile(HttpResponseBase response, string contentType, long contentLength, IEnumerable<RangeItem> ranges, ITransmitEntityStrategy transmitEntity)
+        protected virtual void TransmitMultiPartFile(HttpResponseBase response, string contentType, long contentLength, IEnumerable<RangeItem> ranges, ITransmitEntityStrategy transmitEntity)
         {
             foreach (var range in ranges)
             {
