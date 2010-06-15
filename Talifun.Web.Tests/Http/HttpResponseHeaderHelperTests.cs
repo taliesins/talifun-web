@@ -245,5 +245,25 @@ namespace Talifun.Web.Tests.Http
             httpResponse.VerifyAllExpectations();
         }
         #endregion
+
+        #region SetContentType
+        [Test]
+        public void SetContentType()
+        {
+            //Arrange
+            var httpResponse = MockRepository.GenerateMock<HttpResponseBase>();
+            var contentType = "text/plain";
+            var webServerType = WebServerType.Unknown;
+
+            httpResponse.Expect(x => x.ContentType = contentType);
+
+            //Act
+            var httpResponseHeaderHelper = new HttpResponseHeaderHelper(webServerType);
+            httpResponseHeaderHelper.SetContentType(httpResponse, contentType);
+
+            //Assert
+            httpResponse.VerifyAllExpectations();
+        }
+        #endregion
     }
 }

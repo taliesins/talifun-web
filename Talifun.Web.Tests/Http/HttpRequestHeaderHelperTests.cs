@@ -34,6 +34,7 @@ namespace Talifun.Web.Tests.Http
             Assert.AreEqual(headerValue, userAgentValue);
         }
 
+        [Test]
         public void GetHttpHeaderValue_HttpRequestHeaderNotFound_DefaultValue()
         {
             //Arrange
@@ -54,6 +55,7 @@ namespace Talifun.Web.Tests.Http
             Assert.AreEqual(headerDefaultValue, userAgentValue);
         }
 
+        [Test]
         public void GetHttpHeaderValue_HttpRequestHeaderStringFound_HeaderValue()
         {
             //Arrange
@@ -74,6 +76,7 @@ namespace Talifun.Web.Tests.Http
             Assert.AreEqual(headerValue, userAgentValue);
         }
 
+        [Test]
         public void GetHttpHeaderValue_HttpRequestHeaderStringNotFound_DefaultValue()
         {
             //Arrange
@@ -94,12 +97,14 @@ namespace Talifun.Web.Tests.Http
             Assert.AreEqual(headerDefaultValue, userAgentValue);
         }
 
+        [Test]
         public void GetHttpHeaderValue_HttpRequestHeaderQuotedStringFound_HeaderValue()
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var headerDefaultValue = "Unknown User Agent";
-            var headerValue = @"""Talifun Browser""";
+            var userAgent = "Talifun Browser";
+            var headerValue = "\"" + userAgent + "\"";
             var headerType = HttpRequestHeader.UserAgent;
             var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 
@@ -111,9 +116,10 @@ namespace Talifun.Web.Tests.Http
 
             //Assert
             httpRequest.VerifyAllExpectations();
-            Assert.AreEqual(headerValue, userAgentValue);
+            Assert.AreEqual(userAgent, userAgentValue);
         }
 
+        [Test]
         public void GetHttpHeaderValue_IsCaseSensitive_HeaderValue()
         {
             //Arrange
@@ -201,6 +207,7 @@ namespace Talifun.Web.Tests.Http
             Assert.AreEqual(identity2, headerValues[1]);
         }
 
+        [Test]
         public void GetHttpHeaderValues_MultipleHttpHeaderWithValuesSetWithSpacing_List()
         {
             //Arrange
@@ -224,6 +231,7 @@ namespace Talifun.Web.Tests.Http
             Assert.AreEqual(identity2, headerValues[1]);
         }
 
+        [Test]
         public void GetHttpHeaderValues_MultipleHttpHeaderWithQuotedValuesSet_List()
         {
             //Arrange
@@ -371,6 +379,7 @@ namespace Talifun.Web.Tests.Http
             Assert.AreEqual(qValue2, headerValueWithQValues[1].QValue.Value);
         }
 
+        [Test]
         public void GetHttpHeaderWithQValues_MultipleHttpHeaderWithQValueSetWithSpacing_List()
         {
             //Arrange
@@ -404,6 +413,7 @@ namespace Talifun.Web.Tests.Http
             Assert.AreEqual(qValue2, headerValueWithQValues[1].QValue.Value);
         }
 
+        [Test]
         public void GetHttpHeaderWithQValues_MultipleHttpHeaderWithQuotedQValueSet_List()
         {
             //Arrange
@@ -658,7 +668,7 @@ namespace Talifun.Web.Tests.Http
 
             //Assert
             httpRequest.VerifyAllExpectations();
-            Assert.AreEqual(ResponseCompressionType.Deflate, compressionMode);
+            Assert.AreEqual(ResponseCompressionType.GZip, compressionMode);
         }
 
         [Test]
@@ -686,7 +696,7 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var headerValue = " * , gzip ; q = 0.5, deflate; q=0.1, invalid;q=0.9";
+            var headerValue = " * , gzip ; q = 0.5, deflate; q=0.7, invalid;q=0.9";
             var headerType = HttpRequestHeader.AcceptEncoding;
             var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
 

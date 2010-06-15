@@ -72,19 +72,16 @@ namespace Talifun.Web
         {
             var httpRequestHeaderValues = request.Headers[httpRequestHeader];
 
-            var regex = new Regex(@"(\""(?<identity>[^\""]+|\""\"")*\""|(?<identity>[^,]*))",
+            var regex = new Regex(",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))",
                                   RegexOptions.Compiled
                                   | RegexOptions.Singleline
                                   | RegexOptions.ExplicitCapture
                                   | RegexOptions.IgnorePatternWhitespace);
 
-            var matches = regex.Matches(httpRequestHeaderValues);
+            var quotedHeaders = regex.Split(httpRequestHeaderValues);
+            var headers = quotedHeaders.Select(x => x.Replace("\"", "").Trim()).Where(x=>!string.IsNullOrEmpty(x));
 
-            return (from Match match in matches
-                    let identity = match.Groups["identity"].Value.Trim()
-                    where !string.IsNullOrEmpty(identity)
-                    select identity
-                    ).ToList();
+            return headers.ToList();
         }
 
         /// <summary>
