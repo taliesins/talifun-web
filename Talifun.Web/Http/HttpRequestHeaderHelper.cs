@@ -152,19 +152,15 @@ namespace Talifun.Web
 
                 //We tried our best to use wild card but we got no results, so see if we can send based on any other acceptable identities
                 acceptEncodingToUse = acceptEncodingValues.Where(x => (x.Identity.Equals(DEFLATE, StringComparison.InvariantCultureIgnoreCase) || x.Identity.Equals(GZIP, StringComparison.InvariantCultureIgnoreCase) || x.Identity.Equals(XGZIP, StringComparison.InvariantCultureIgnoreCase)) && (!x.QValue.HasValue || x.QValue.Value > 0)).FirstOrDefault();
-                if (acceptEncodingToUse == null) return ResponseCompressionType.None;
             }
 
             switch (acceptEncodingToUse.Identity.ToLowerInvariant())
             {
                 case DEFLATE:
                     return ResponseCompressionType.Deflate;
-                case GZIP:
-                case XGZIP:
+                default:
                     return ResponseCompressionType.GZip;
             }
-
-            return ResponseCompressionType.None;
         }
 
         /// <summary>

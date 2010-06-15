@@ -8,7 +8,7 @@ using Rhino.Mocks;
 namespace Talifun.Web.Tests.Http
 {
     [TestFixture]
-    public class FullEntityResponseTests
+    public class SinglePartEntityResponseTests
     {
         #region SendHeaders
         [Test]
@@ -18,21 +18,29 @@ namespace Talifun.Web.Tests.Http
             var httpResponse = MockRepository.GenerateMock<HttpResponseBase>();
             var httpResponseHeaderHelper = MockRepository.GenerateMock<IHttpResponseHeaderHelper>();
             var entity = MockRepository.GenerateMock<IEntity>();
-            
-            var contentLength = 1000l;
-            var entityCompressionType = ResponseCompressionType.None;
             var responseCompressionType = ResponseCompressionType.None;
+            var entityLength = 1000l;
+            var entityCompressionType = ResponseCompressionType.None;
 
-            entity.Stub(x => x.ContentLength).Return(contentLength);
+            var startRange = 0l;
+            var endRange = 499l;
+            var rangeItem = new RangeItem
+            {
+                StartRange = startRange,
+                EndRange = endRange
+            };
+            var contentLength = endRange - startRange + 1;
+
+            entity.Stub(x => x.ContentLength).Return(entityLength);
             entity.Stub(x => x.CompressionType).Return(entityCompressionType);
 
             httpResponseHeaderHelper.Expect(x => x.SetContentEncoding(httpResponse, responseCompressionType));
-            httpResponseHeaderHelper.Expect(x => x.AppendHeader(httpResponse, FullEntityResponse.HTTP_HEADER_CONTENT_LENGTH, contentLength.ToString()));
+            httpResponseHeaderHelper.Expect(x => x.AppendHeader(httpResponse, SinglePartEntityResponse.HTTP_HEADER_CONTENT_LENGTH, contentLength.ToString()));
             httpResponse.Expect(x => x.ContentType = entity.ContentType);
 
             //Act
-            var responseForFullEntityStrategy = new FullEntityResponse(httpResponseHeaderHelper);
-            responseForFullEntityStrategy.SendHeaders(httpResponse,responseCompressionType, entity);
+            var singlePartEntityResponse = new SinglePartEntityResponse(httpResponseHeaderHelper, rangeItem);
+            singlePartEntityResponse.SendHeaders(httpResponse, responseCompressionType, entity);
 
             //Assert
             httpResponseHeaderHelper.VerifyAllExpectations();
@@ -46,21 +54,25 @@ namespace Talifun.Web.Tests.Http
             var httpResponse = MockRepository.GenerateMock<HttpResponseBase>();
             var httpResponseHeaderHelper = MockRepository.GenerateMock<IHttpResponseHeaderHelper>();
             var entity = MockRepository.GenerateMock<IEntity>();
-
-            var entityCompressionType = ResponseCompressionType.None;
             var responseCompressionType = ResponseCompressionType.GZip;
 
-            entity.Stub(x => x.CompressionType).Return(entityCompressionType);
-
-            httpResponseHeaderHelper.Expect(x => x.SetContentEncoding(httpResponse, responseCompressionType));
-            httpResponse.Expect(x => x.ContentType = entity.ContentType);
+            var startRange = 0l;
+            var endRange = 499l;
+            var rangeItem = new RangeItem
+            {
+                StartRange = startRange,
+                EndRange = endRange
+            };
 
             httpResponse.Stub(x => x.Filter).PropertyBehavior();
             httpResponse.Filter = new MemoryStream();
 
+            httpResponseHeaderHelper.Expect(x => x.SetContentEncoding(httpResponse, responseCompressionType));
+            httpResponse.Expect(x => x.ContentType = entity.ContentType);
+
             //Act
-            var responseForFullEntityStrategy = new FullEntityResponse(httpResponseHeaderHelper);
-            responseForFullEntityStrategy.SendHeaders(httpResponse, responseCompressionType, entity);
+            var singlePartEntityResponse = new SinglePartEntityResponse(httpResponseHeaderHelper, rangeItem);
+            singlePartEntityResponse.SendHeaders(httpResponse, responseCompressionType, entity);
 
             //Assert
             httpResponseHeaderHelper.VerifyAllExpectations();
@@ -76,21 +88,25 @@ namespace Talifun.Web.Tests.Http
             var httpResponse = MockRepository.GenerateMock<HttpResponseBase>();
             var httpResponseHeaderHelper = MockRepository.GenerateMock<IHttpResponseHeaderHelper>();
             var entity = MockRepository.GenerateMock<IEntity>();
-
-            var entityCompressionType = ResponseCompressionType.None;
             var responseCompressionType = ResponseCompressionType.Deflate;
-            
-            entity.Stub(x => x.CompressionType).Return(entityCompressionType);
 
-            httpResponseHeaderHelper.Expect(x => x.SetContentEncoding(httpResponse, responseCompressionType));
-            httpResponse.Expect(x => x.ContentType = entity.ContentType);
+            var startRange = 0l;
+            var endRange = 499l;
+            var rangeItem = new RangeItem
+            {
+                StartRange = startRange,
+                EndRange = endRange
+            };
 
             httpResponse.Stub(x => x.Filter).PropertyBehavior();
             httpResponse.Filter = new MemoryStream();
 
+            httpResponseHeaderHelper.Expect(x => x.SetContentEncoding(httpResponse, responseCompressionType));
+            httpResponse.Expect(x => x.ContentType = entity.ContentType);
+
             //Act
-            var responseForFullEntityStrategy = new FullEntityResponse(httpResponseHeaderHelper);
-            responseForFullEntityStrategy.SendHeaders(httpResponse, responseCompressionType, entity);
+            var singlePartEntityResponse = new SinglePartEntityResponse(httpResponseHeaderHelper, rangeItem);
+            singlePartEntityResponse.SendHeaders(httpResponse, responseCompressionType, entity);
 
             //Assert
             httpResponseHeaderHelper.VerifyAllExpectations();
@@ -106,15 +122,23 @@ namespace Talifun.Web.Tests.Http
             var httpResponse = MockRepository.GenerateMock<HttpResponseBase>();
             var httpResponseHeaderHelper = MockRepository.GenerateMock<IHttpResponseHeaderHelper>();
             var entity = MockRepository.GenerateMock<IEntity>();
-            
+
             var entityCompressionType = ResponseCompressionType.GZip;
             var responseCompressionType = ResponseCompressionType.None;
+
+            var startRange = 0l;
+            var endRange = 499l;
+            var rangeItem = new RangeItem
+            {
+                StartRange = startRange,
+                EndRange = endRange
+            };
 
             entity.Stub(x => x.CompressionType).Return(entityCompressionType);
 
             //Act
-            var responseForFullEntityStrategy = new FullEntityResponse(httpResponseHeaderHelper);
-            var ex = Assert.Throws<NotImplementedException>(() => responseForFullEntityStrategy.SendHeaders(httpResponse, responseCompressionType, entity));
+            var singlePartEntityResponse = new SinglePartEntityResponse(httpResponseHeaderHelper, rangeItem);
+            var ex = Assert.Throws<Exception>(() => singlePartEntityResponse.SendHeaders(httpResponse, responseCompressionType, entity));
         }
 
         [Test]
@@ -128,11 +152,19 @@ namespace Talifun.Web.Tests.Http
             var entityCompressionType = ResponseCompressionType.GZip;
             var responseCompressionType = ResponseCompressionType.Deflate;
 
+            var startRange = 0l;
+            var endRange = 499l;
+            var rangeItem = new RangeItem
+            {
+                StartRange = startRange,
+                EndRange = endRange
+            };
+
             entity.Stub(x => x.CompressionType).Return(entityCompressionType);
 
             //Act
-            var responseForFullEntityStrategy = new FullEntityResponse(httpResponseHeaderHelper);
-            var ex = Assert.Throws<NotImplementedException>(() => responseForFullEntityStrategy.SendHeaders(httpResponse, responseCompressionType, entity));
+            var singlePartEntityResponse = new SinglePartEntityResponse(httpResponseHeaderHelper, rangeItem);
+            var ex = Assert.Throws<Exception>(() => singlePartEntityResponse.SendHeaders(httpResponse, responseCompressionType, entity));
         }
 
         [Test]
@@ -146,11 +178,19 @@ namespace Talifun.Web.Tests.Http
             var entityCompressionType = ResponseCompressionType.Deflate;
             var responseCompressionType = ResponseCompressionType.None;
 
+            var startRange = 0l;
+            var endRange = 499l;
+            var rangeItem = new RangeItem
+            {
+                StartRange = startRange,
+                EndRange = endRange
+            };
+
             entity.Stub(x => x.CompressionType).Return(entityCompressionType);
 
             //Act
-            var responseForFullEntityStrategy = new FullEntityResponse(httpResponseHeaderHelper);
-            var ex = Assert.Throws<NotImplementedException>(() => responseForFullEntityStrategy.SendHeaders(httpResponse, responseCompressionType, entity));
+            var singlePartEntityResponse = new SinglePartEntityResponse(httpResponseHeaderHelper, rangeItem);
+            var ex = Assert.Throws<Exception>(() => singlePartEntityResponse.SendHeaders(httpResponse, responseCompressionType, entity));
         }
 
         [Test]
@@ -164,11 +204,19 @@ namespace Talifun.Web.Tests.Http
             var entityCompressionType = ResponseCompressionType.Deflate;
             var responseCompressionType = ResponseCompressionType.GZip;
 
+            var startRange = 0l;
+            var endRange = 499l;
+            var rangeItem = new RangeItem
+            {
+                StartRange = startRange,
+                EndRange = endRange
+            };
+
             entity.Stub(x => x.CompressionType).Return(entityCompressionType);
 
             //Act
-            var responseForFullEntityStrategy = new FullEntityResponse(httpResponseHeaderHelper);
-            var ex = Assert.Throws<NotImplementedException>(() => responseForFullEntityStrategy.SendHeaders(httpResponse, responseCompressionType, entity));
+            var singlePartEntityResponse = new SinglePartEntityResponse(httpResponseHeaderHelper, rangeItem);
+            var ex = Assert.Throws<Exception>(() => singlePartEntityResponse.SendHeaders(httpResponse, responseCompressionType, entity));
         }
 
         #endregion
@@ -183,12 +231,21 @@ namespace Talifun.Web.Tests.Http
             var transmitEntityStrategy = MockRepository.GenerateMock<ITransmitEntityStrategy>();
             var requestHttpMethod = HttpMethod.Get;
 
+            var startRange = 0l;
+            var endRange = 499l;
+            var rangeItem = new RangeItem
+            {
+                StartRange = startRange,
+                EndRange = endRange
+            };
+            var bytesToRead = endRange - startRange + 1;
+
             //Act
-            var responseForFullEntityStrategy = new FullEntityResponse(httpResponseHeaderHelper);
-            responseForFullEntityStrategy.SendBody(requestHttpMethod, httpResponse, transmitEntityStrategy);
+            var singleByteRangeResponse = new SinglePartEntityResponse(httpResponseHeaderHelper, rangeItem);
+            singleByteRangeResponse.SendBody(requestHttpMethod, httpResponse, transmitEntityStrategy);
 
             //Assert
-            transmitEntityStrategy.AssertWasCalled(x => x.Transmit(httpResponse));
+            transmitEntityStrategy.AssertWasCalled(x => x.Transmit(httpResponse, startRange, bytesToRead));
         }
 
         [Test]
@@ -200,12 +257,22 @@ namespace Talifun.Web.Tests.Http
             var transmitEntityStrategy = MockRepository.GenerateMock<ITransmitEntityStrategy>();
             var requestHttpMethod = HttpMethod.Head;
 
+            var startRange = 0l;
+            var endRange = 499l;
+            var rangeItem = new RangeItem
+            {
+                StartRange = startRange,
+                EndRange = endRange
+            };
+
+            var bytesToRead = endRange - startRange + 1;
+
             //Act
-            var responseForFullEntityStrategy = new FullEntityResponse(httpResponseHeaderHelper);
-            responseForFullEntityStrategy.SendBody(requestHttpMethod, httpResponse, transmitEntityStrategy);
+            var singleByteRangeResponse = new SinglePartEntityResponse(httpResponseHeaderHelper, rangeItem);
+            singleByteRangeResponse.SendBody(requestHttpMethod, httpResponse, transmitEntityStrategy);
 
             //Assert
-            transmitEntityStrategy.AssertWasNotCalled(x => x.Transmit(httpResponse));
+            transmitEntityStrategy.AssertWasNotCalled(x => x.Transmit(httpResponse, startRange, bytesToRead));
         }
 
         [Test]
@@ -217,10 +284,19 @@ namespace Talifun.Web.Tests.Http
             var transmitEntityStrategy = MockRepository.GenerateMock<ITransmitEntityStrategy>();
             var requestHttpMethod = HttpMethod.Options;
 
+            var startRange = 0l;
+            var endRange = 499l;
+            var rangeItem = new RangeItem
+            {
+                StartRange = startRange,
+                EndRange = endRange
+            };
+
+            var bytesToRead = endRange - startRange + 1;
+
             //Act
-            var responseForFullEntityStrategy = new FullEntityResponse(httpResponseHeaderHelper);
-        
-            var ex = Assert.Throws<Exception>(() => responseForFullEntityStrategy.SendBody(requestHttpMethod, httpResponse, transmitEntityStrategy));
+            var singleByteRangeResponse = new SinglePartEntityResponse(httpResponseHeaderHelper, rangeItem);
+            var ex = Assert.Throws<Exception>(() => singleByteRangeResponse.SendBody(requestHttpMethod, httpResponse, transmitEntityStrategy));
         }
 
         #endregion

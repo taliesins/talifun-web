@@ -109,11 +109,10 @@
     <Compile Include="Http\temp\IByteRangeResponse.cs" />
     <Compile Include="Http\temp\IEntity.cs" />
     <Compile Include="Http\temp\IEntityResponse.cs" />
-    <Compile Include="Http\temp\MultipleByteRangeResponse.cs" />
+    <Compile Include="Http\temp\MultiPartEntityResponse.cs" />
     <Compile Include="Http\temp\FullEntityResponse.cs" />
     <Compile Include="Http\temp\ITransmitEntityStrategy.cs" />
-    <Compile Include="Http\temp\PartialEntityResponse.cs" />
-    <Compile Include="Http\temp\SingleByteRangeResponse.cs" />
+    <Compile Include="Http\temp\SinglePartEntityResponse.cs" />
     <Compile Include="Http\temp\TransmitEntityStrategyForByteArray.cs" />
     <Compile Include="Http\temp\TransmitEntityStrategyForFile.cs" />
     <Compile Include="Http\temp\TransmitEntityStrategyForIIS.cs" />

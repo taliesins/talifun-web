@@ -63,9 +63,8 @@
   <ItemGroup>
     <Compile Include="Http\HttpResponseHeaderHelperTests.cs" />
     <Compile Include="Http\FullEntityResponseTests.cs" />
-    <Compile Include="Http\MultipleByteRangeResponseTests.cs" />
-    <Compile Include="Http\PartialEntityResponseTests.cs" />
-    <Compile Include="Http\SingleByteRangeResponseTests.cs" />
+    <Compile Include="Http\MultiplePartEntityResponseTests.cs" />
+    <Compile Include="Http\SinglePartEntityResponseTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Http\HttpRequestHeaderHelperTests.cs" />
   </ItemGroup>

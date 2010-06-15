@@ -482,6 +482,26 @@ namespace Talifun.Web.Tests.Http
         }
 
         [Test]
+        public void GetCompressionMode_InvalidAcceptEncoding_None()
+        {
+            //Arrange
+            var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
+            var headerValue = "invalid;q=0.5";
+            var headerType = HttpRequestHeader.AcceptEncoding;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
+
+            //Act
+            var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
+            var compressionMode = httpRequestHeaderHelper.GetCompressionMode(httpRequest);
+
+            //Assert
+            httpRequest.VerifyAllExpectations();
+            Assert.AreEqual(ResponseCompressionType.None, compressionMode);
+        }
+
+        [Test]
         public void GetCompressionMode_CompressionTermASubstringNotSpecifiedAcceptEncoding_None()
         {
             //Arrange
@@ -622,6 +642,26 @@ namespace Talifun.Web.Tests.Http
         }
 
         [Test]
+        public void GetCompressionMode_WildcardWithDeflateAcceptEncoding_Gzip()
+        {
+            //Arrange
+            var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
+            var headerValue = "*, deflate";
+            var headerType = HttpRequestHeader.AcceptEncoding;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
+
+            //Act
+            var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
+            var compressionMode = httpRequestHeaderHelper.GetCompressionMode(httpRequest);
+
+            //Assert
+            httpRequest.VerifyAllExpectations();
+            Assert.AreEqual(ResponseCompressionType.Deflate, compressionMode);
+        }
+
+        [Test]
         public void GetCompressionMode_WildcardWithGzipAndDeflateAcceptEncoding_Deflate()
         {
             //Arrange
@@ -641,6 +681,25 @@ namespace Talifun.Web.Tests.Http
             Assert.AreEqual(ResponseCompressionType.Deflate, compressionMode);
         }
 
+        [Test]
+        public void GetCompressionMode_WildcardWithPreferredInvalidAcceptEncoding_Deflate()
+        {
+            //Arrange
+            var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
+            var headerValue = " * , gzip ; q = 0.5, deflate; q=0.1, invalid;q=0.9";
+            var headerType = HttpRequestHeader.AcceptEncoding;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
+
+            //Act
+            var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
+            var compressionMode = httpRequestHeaderHelper.GetCompressionMode(httpRequest);
+
+            //Assert
+            httpRequest.VerifyAllExpectations();
+            Assert.AreEqual(ResponseCompressionType.Deflate, compressionMode);
+        }
 
         [Test]
         public void GetCompressionMode_IsCaseSensitive_Gzip()
@@ -793,6 +852,27 @@ namespace Talifun.Web.Tests.Http
             Assert.False(hasBeenModifiedSince.Value);
         }
 
+        [Test]
+        public void CheckIfModifiedSince_DateModifiedSinceInvalid_False()
+        {
+            //Arrange
+            var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
+            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
+            var headerValue = "invalid";
+            var headerType = HttpRequestHeader.IfModifiedSince;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
+
+            //Act
+            var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
+            var hasBeenModifiedSince = httpRequestHeaderHelper.CheckIfModifiedSince(httpRequest, lastModified);
+
+            //Assert
+            httpRequest.VerifyAllExpectations();
+            Assert.IsNull(hasBeenModifiedSince);
+        }
+
         #endregion
 
         #region CheckIfUnmodifiedSince
@@ -860,6 +940,27 @@ namespace Talifun.Web.Tests.Http
             Assert.IsNotNull(hasNotBeenModifiedSince);
             Assert.False(hasNotBeenModifiedSince.Value);
         }
+
+        [Test]
+        public void CheckIfUnmodifiedSince_DateUnmodifiedSinceInvalid_False()
+        {
+            //Arrange
+            var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
+            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
+            var headerValue = "Invalid";
+            var headerType = HttpRequestHeader.IfUnmodifiedSince;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
+
+            //Act
+            var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
+            var hasNotBeenModifiedSince = httpRequestHeaderHelper.CheckIfUnmodifiedSince(httpRequest, lastModified);
+
+            //Assert
+            httpRequest.VerifyAllExpectations();
+            Assert.IsNull(hasNotBeenModifiedSince);
+        }
         #endregion
 
         #region CheckUnlessModifiedSince
@@ -924,6 +1025,26 @@ namespace Talifun.Web.Tests.Http
             Assert.IsNotNull(hasNotBeenModifiedSince);
             Assert.False(hasNotBeenModifiedSince.Value);
         }
+
+        [Test]
+        public void CheckUnlessModifiedSince_DateUnlessModifiedSinceInvalid_False()
+        {
+            //Arrange
+            var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
+            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
+            var headerValue = "Invalid";
+            var headerName = HttpRequestHeaderHelper.HTTP_HEADER_UNLESS_MODIFIED_SINCE;
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
+
+            //Act
+            var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
+            var hasNotBeenModifiedSince = httpRequestHeaderHelper.CheckUnlessModifiedSince(httpRequest, lastModified);
+
+            //Assert
+            httpRequest.VerifyAllExpectations();
+            Assert.IsNull(hasNotBeenModifiedSince);
+        }
         #endregion
 
         #region CheckIfRange
@@ -984,6 +1105,7 @@ namespace Talifun.Web.Tests.Http
             Assert.IsNull(satisfiesRangeCheck);
         }
 
+        [Test]
         public void CheckIfRange_CheckOnEtagIfRangeHeader_True()
         {
             //Arrange
@@ -1016,6 +1138,7 @@ namespace Talifun.Web.Tests.Http
             Assert.True(satisfiesRangeCheck.Value);
         }
 
+        [Test]
         public void CheckIfRange_CheckOnEtagIfRangeHeader_False()
         {
             //Arrange
@@ -1048,6 +1171,7 @@ namespace Talifun.Web.Tests.Http
             Assert.False(satisfiesRangeCheck.Value);
         }
 
+        [Test]
         public void CheckIfRange_CheckOnLastModifiedIfRangeHeader_True()
         {
             //Arrange
@@ -1080,6 +1204,7 @@ namespace Talifun.Web.Tests.Http
             Assert.True(satisfiesRangeCheck.Value);
         }
 
+        [Test]
         public void CheckIfRange_CheckOnLastModifiedIfRangeHeader_False()
         {
             //Arrange
@@ -1594,6 +1719,78 @@ namespace Talifun.Web.Tests.Http
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
             
+            //Act
+            var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
+            IEnumerable<RangeItem> ranges;
+            var rangeResult = httpRequestHeaderHelper.GetRanges(httpRequest, contentLength, out ranges);
+
+            //Assert
+            httpRequest.VerifyAllExpectations();
+            Assert.NotNull(rangeResult);
+            Assert.IsFalse(rangeResult.Value);
+            Assert.IsNull(ranges);
+        }
+
+        [Test]
+        public void GetRanges_EndRangeLargerThenEntityLength_False()
+        {
+            //Arrange
+            var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
+            var contentLength = 10000;
+            var headerValue = "bytes=0-20000";
+            var headerType = HttpRequestHeader.Range;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
+
+            //Act
+            var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
+            IEnumerable<RangeItem> ranges;
+            var rangeResult = httpRequestHeaderHelper.GetRanges(httpRequest, contentLength, out ranges);
+
+            //Assert
+            httpRequest.VerifyAllExpectations();
+            Assert.NotNull(rangeResult);
+            Assert.IsFalse(rangeResult.Value);
+            Assert.IsNull(ranges);
+        }
+
+        [Test]
+        public void GetRanges_NegativeStartRange_False()
+        {
+            //Arrange
+            var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
+            var contentLength = 10000;
+            var headerValue = "bytes=-20000";
+            var headerType = HttpRequestHeader.Range;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
+
+            //Act
+            var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
+            IEnumerable<RangeItem> ranges;
+            var rangeResult = httpRequestHeaderHelper.GetRanges(httpRequest, contentLength, out ranges);
+
+            //Assert
+            httpRequest.VerifyAllExpectations();
+            Assert.NotNull(rangeResult);
+            Assert.IsFalse(rangeResult.Value);
+            Assert.IsNull(ranges);
+        }
+
+        [Test]
+        public void GetRanges_StartRangeLargerThenEntityLength_False()
+        {
+            //Arrange
+            var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
+            var contentLength = 10000;
+            var headerValue = "bytes=20000-";
+            var headerType = HttpRequestHeader.Range;
+            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
+
             //Act
             var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
             IEnumerable<RangeItem> ranges;

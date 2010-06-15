@@ -309,8 +309,16 @@ namespace Talifun.Web.StaticFile
             IEntityResponse entityResponseForEntity;
             if (response.StatusCode == (int) HttpStatusCode.PartialContent)
             {            
-                //Send a partial response
-                entityResponseForEntity = new PartialEntityResponse(_httpResponseHeaderHelper, ranges);
+                if (ranges.Count() == 1)
+                {
+                    //Single byte range request, send a partial response
+                    entityResponseForEntity = new SinglePartEntityResponse(_httpResponseHeaderHelper, ranges.First());
+                }
+                else
+                {
+                    //Multi byte range request, send a partial response
+                    entityResponseForEntity = new MultiPartEntityResponse(_httpResponseHeaderHelper, ranges);
+                }
             }
             else
             {

@@ -23,6 +23,11 @@ namespace Talifun.Web
         /// <param name="entity"></param>
         public void SendHeaders(HttpResponseBase response, ResponseCompressionType compressionType, IEntity entity)
         {
+            if (!(entity.CompressionType == ResponseCompressionType.None || entity.CompressionType == compressionType))
+            {
+                throw new NotImplementedException("Need to decode in memory, and then stream it");
+            }
+
             HttpResponseHeaderHelper.SetContentEncoding(response, compressionType);
 
             //How should data be compressed
@@ -35,9 +40,6 @@ namespace Talifun.Web
             {
                 switch (compressionType)
                 {
-                    case ResponseCompressionType.None:
-                        HttpResponseHeaderHelper.AppendHeader(response, HTTP_HEADER_CONTENT_LENGTH, entity.ContentLength.ToString());
-                        break;
                     case ResponseCompressionType.GZip:
                         response.Filter = new GZipStream(response.Filter, CompressionMode.Compress);
                         //This means that the output stream will be chunked, so we don't have to worry about content length
@@ -48,10 +50,7 @@ namespace Talifun.Web
                         break;
                 }
             }
-            else
-            {
-                throw new NotImplementedException("Need to decode in memory, and then stream it");
-            }
+
             response.ContentType = entity.ContentType;
         }
 
@@ -66,6 +65,11 @@ namespace Talifun.Web
             if (requestHttpMethod == HttpMethod.Head)
             {
                 return;
+            }
+
+            if (requestHttpMethod != HttpMethod.Get)
+            {
+                throw new Exception("Unsupported http method");
             }
 
             transmitEntity.Transmit(response);
