@@ -40,7 +40,7 @@ namespace Talifun.Web
             }
 
             //We will never get here
-            throw new IOException("Unable to open file");
+            throw new IOException("Unable to open file - " + fileInfo.FullName);
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace Talifun.Web
             }
 
             //We will never get here
-            throw new IOException("Unable to open file");
+            throw new IOException("Unable to open file - " + fileInfo.FullName);
         }
 
         /// <summary>

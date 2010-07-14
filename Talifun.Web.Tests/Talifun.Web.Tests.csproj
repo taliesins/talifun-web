@@ -61,6 +61,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helper\HasherTests.cs" />
+    <Compile Include="Helper\MimeTyperTest.cs" />
     <Compile Include="Http\HttpResponseHeaderHelperTests.cs" />
     <Compile Include="Http\FullEntityResponseTests.cs" />
     <Compile Include="Http\MultiplePartEntityResponseTests.cs" />
