@@ -67,6 +67,10 @@
     <Compile Include="Http\FullEntityResponseTests.cs" />
     <Compile Include="Http\MultiplePartEntityResponseTests.cs" />
     <Compile Include="Http\SinglePartEntityResponseTests.cs" />
+    <Compile Include="Http\TransmitEntityStrategyForByteArrayTests.cs" />
+    <Compile Include="Http\TransmitEntityStrategyForFileTests.cs" />
+    <Compile Include="Http\TransmitEntityStrategyForIISTests.cs" />
+    <Compile Include="Http\TransmitEntityStrategyForStreamTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Http\HttpRequestHeaderHelperTests.cs" />
   </ItemGroup>
