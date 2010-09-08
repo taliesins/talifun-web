@@ -283,7 +283,11 @@ namespace Talifun.Web.StaticFile
                 //How the entity should be cached on the client
                 _httpResponseHeaderHelper.SetResponseCachable(response, DateTime.Now, fileHandlerCacheItem.LastModified, fileHandlerCacheItem.Etag, fileExtensionMatch.Expires);
 
-                ServeContent(response, file, fileHandlerCacheItem, requestHttpMethod, compressionType, ranges);
+                var entityResponseForEntity = GetEntityResponse(response, ranges);
+                entityResponseForEntity.SendHeaders(response, compressionType, fileHandlerCacheItem);
+
+                var transmitEntity = GetTransmitEntityStrategy(fileHandlerCacheItem, file);
+                entityResponseForEntity.SendBody(requestHttpMethod, response, transmitEntity);
             }
             catch (HttpException httpException)
             {
@@ -296,49 +300,47 @@ namespace Talifun.Web.StaticFile
         }
 
         /// <summary>
-        /// Serve content for request.
+        /// The entity respose type to use.
         /// </summary>
         /// <param name="response">An HTTP response.</param>
-        /// <param name="file">File to send.</param>
-        /// <param name="fileHandlerCacheItem">An item </param>
-        /// <param name="requestHttpMethod">The http method for the HTTP request.</param>
-        /// <param name="compressionType">The compression type to use when sending content.</param>
         /// <param name="ranges">The byte ranges to serve.</param>
-        public static void ServeContent(HttpResponseBase response, FileInfo file, FileHandlerCacheItem fileHandlerCacheItem, HttpMethod requestHttpMethod, ResponseCompressionType compressionType, IEnumerable<RangeItem> ranges)
+        /// <returns>Entity respose type to use</returns>
+        public static IEntityResponse GetEntityResponse(HttpResponseBase response, IEnumerable<RangeItem> ranges)
         {
-            IEntityResponse entityResponseForEntity;
-            if (response.StatusCode == (int) HttpStatusCode.PartialContent)
-            {            
-                if (ranges.Count() == 1)
-                {
-                    //Single byte range request, send a partial response
-                    entityResponseForEntity = new SinglePartEntityResponse(_httpResponseHeaderHelper, ranges.First());
-                }
-                else
-                {
-                    //Multi byte range request, send a partial response
-                    entityResponseForEntity = new MultiPartEntityResponse(_httpResponseHeaderHelper, ranges);
-                }
-            }
-            else
+            if (response.StatusCode != (int) HttpStatusCode.PartialContent)
             {
                 //Send a full response
-                entityResponseForEntity = new FullEntityResponse(_httpResponseHeaderHelper);
+                return new FullEntityResponse(_httpResponseHeaderHelper);
             }
-            entityResponseForEntity.SendHeaders(response, compressionType, fileHandlerCacheItem);
 
-            ITransmitEntityStrategy transmitEntity;   
+            if (ranges.Count() == 1)
+            {
+                //Single byte range request, send a partial response
+                return new SinglePartEntityResponse(_httpResponseHeaderHelper, ranges.First());
+            }
+
+            //Multi byte range request, send a partial response
+            return new MultiPartEntityResponse(_httpResponseHeaderHelper, ranges);
+        }
+
+        /// <summary>
+        /// The transmit entity strategy to use.
+        /// </summary>
+        /// <param name="fileHandlerCacheItem">The cache item.</param>
+        /// <param name="file">File to send.</param>
+        /// <returns></returns>
+        public static ITransmitEntityStrategy GetTransmitEntityStrategy(FileHandlerCacheItem fileHandlerCacheItem, FileInfo file)
+        {
             if (fileHandlerCacheItem.EntityData == null)
             {
                 //Let IIS send file content with TransmitFile
-                transmitEntity = new TransmitEntityStrategyForIIS(fileHandlerCacheItem, file.FullName);
+                return new TransmitEntityStrategyForIIS(fileHandlerCacheItem, file.FullName);
             }
             else
             {
                 //We will serve the in memory file
-                transmitEntity = new TransmitEntityStrategyForByteArray(fileHandlerCacheItem, fileHandlerCacheItem.EntityData);
+                return new TransmitEntityStrategyForByteArray(fileHandlerCacheItem, fileHandlerCacheItem.EntityData);
             }
-            entityResponseForEntity.SendBody(requestHttpMethod, response, transmitEntity);
         }
 
         /// <summary>

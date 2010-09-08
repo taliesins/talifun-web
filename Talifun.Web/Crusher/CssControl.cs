@@ -80,6 +80,13 @@ namespace Talifun.Web.Crusher
                         var etag = Hasher.CalculateMd5Etag(fileInfo);
                         var url = this.ResolveUrl(file.FilePath);
 
+                        var fileName = fileInfo.Name.ToLower();
+
+                        if (fileName.EndsWith(".less") || fileName.EndsWith(".less.css"))
+                        {
+                            etag = "'" + etag + "'";
+                        }
+
                         scriptLinksBuilder.Append("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + url + "?Etag=" + etag + "\" media=\"" + cssGroup.Media + "\" />"); 
                     }
                     scriptLinks = scriptLinksBuilder.ToString();

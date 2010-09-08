@@ -30,6 +30,16 @@ namespace Talifun.Web.Crusher
         }
 
         /// <summary>
+        /// Compiles dot less css file contents.
+        /// </summary>
+        /// <param name="fileContents">Uncompiled css file contents.</param>
+        /// <returns>Compiled css file contents.</returns>
+        public static string ProcessDotLess(string fileContents)
+        {
+            return dotless.Core.Less.Parse(fileContents);
+        }
+
+        /// <summary>
         /// Compress the css files and store them in the specified css file.
         /// </summary>
         /// <param name="outputPath">The path for the crushed css file.</param>
@@ -45,6 +55,12 @@ namespace Talifun.Web.Crusher
             {
                 var fileInfo = new FileInfo(HostingEnvironment.MapPath(file.FilePath));
                 var fileContents = _retryableFileOpener.ReadAllText(fileInfo);
+                var fileName = fileInfo.Name.ToLower();
+
+                if (fileName.EndsWith(".less") || fileName.EndsWith(".less.css"))
+                {
+                    fileContents = ProcessDotLess(fileContents);
+                }
 
                 switch (file.CompressionType)
                 {
