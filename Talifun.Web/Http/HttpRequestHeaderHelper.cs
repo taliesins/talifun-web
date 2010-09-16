@@ -72,6 +72,11 @@ namespace Talifun.Web
         {
             var httpRequestHeaderValues = request.Headers[httpRequestHeader];
 
+            if (httpRequestHeaderValues == null)
+            {
+                return new List<string>();
+            }
+
             var regex = new Regex(",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))",
                                   RegexOptions.Compiled
                                   | RegexOptions.Singleline
@@ -107,6 +112,11 @@ namespace Talifun.Web
         public List<HttpHeaderValue> GetHttpHeaderWithQValues(HttpRequestBase request, string httpRequestHeader)
         {
             var httpRequestHeaderValues = request.Headers[httpRequestHeader];
+
+            if (httpRequestHeaderValues == null)
+            {
+                return new List<HttpHeaderValue>();
+            }
 
             var regex = new Regex(@"\s*(\""(?<identity>[^\""]+|\""\"")*\""|(?<identity>[^;,]*))\s*((\;\s*[q|Q]\s*=\s*(?<qValue>[1|0](\.\d)?))?)\s*",
                                   RegexOptions.Compiled
