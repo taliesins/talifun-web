@@ -120,6 +120,14 @@
     <Compile Include="Http\TransmitEntityStrategyForFile.cs" />
     <Compile Include="Http\TransmitEntityStrategyForIIS.cs" />
     <Compile Include="Http\TransmitEntityStrategyForStream.cs" />
+    <Compile Include="IpAddressAuthentication\BinaryTrie.cs" />
+    <Compile Include="IpAddressAuthentication\BinaryTrieNode.cs" />
+    <Compile Include="IpAddressAuthentication\Config\CurrentIpAddressAuthenticationConfiguration.cs" />
+    <Compile Include="IpAddressAuthentication\Config\IpAddressAuthenticationSection.cs" />
+    <Compile Include="IpAddressAuthentication\Config\UrlMatchElement.cs" />
+    <Compile Include="IpAddressAuthentication\Config\UrlMatchElementCollection.cs" />
+    <Compile Include="IpAddressAuthentication\IpAddressAuthenticationModule.cs" />
+    <Compile Include="IpAddressAuthentication\IpAddressAuthenticationTable.cs" />
     <Compile Include="LogUrl\AfterLogUrlEventArgs.cs" />
     <Compile Include="LogUrl\AfterLogUrlEventHandler.cs" />
     <Compile Include="LogUrl\BeforeLogUrlEventArgs.cs" />
@@ -203,6 +211,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
