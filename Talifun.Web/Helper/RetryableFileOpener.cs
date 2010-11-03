@@ -30,6 +30,10 @@ namespace Talifun.Web
                     var stream = new FileStream(fileInfo.FullName, fileMode, fileAccess, fileShare);
                     return stream;
                 }
+                catch(FileNotFoundException)
+                {
+                    throw;
+                }
                 catch (IOException)
                 {
                     delay += 100;
@@ -63,6 +67,10 @@ namespace Talifun.Web
                 {
                     var stream = new StreamReader(fileInfo.FullName, Encoding.UTF8);
                     return stream;
+                }
+                catch (FileNotFoundException)
+                {
+                    throw;
                 }
                 catch (IOException)
                 {
