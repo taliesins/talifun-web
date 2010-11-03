@@ -17,6 +17,8 @@ namespace Talifun.Web.Crusher
         private const int BufferSize = 32768;
         private static IRetryableFileOpener _retryableFileOpener = new RetryableFileOpener();
         private static IHasher _hasher = new Hasher(_retryableFileOpener);
+        private static ICssAssetsFileHasher _cssAssetsFileHasher = new CssAssetsFileHasher("r", _hasher);
+        private static ICssPathRewriter _cssPathRewriter = new CssPathRewriter(_cssAssetsFileHasher);
 
         /// <summary>
         /// Add css files to be crushed.
@@ -46,6 +48,7 @@ namespace Talifun.Web.Crusher
         /// <param name="files">The css files to be crushed.</param>
         private static void ProcessFiles(string outputPath, IEnumerable<CssFile> files)
         {
+            outputPath = HostingEnvironment.MapPath(outputPath);
             var uncompressedContents = new StringBuilder();
             var toBeStockYuiCompressedContents = new StringBuilder();
             var toBeMichaelAshRegexCompressedContents = new StringBuilder();
@@ -61,6 +64,8 @@ namespace Talifun.Web.Crusher
                 {
                     fileContents = ProcessDotLess(fileContents);
                 }
+
+                fileContents = _cssPathRewriter.RewriteCssPaths(outputPath, fileInfo.FullName, fileContents);
 
                 switch (file.CompressionType)
                 {
@@ -123,7 +128,7 @@ namespace Talifun.Web.Crusher
                 }
 
                 //We might be competing with the web server for the output file, so try to overwrite it at regular intervals
-                using (var outputFile = _retryableFileOpener.OpenFileStream(new FileInfo(HostingEnvironment.MapPath(outputPath)), 5, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+                using (var outputFile = _retryableFileOpener.OpenFileStream(new FileInfo(outputPath), 5, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
                 {
                     var overwrite = true;
                     if (outputFile.Length > 0)

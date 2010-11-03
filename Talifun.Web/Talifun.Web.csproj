@@ -83,6 +83,10 @@
     <Compile Include="Configuration\CurrentConfigurationElementCollection.cs" />
     <Compile Include="Configuration\CurrentConfigurationManager.cs" />
     <Compile Include="Configuration\NamedConfigurationElement.cs" />
+    <Compile Include="Crusher\CssAssetsFileHasher.cs" />
+    <Compile Include="Crusher\CssPathRewriter.cs" />
+    <Compile Include="Crusher\ICssAssetsFileHasher.cs" />
+    <Compile Include="Crusher\ICssPathRewriter.cs" />
     <Compile Include="CssSprite\Config\CssSpriteGroupElement.cs" />
     <Compile Include="CssSprite\Config\CssSpriteGroupElementCollection.cs" />
     <Compile Include="CssSprite\Config\CssSpriteSection.cs" />
