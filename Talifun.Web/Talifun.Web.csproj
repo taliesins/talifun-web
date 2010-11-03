@@ -120,14 +120,11 @@
     <Compile Include="Http\TransmitEntityStrategyForFile.cs" />
     <Compile Include="Http\TransmitEntityStrategyForIIS.cs" />
     <Compile Include="Http\TransmitEntityStrategyForStream.cs" />
-    <Compile Include="IpAddressAuthentication\BinaryTrie.cs" />
-    <Compile Include="IpAddressAuthentication\BinaryTrieNode.cs" />
     <Compile Include="IpAddressAuthentication\Config\CurrentIpAddressAuthenticationConfiguration.cs" />
     <Compile Include="IpAddressAuthentication\Config\IpAddressAuthenticationSection.cs" />
     <Compile Include="IpAddressAuthentication\Config\UrlMatchElement.cs" />
     <Compile Include="IpAddressAuthentication\Config\UrlMatchElementCollection.cs" />
     <Compile Include="IpAddressAuthentication\IpAddressAuthenticationModule.cs" />
-    <Compile Include="IpAddressAuthentication\IpAddressAuthenticationTable.cs" />
     <Compile Include="LogUrl\AfterLogUrlEventArgs.cs" />
     <Compile Include="LogUrl\AfterLogUrlEventHandler.cs" />
     <Compile Include="LogUrl\BeforeLogUrlEventArgs.cs" />
@@ -169,6 +166,8 @@
     <Compile Include="Crusher\CrusherManager.cs" />
     <Compile Include="Crusher\CrusherModule.cs" />
     <Compile Include="RegexUrlAuthorization\Config\CurrentRegexUrlAuthorizationConfiguration.cs" />
+    <Compile Include="IpAddressAuthentication\Config\IpAddressMatchElement.cs" />
+    <Compile Include="IpAddressAuthentication\Config\IpAddressMatchElementCollection.cs" />
     <Compile Include="RegexUrlAuthorization\Config\RegexUrlAuthorizationSection.cs" />
     <Compile Include="RegexUrlAuthorization\Config\UrlMatchElement.cs" />
     <Compile Include="RegexUrlAuthorization\Config\UrlMatchElementCollection.cs" />

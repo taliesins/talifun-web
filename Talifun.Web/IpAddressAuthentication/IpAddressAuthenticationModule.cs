@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Net;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Web;
-using System.Web.Caching;
 using Talifun.Web.IpAddressAuthentication.Config;
 using Talifun.Web.Module;
 
@@ -46,45 +46,49 @@ namespace Talifun.Web.IpAddressAuthentication
 
             if (urlMatched == null) return;
 
-            var ipAddress = context.Request.UserHostAddress;
-            if (IsValidIpAddress(ipAddress)) return;
+            var ipAddress = IPAddress.Parse(context.Request.UserHostAddress);
+            if (IsValidIpAddress(urlMatched, ipAddress)) return;
 
             context.Response.StatusCode = 403; // (Forbidden)
             this.WriteErrorMessage(context);
             application.CompleteRequest();
         }
 
-        private static bool IsValidIpAddress(string ipAddress)
+        private static bool IsValidIpAddress(UrlMatchElement urlMatched, IPAddress ipAddress)
         {
-            //var ipAddressAuthorizationTable = GetIpAddressAuthorizationTable();
-            //return ipAddressAuthorizationTable.IsAuthorized(ipAddress);
-
-            return true;
-        }
-
-        private static IpAddressAuthorizationTable GetIpAddressAuthorizationTable(string fileName)
-        {
-            var cacheKey = ipAddressAuthenticationModuleType + ":" + "IpAddressAuthorizationTable";
-
-            var cachedValue = HttpRuntime.Cache.Get(cacheKey);
-            if (cachedValue != null)
+            foreach (IpAddressMatchElement ipAddressMatch in urlMatched.IpAddressMatches)
             {
-                return (IpAddressAuthorizationTable) cachedValue;
+                if (ipAddressMatch.NetMask == null)
+                {
+                    if (ipAddressMatch.IpAddress == ipAddress)
+                    {
+                        return ipAddressMatch.Access;
+                    }
+                } else
+                {
+                    if (IsAddressOnSubnet(ipAddress, ipAddressMatch.IpAddress, ipAddressMatch.NetMask))
+                    {
+                        return ipAddressMatch.Access;
+                    }
+                }
             }
 
-            var ipAddressAuthorizationTable = new IpAddressAuthorizationTable(true, 1);
-            ipAddressAuthorizationTable.LoadStatisticsFile(fileName, true);
+            return urlMatched.DefaultAccess;
+        }
 
-            HttpRuntime.Cache.Insert(
-                cacheKey,
-                ipAddressAuthorizationTable,
-                new CacheDependency(fileName, System.DateTime.Now),
-                Cache.NoAbsoluteExpiration,
-                Cache.NoSlidingExpiration,
-                CacheItemPriority.High,
-                null);
+        public static bool IsAddressOnSubnet(IPAddress address, IPAddress subnet, IPAddress mask)
+        {
+            var addrBytes = address.GetAddressBytes();
+            var maskBytes = mask.GetAddressBytes();
+            var maskedAddressBytes = new byte[addrBytes.Length];
 
-            return ipAddressAuthorizationTable;
+            for (var i = 0; i < maskedAddressBytes.Length; ++i)
+            {
+                maskedAddressBytes[i] = (byte)(addrBytes[i] & maskBytes[i]);
+            }
+
+            var maskedAddress = new IPAddress(maskedAddressBytes);
+            return subnet.Equals(maskedAddress);
         }
 
         private static MethodInfo getErrorTextMethod =

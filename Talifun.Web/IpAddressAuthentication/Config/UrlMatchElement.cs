@@ -9,7 +9,9 @@ namespace Talifun.Web.IpAddressAuthentication.Config
         private static ConfigurationPropertyCollection properties = new ConfigurationPropertyCollection();
         private static readonly ConfigurationProperty name = new ConfigurationProperty("name", typeof(string), null, ConfigurationPropertyOptions.IsRequired);
         private static readonly ConfigurationProperty expression = new ConfigurationProperty("expression", typeof(string), null, ConfigurationPropertyOptions.IsRequired);
-
+        private static readonly ConfigurationProperty defaultAccess = new ConfigurationProperty("defaultAccess", typeof(bool), false, ConfigurationPropertyOptions.None);
+        private static readonly ConfigurationProperty ipAddressMatches = new ConfigurationProperty("ipAddressMatches", typeof(IpAddressMatchElementCollection), null, ConfigurationPropertyOptions.None | ConfigurationPropertyOptions.IsDefaultCollection);
+       
         /// <summary>
         /// Initializes the <see cref="UrlMatchElement"/> class.
         /// </summary>
@@ -18,6 +20,8 @@ namespace Talifun.Web.IpAddressAuthentication.Config
         {
             properties.Add(name);
             properties.Add(expression);
+            properties.Add(defaultAccess);
+            properties.Add(ipAddressMatches);
         }
 
         /// <summary>
@@ -38,6 +42,27 @@ namespace Talifun.Web.IpAddressAuthentication.Config
         {
             get { return ((string)base[expression]); }
             set { base[expression] = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the default access for ip addresses that do not match any rules.
+        /// </summary>
+        [ConfigurationProperty("defaultAccess", DefaultValue = false, IsRequired = true)]
+        public bool DefaultAccess
+        {
+            get { return ((bool)base[defaultAccess]); }
+            set { base[defaultAccess] = value; }
+        }
+
+        /// <summary>
+        /// Gets a <see cref="IpAddressMatchElementCollection" /> containing the <see cref="ProviderSettingsCollection" /> elements
+        /// for the conversion type to run upon matching.
+        /// </summary>
+        /// <value>A <see cref="IpAddressMatchElement" /> containing the configuration elements associated with this configuration section.</value>
+        [ConfigurationProperty("ipAddressMatches", DefaultValue = null, IsDefaultCollection = true)]
+        public IpAddressMatchElementCollection IpAddressMatches
+        {
+            get { return ((IpAddressMatchElementCollection)base[ipAddressMatches]); }
         }
 
         /// <summary>

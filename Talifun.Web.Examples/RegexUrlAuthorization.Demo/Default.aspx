@@ -43,7 +43,7 @@
                 <asp:HyperLink ID="ShowPdfHyperLink" runat="server" NavigateUrl="~/test.pdf" Text="Show Pdf" />
             </li>
             <li>
-                <asp:HyperLink ID="HyperLink1" runat="server" NavigateUrl="~/test.txt" Text="Show Txt" />            
+                <asp:HyperLink ID="ShowTextHyperLink" runat="server" NavigateUrl="~/test.txt" Text="Show Txt" />            
             </li>
         </ul>
     </div>
