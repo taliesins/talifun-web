@@ -14,13 +14,15 @@ namespace Talifun.Web.Crusher
     /// </summary>
     public class CssControl : WebControl
     {
-        protected CssGroupElementCollection cssGroups = CurrentCrusherConfiguration.Current.CssGroups;
-
-        protected IRetryableFileOpener RetryableFileOpener { get; set; }
-        protected IHasher Hasher { get; set; }
+        protected readonly string QuerystringKeyName;
+        protected readonly CssGroupElementCollection CssGroups;
+        protected readonly IRetryableFileOpener RetryableFileOpener;
+        protected readonly IHasher Hasher;
 
         public CssControl()
         {
+            QuerystringKeyName = CurrentCrusherConfiguration.Current.QuerystringKeyName;
+            CssGroups = CurrentCrusherConfiguration.Current.CssGroups;
             RetryableFileOpener = new RetryableFileOpener();
             Hasher = new Hasher(RetryableFileOpener);
         }
@@ -50,7 +52,7 @@ namespace Talifun.Web.Crusher
         /// </remarks>
         protected override void Render(HtmlTextWriter writer)
         {
-            var cssGroup = cssGroups[GroupName];
+            var cssGroup = CssGroups[GroupName];
             var outputFilePath = cssGroup.OutputFilePath;
             var scriptLinks = string.Empty;
 
@@ -69,7 +71,7 @@ namespace Talifun.Web.Crusher
                     var etag = Hasher.CalculateMd5Etag(fileInfo);
                     var url = string.IsNullOrEmpty(cssGroup.Url) ? this.ResolveUrl(outputFilePath) : cssGroup.Url;
 
-                    scriptLinks = "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + url + "?Etag=" + etag + "\" media=\"" + cssGroup.Media + "\" />"; 
+                    scriptLinks = "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + url + "?" + QuerystringKeyName + "=" + etag + "\" media=\"" + cssGroup.Media + "\" />"; 
                 }
                 else
                 {
@@ -87,7 +89,7 @@ namespace Talifun.Web.Crusher
                             etag = "'" + etag + "'";
                         }
 
-                        scriptLinksBuilder.Append("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + url + "?Etag=" + etag + "\" media=\"" + cssGroup.Media + "\" />"); 
+                        scriptLinksBuilder.Append("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + url + "?" + QuerystringKeyName + "=" + etag + "\" media=\"" + cssGroup.Media + "\" />"); 
                     }
                     scriptLinks = scriptLinksBuilder.ToString();
                 }

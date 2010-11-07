@@ -14,6 +14,7 @@ namespace Talifun.Web.Crusher.Config
         private static readonly ConfigurationProperty outputFilePath = new ConfigurationProperty("outputFilePath", typeof(string), null, ConfigurationPropertyOptions.IsRequired);
         private static readonly ConfigurationProperty url = new ConfigurationProperty("url", typeof(string), null, ConfigurationPropertyOptions.None);
         private static readonly ConfigurationProperty media = new ConfigurationProperty("media", typeof(string), "screen", ConfigurationPropertyOptions.None);
+        private static readonly ConfigurationProperty appendHash = new ConfigurationProperty("appendHash", typeof(bool), true, ConfigurationPropertyOptions.None);
         private static readonly ConfigurationProperty debug = new ConfigurationProperty("debug", typeof(bool), null, ConfigurationPropertyOptions.IsRequired);
         private static readonly ConfigurationProperty files = new ConfigurationProperty("files", typeof(CssFileElementCollection), null, ConfigurationPropertyOptions.None | ConfigurationPropertyOptions.IsDefaultCollection);
         
@@ -27,6 +28,7 @@ namespace Talifun.Web.Crusher.Config
             properties.Add(outputFilePath);
             properties.Add(url);
             properties.Add(media);
+            properties.Add(appendHash);
             properties.Add(debug);
             properties.Add(files);
         }
@@ -74,11 +76,24 @@ namespace Talifun.Web.Crusher.Config
         /// <summary>
         /// The css media to use
         /// </summary>
-        [ConfigurationProperty("media", DefaultValue = "screen", IsRequired = true)]
+        [ConfigurationProperty("media", DefaultValue = "screen", IsRequired = false)]
         public string Media
         {
             get { return ((string)base[media]); }
             set { base[media] = value; }
+        }
+
+        /// <summary>
+        /// Should a hash of each local assets be appended to their url
+        /// e.g.
+        /// 
+        /// url('/images/test.jpg') becomes url('/images/test.jpg?v=SDSCSDVSDFF==')
+        /// </summary>
+        [ConfigurationProperty("appendHash", DefaultValue = true, IsRequired = false)]
+        public bool AppendHash
+        {
+            get { return ((bool)base[appendHash]); }
+            set { base[appendHash] = value; }
         }
 
         /// <summary>

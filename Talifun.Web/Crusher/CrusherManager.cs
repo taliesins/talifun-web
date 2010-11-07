@@ -11,11 +11,21 @@ namespace Talifun.Web.Crusher
     /// </summary>
     public sealed class CrusherManager : IDisposable
     {
+        private const int BufferSize = 32768;
+        private const string HashQueryStringKeyName = "etag=";
         private CssGroupElementCollection cssGroups = CurrentCrusherConfiguration.Current.CssGroups;
         private JsGroupElementCollection jsGroups = CurrentCrusherConfiguration.Current.JsGroups;
+        private ICssCrusher cssCrusher;
+        private IJsCrusher jsCrusher;
 
         private CrusherManager()
         {
+            var retryableFileOpener = new RetryableFileOpener();
+            var hasher = new Hasher(retryableFileOpener);
+            var cssAssetsFileHasher = new CssAssetsFileHasher(HashQueryStringKeyName, hasher);
+            var cssPathRewriter = new CssPathRewriter(cssAssetsFileHasher);
+            cssCrusher = new CssCrusher(BufferSize, retryableFileOpener, hasher, cssPathRewriter);
+            jsCrusher = new JsCrusher(BufferSize, retryableFileOpener, hasher);
             InitManager();
         }
 
@@ -77,7 +87,7 @@ namespace Talifun.Web.Crusher
                     files.Add(file);
                 } 
 
-                CrushCssHelper.AddFiles(outputPath, files);
+                cssCrusher.AddFiles(outputPath, files);
             }
 
             foreach (JsGroupElement group in jsGroups)
@@ -95,7 +105,7 @@ namespace Talifun.Web.Crusher
                     files.Add(file);
                 }
 
-                CrushJsHelper.AddFiles(outputPath, files);
+                jsCrusher.AddFiles(outputPath, files);
             }
         }
 
@@ -103,12 +113,12 @@ namespace Talifun.Web.Crusher
         {
             foreach (CssGroupElement group in cssGroups)
             {
-                CrushCssHelper.RemoveFiles(group.OutputFilePath);
+                cssCrusher.RemoveFiles(group.OutputFilePath);
             }
 
             foreach (JsGroupElement group in jsGroups)
             {
-                CrushJsHelper.RemoveFiles(group.OutputFilePath);
+                jsCrusher.RemoveFiles(group.OutputFilePath);
             }
 
             if (AppDomain.CurrentDomain != null)

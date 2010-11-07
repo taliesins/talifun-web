@@ -86,7 +86,9 @@
     <Compile Include="Crusher\CssAssetsFileHasher.cs" />
     <Compile Include="Crusher\CssPathRewriter.cs" />
     <Compile Include="Crusher\ICssAssetsFileHasher.cs" />
+    <Compile Include="Crusher\ICssCrusher.cs" />
     <Compile Include="Crusher\ICssPathRewriter.cs" />
+    <Compile Include="Crusher\IJsCrusher.cs" />
     <Compile Include="CssSprite\Config\CssSpriteGroupElement.cs" />
     <Compile Include="CssSprite\Config\CssSpriteGroupElementCollection.cs" />
     <Compile Include="CssSprite\Config\CssSpriteSection.cs" />
@@ -159,8 +161,8 @@
     <Compile Include="Crusher\Config\JsGroupElement.cs" />
     <Compile Include="Crusher\Config\JsGroupElementCollection.cs" />
     <Compile Include="Crusher\Config\CrusherSection.cs" />
-    <Compile Include="Crusher\CrushCssHelper.cs" />
-    <Compile Include="Crusher\CrushJsHelper.cs" />
+    <Compile Include="Crusher\CssCrusher.cs" />
+    <Compile Include="Crusher\JsCrusher.cs" />
     <Compile Include="Crusher\CssCompressionType.cs" />
     <Compile Include="Crusher\CssControl.cs" />
     <Compile Include="Crusher\CssFile.cs" />

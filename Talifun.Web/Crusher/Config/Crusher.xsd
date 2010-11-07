@@ -97,7 +97,6 @@
 										</xs:documentation>
 									</xs:annotation>
 								</xs:attribute>
-
 							</xs:complexType>
 						</xs:element>
 					</xs:sequence>
@@ -175,6 +174,13 @@
 					</xs:complexType>
 				</xs:element>
 			</xs:all>
+      <xs:attribute name="querystringKeyName" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            The name of the query string key that is appended for the hash of the file.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
 		</xs:complexType>
 	</xs:element>
 </xs:schema>

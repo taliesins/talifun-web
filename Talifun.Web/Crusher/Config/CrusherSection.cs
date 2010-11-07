@@ -11,6 +11,8 @@ namespace Talifun.Web.Crusher.Config
         private static ConfigurationPropertyCollection properties = new ConfigurationPropertyCollection();
         private static readonly ConfigurationProperty cssGroups = new ConfigurationProperty("cssGroups", typeof(CssGroupElementCollection), null, ConfigurationPropertyOptions.IsRequired);
         private static readonly ConfigurationProperty jsGroups = new ConfigurationProperty("jsGroups", typeof(JsGroupElementCollection), null, ConfigurationPropertyOptions.IsRequired);
+        private static readonly ConfigurationProperty querystringKeyName = new ConfigurationProperty("querystringKeyName", typeof(string), "etag", ConfigurationPropertyOptions.None);
+        
 
         /// <summary>
         /// Perform static initialisation for this configuration section. This includes explicitly adding
@@ -21,6 +23,7 @@ namespace Talifun.Web.Crusher.Config
         {
             properties.Add(cssGroups);
             properties.Add(jsGroups);
+            properties.Add(querystringKeyName);
         }
 
         /// <summary>
@@ -41,6 +44,16 @@ namespace Talifun.Web.Crusher.Config
         public JsGroupElementCollection JsGroups
         {
             get { return ((JsGroupElementCollection)base[jsGroups]); }
+        }
+
+        /// <summary>
+        /// The name of the query string key that is appended for the hash of the file.
+        /// </summary>
+        [ConfigurationProperty("querystringKeyName", DefaultValue = "etag", IsRequired = false)]
+        public string QuerystringKeyName
+        {
+            get { return ((string)base[querystringKeyName]); }
+            set { base[querystringKeyName] = value; }
         }
 
         /// <summary>

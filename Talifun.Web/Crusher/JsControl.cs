@@ -14,16 +14,18 @@ namespace Talifun.Web.Crusher
     /// </summary>
     public class JsControl : WebControl
     {
-        protected IRetryableFileOpener RetryableFileOpener { get; set; }
-        protected IHasher Hasher { get; set; }
+        protected readonly string QuerystringKeyName;
+        protected readonly JsGroupElementCollection JsGroups;
+        protected readonly IRetryableFileOpener RetryableFileOpener;
+        protected readonly IHasher Hasher;
 
         public JsControl()
         {
+            QuerystringKeyName = CurrentCrusherConfiguration.Current.QuerystringKeyName;
+            JsGroups = CurrentCrusherConfiguration.Current.JsGroups;
             RetryableFileOpener = new RetryableFileOpener();
             Hasher = new Hasher(RetryableFileOpener);
         }
-
-        protected JsGroupElementCollection jsGroups = CurrentCrusherConfiguration.Current.JsGroups;
 
         /// <summary>
         /// The name of js group to generate the include headers for.
@@ -50,7 +52,7 @@ namespace Talifun.Web.Crusher
         /// </remarks>
         protected override void Render(HtmlTextWriter writer)
         {
-            var jsGroup = jsGroups[GroupName];
+            var jsGroup = JsGroups[GroupName];
             var outputFilePath = jsGroup.OutputFilePath;
             var scriptLinks = string.Empty;
 
@@ -69,7 +71,7 @@ namespace Talifun.Web.Crusher
                     var etag = Hasher.CalculateMd5Etag(fileInfo);
                     var url = string.IsNullOrEmpty(jsGroup.Url) ? this.ResolveUrl(outputFilePath) : jsGroup.Url;
 
-                    scriptLinks = "<script language=\"javascript\" type=\"text/javascript\" src=\"" + url + "?Etag=" + etag + "\"></script>";
+                    scriptLinks = "<script language=\"javascript\" type=\"text/javascript\" src=\"" + url + "?" + QuerystringKeyName + "=" + etag + "\"></script>";
                 }
                 else
                 {
@@ -80,7 +82,7 @@ namespace Talifun.Web.Crusher
                         var etag = Hasher.CalculateMd5Etag(fileInfo);
                         var url = this.ResolveUrl(file.FilePath);
 
-                        scriptLinksBuilder.Append("<script language=\"javascript\" type=\"text/javascript\" src=\"" + url + "?Etag=" + etag + "\"></script>");
+                        scriptLinksBuilder.Append("<script language=\"javascript\" type=\"text/javascript\" src=\"" + url + "?" + QuerystringKeyName + "=" + etag + "\"></script>");
                     }
                     scriptLinks = scriptLinksBuilder.ToString();
                 }
