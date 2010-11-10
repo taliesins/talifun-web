@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Web;
 using System.Web.Caching;
+using System.Web.Hosting;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using Talifun.Web.Crusher.Config;
@@ -67,7 +68,7 @@ namespace Talifun.Web.Crusher
             {
                 if (!cssGroup.Debug)
                 {
-                    var fileInfo = new FileInfo(HttpContext.Current.Server.MapPath(outputFilePath));
+                    var fileInfo = new FileInfo(HostingEnvironment.MapPath(outputFilePath));
                     var etag = Hasher.CalculateMd5Etag(fileInfo);
                     var url = string.IsNullOrEmpty(cssGroup.Url) ? this.ResolveUrl(outputFilePath) : cssGroup.Url;
 
@@ -78,7 +79,7 @@ namespace Talifun.Web.Crusher
                     var scriptLinksBuilder = new StringBuilder();
                     foreach (CssFileElement file in cssGroup.Files)
                     {
-                        var fileInfo = new FileInfo(HttpContext.Current.Server.MapPath(file.FilePath));
+                        var fileInfo = new FileInfo(HostingEnvironment.MapPath(file.FilePath));
                         var etag = Hasher.CalculateMd5Etag(fileInfo);
                         var url = this.ResolveUrl(file.FilePath);
 

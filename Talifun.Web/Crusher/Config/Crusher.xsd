@@ -73,6 +73,16 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+    <xs:attribute name="appendHash" type="xs:boolean" default="true">
+      <xs:annotation>
+        <xs:documentation>
+          Should a hash be appended to url of css assets.
+
+          e.g.  background-image:url('/path/back01.gif'); 
+          becomes background-image:url('/path/back01.gif?r=ABSHSHJDFDF==');
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>    
 	</xs:complexType>
 
 	<xs:complexType name="jsGroup">

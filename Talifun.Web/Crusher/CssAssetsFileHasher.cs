@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Web;
+using System.Web.Hosting;
 
 namespace Talifun.Web.Crusher
 {
@@ -15,7 +16,7 @@ namespace Talifun.Web.Crusher
             Hasher = hasher;
         }
 
-        public string AppendFileHash(string cssFilePath, string url)
+        public virtual string AppendFileHash(string cssFilePath, string url)
         {
             if (url.StartsWith("http", StringComparison.InvariantCultureIgnoreCase))
             {
@@ -37,7 +38,7 @@ namespace Talifun.Web.Crusher
             return url;
         }
 
-        private string GetAssetFilePath(string cssFilePath, string url)
+        public virtual string GetAssetFilePath(string cssFilePath, string url)
         {
             var queryStringPosition = url.IndexOf('?');
 
@@ -71,14 +72,14 @@ namespace Talifun.Web.Crusher
             return urlUri.LocalPath;
         }
 
-        private string ResolveAppRelativePathToFileSystem(string file)
+        public virtual string ResolveAppRelativePathToFileSystem(string file)
         {
             if (HttpContext.Current == null)
             {
                 file = file.Replace("/", "\\").TrimStart('~').TrimStart('\\');
                 return @"C:\" + file.Replace("/", "\\");
             }
-            return HttpContext.Current.Server.MapPath(file);
+            return HostingEnvironment.MapPath(file);
         }
 
         /// <summary>
@@ -88,7 +89,7 @@ namespace Talifun.Web.Crusher
         /// <param name="key">The key to use.</param>
         /// <param name="value">The value to use.</param>
         /// <returns></returns>
-        private static string AppendQueryStringPairValue(string url, string key, string value)
+        public virtual string AppendQueryStringPairValue(string url, string key, string value)
         {
             var path = url;
             var queryString = string.Empty;

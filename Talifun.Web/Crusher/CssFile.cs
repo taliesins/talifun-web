@@ -5,11 +5,11 @@
         /// <summary>
         /// The file path where the css file will be created.
         /// </summary>
-        public string FilePath { get; set; }
+        public virtual string FilePath { get; set; }
 
         /// <summary>
         /// Compression type to use on css file
         /// </summary>
-        public CssCompressionType CompressionType { get; set; }
+        public virtual CssCompressionType CompressionType { get; set; }
     }
 }

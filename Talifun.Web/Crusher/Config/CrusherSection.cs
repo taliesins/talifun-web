@@ -13,7 +13,6 @@ namespace Talifun.Web.Crusher.Config
         private static readonly ConfigurationProperty jsGroups = new ConfigurationProperty("jsGroups", typeof(JsGroupElementCollection), null, ConfigurationPropertyOptions.IsRequired);
         private static readonly ConfigurationProperty querystringKeyName = new ConfigurationProperty("querystringKeyName", typeof(string), "etag", ConfigurationPropertyOptions.None);
         
-
         /// <summary>
         /// Perform static initialisation for this configuration section. This includes explicitly adding
         /// configured properties to the Properties collection, and so cannot be performed inline.

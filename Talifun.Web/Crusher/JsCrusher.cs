@@ -30,7 +30,7 @@ namespace Talifun.Web.Crusher
         /// </summary>
         /// <param name="outputPath">The path for the crushed js file</param>
         /// <param name="files">The js files to be crushed</param>
-        public void AddFiles(string outputPath, IEnumerable<JsFile> files)
+        public virtual void AddFiles(string outputPath, IEnumerable<JsFile> files)
         {
             ProcessFiles(outputPath, files);
             AddFilesToCache(outputPath, files);
@@ -41,7 +41,7 @@ namespace Talifun.Web.Crusher
         /// </summary>
         /// <param name="outputPath">The path for the crushed js file.</param>
         /// <param name="files">The js files to be crushed.</param>
-        private void ProcessFiles(string outputPath, IEnumerable<JsFile> files)
+        public virtual void ProcessFiles(string outputPath, IEnumerable<JsFile> files)
         {
             var uncompressedContents = new StringBuilder();
             var toBeCompressedContents = new StringBuilder();
@@ -119,7 +119,7 @@ namespace Talifun.Web.Crusher
         /// Remove all js files from being crushed
         /// </summary>
         /// <param name="outputPath">The path for the crushed js file</param>
-        public void RemoveFiles(string outputPath)
+        public virtual void RemoveFiles(string outputPath)
         {
             HttpRuntime.Cache.Remove(GetKey(outputPath));
         }
@@ -129,7 +129,7 @@ namespace Talifun.Web.Crusher
         /// </summary>
         /// <param name="outputPath">The path for the crushed js file.</param>
         /// <param name="files">The js files to be crushed.</param>
-        private void AddFilesToCache(string outputPath, IEnumerable<JsFile> files)
+        public virtual void AddFilesToCache(string outputPath, IEnumerable<JsFile> files)
         {
             var fileNames = new List<string>
                                 {
@@ -159,7 +159,7 @@ namespace Talifun.Web.Crusher
         /// <param name="key">The key of the cache item</param>
         /// <param name="value">The value of the cache item</param>
         /// <param name="reason">The reason the file was removed from cache.</param>
-        private void FileRemoved(string key, object value, CacheItemRemovedReason reason)
+        public virtual void FileRemoved(string key, object value, CacheItemRemovedReason reason)
         {
             var outputPath = GetOutputPathFromKey(key);
             var files = (List<JsFile>)value;
@@ -180,7 +180,7 @@ namespace Talifun.Web.Crusher
         /// </summary>
         /// <param name="outputPath">The path for the crushed js file.</param>
         /// <returns>The cache key to use for caching.</returns>
-        private string GetKey(string outputPath)
+        public virtual string GetKey(string outputPath)
         {
             var prefix = typeof(JsCrusher).ToString() + "|";
             return prefix + outputPath;
@@ -191,7 +191,7 @@ namespace Talifun.Web.Crusher
         /// </summary>
         /// <param name="key">The cache key.</param>
         /// <returns>The path for the crushed js file.</returns>
-        private string GetOutputPathFromKey(string key)
+        public virtual string GetOutputPathFromKey(string key)
         {
             var prefix = typeof(JsCrusher).ToString() + "|";
             return key.Substring(prefix.Length);

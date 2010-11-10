@@ -13,7 +13,7 @@ namespace Talifun.Web.Crusher
             CssAssetsFileHasher = cssAssetsFileHasher;
         }
 
-        public string RewriteCssPaths(string outputPath, string sourcePath, string css)
+        public virtual string RewriteCssPaths(string outputPath, string sourcePath, string css)
         {
             var sourceUri = new Uri(Path.GetDirectoryName(sourcePath) + "/", UriKind.Absolute);
             var outputUri = new Uri(Path.GetDirectoryName(outputPath) + "/", UriKind.Absolute);
@@ -46,7 +46,7 @@ namespace Talifun.Web.Crusher
             return css;
         }
 
-        public IEnumerable<string> FindDistinctRelativePathsIn(string css)
+        public virtual IEnumerable<string> FindDistinctRelativePathsIn(string css)
         {
             var matches = Regex.Matches(css, @"url\([""']{0,1}(.+?)[""']{0,1}\)", RegexOptions.IgnoreCase);
             var matchesHash = new HashSet<string>();
@@ -63,7 +63,7 @@ namespace Talifun.Web.Crusher
             }
         }
 
-        public IEnumerable<string> FindDistinctLocalRelativePathsThatExist(string css)
+        public virtual IEnumerable<string> FindDistinctLocalRelativePathsThatExist(string css)
         {
             var matches = Regex.Matches(css, @"url\([""']{0,1}(.+?)[""']{0,1}\)", RegexOptions.IgnoreCase);
             var matchesHash = new HashSet<string>();
