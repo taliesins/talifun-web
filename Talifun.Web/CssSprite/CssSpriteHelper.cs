@@ -47,7 +47,8 @@ namespace Talifun.Web.CssSprite
             var spriteElements = new List<SpriteElement>();
             foreach (var file in files)
             {
-                var fileInfo = new FileInfo(HostingEnvironment.MapPath(file.FilePath));
+                var filePath = HostingEnvironment.MapPath(file.FilePath);
+                var fileInfo = new FileInfo(filePath);
                 using (var reader = _retryableFileOpener.OpenFileStream(fileInfo, 5, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
                     var spriteElement = new SpriteElement(file.Name, reader);
@@ -65,7 +66,8 @@ namespace Talifun.Web.CssSprite
 
                     etag = _hasher.CalculateMd5Etag(writer);
 
-                    var imageFileInfo = new FileInfo(HostingEnvironment.MapPath(imageOutputPath));
+                    var imageFilePath = HostingEnvironment.MapPath(imageOutputPath);
+                    var imageFileInfo = new FileInfo(imageFilePath);
                     //We might be competing with the web server for the output file, so try to overwrite it at regular intervals
                     using (var outputFile = _retryableFileOpener.OpenFileStream(imageFileInfo, 5, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
                     {

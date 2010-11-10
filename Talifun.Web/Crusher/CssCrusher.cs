@@ -5,6 +5,7 @@ using System.Text;
 using System.Web;
 using System.Web.Caching;
 using System.Web.Hosting;
+using Talifun.Web.Helper;
 using Yahoo.Yui.Compressor;
 
 namespace Talifun.Web.Crusher
@@ -14,16 +15,14 @@ namespace Talifun.Web.Crusher
     /// </summary>
     public class CssCrusher : ICssCrusher
     {
-        protected readonly int BufferSize;
         protected readonly IRetryableFileOpener RetryableFileOpener;
-        protected readonly IHasher Hasher;
+        protected readonly IRetryableFileWriter RetryableFileWriter;
         protected readonly ICssPathRewriter CssPathRewriter;
 
-        public CssCrusher(int bufferSize, IRetryableFileOpener retryableFileOpener, IHasher hasher, ICssPathRewriter cssPathRewriter)
+        public CssCrusher(IRetryableFileOpener retryableFileOpener, IRetryableFileWriter retryableFileWriter, ICssPathRewriter cssPathRewriter)
         {
-            BufferSize = bufferSize;
             RetryableFileOpener = retryableFileOpener;
-            Hasher = hasher;
+            RetryableFileWriter = retryableFileWriter;
             CssPathRewriter = cssPathRewriter;
         }
 
@@ -35,7 +34,7 @@ namespace Talifun.Web.Crusher
         public virtual void AddFiles(string outputPath, IEnumerable<CssFile> files)
         {
             var crushedContent = ProcessFiles(outputPath, files);
-            SaveContentsToFile(crushedContent, outputPath);
+            RetryableFileWriter.SaveContentsToFile(crushedContent, outputPath);
             AddFilesToCache(outputPath, files);
         }
 
@@ -111,61 +110,6 @@ namespace Talifun.Web.Crusher
             return uncompressedContents;
         }
 
-        /// <summary>
-        /// Save StringBuilder content to file.
-        /// </summary>
-        /// <param name="output">The StringBuilder to save.</param>
-        /// <param name="outputPath">The path for the file to save.</param>
-        public virtual void SaveContentsToFile(StringBuilder output, string outputPath)
-        {
-            using (var outputStream = new MemoryStream())
-            {
-                var uniEncoding = Encoding.Default;
-                var uncompressedContent = output.ToString();
-
-                outputStream.Write(uniEncoding.GetBytes(uncompressedContent), 0, uniEncoding.GetByteCount(uncompressedContent));
-
-                SaveContentsToFile(outputStream, outputPath);
-            }
-        }
-
-        /// <summary>
-        /// Save stream to file.
-        /// </summary>
-        /// <param name="outputStream">The stream to save.</param>
-        /// <param name="outputPath">The path for the file to save.</param>
-        public virtual void SaveContentsToFile(Stream outputStream, string outputPath)
-        {
-            //We might be competing with the web server for the output file, so try to overwrite it at regular intervals
-            using (var outputFile = RetryableFileOpener.OpenFileStream(new FileInfo(outputPath), 5, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
-            {
-                var overwrite = true;
-                if (outputFile.Length > 0)
-                {
-                    var newOutputFileHash = Hasher.CalculateMd5Etag(outputStream);
-                    var outputFileHash = Hasher.CalculateMd5Etag(outputFile);
-
-                    overwrite = (newOutputFileHash != outputFileHash);
-                }
-
-                if (overwrite)
-                {
-                    outputStream.Seek(0, SeekOrigin.Begin);
-                    outputFile.SetLength(outputStream.Length); //Truncate current file
-                    outputFile.Seek(0, SeekOrigin.Begin);
-
-                    var bufferSize = Convert.ToInt32(Math.Min(outputStream.Length, BufferSize));
-                    var buffer = new byte[bufferSize];
-
-                    int bytesRead;
-                    while ((bytesRead = outputStream.Read(buffer, 0, bufferSize)) > 0)
-                    {
-                        outputFile.Write(buffer, 0, bytesRead);
-                    }
-                    outputFile.Flush();
-                }
-            }
-        }
 
         /// <summary>
         /// Remove all css files from being crushed

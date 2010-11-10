@@ -100,12 +100,14 @@
     <Compile Include="CssSprite\CssSpriteModule.cs" />
     <Compile Include="CssSprite\ImageFile.cs" />
     <Compile Include="CssSprite\SpriteElement.cs" />
+    <Compile Include="Helper\IRetryableFileWriter.cs" />
     <Compile Include="Helper\RetryableFileOpener.cs" />
     <Compile Include="Helper\Hasher.cs" />
     <Compile Include="Helper\IRetryableFileOpener.cs" />
     <Compile Include="Helper\IHasher.cs" />
     <Compile Include="Helper\IMimeTyper.cs" />
     <Compile Include="Helper\MimeTyper.cs" />
+    <Compile Include="Helper\RetryableFileWriter.cs" />
     <Compile Include="Helper\UrlHelper.cs" />
     <Compile Include="Http\HeaderValueQValueComparer.cs" />
     <Compile Include="Http\HttpHeaderValue.cs" />

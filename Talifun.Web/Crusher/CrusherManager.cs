@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using Talifun.Web.Crusher.Config;
+using Talifun.Web.Helper;
 
 namespace Talifun.Web.Crusher
 {
@@ -22,10 +23,11 @@ namespace Talifun.Web.Crusher
         {
             var retryableFileOpener = new RetryableFileOpener();
             var hasher = new Hasher(retryableFileOpener);
+            var retryableFileWriter = new RetryableFileWriter(BufferSize, retryableFileOpener, hasher); 
             var cssAssetsFileHasher = new CssAssetsFileHasher(HashQueryStringKeyName, hasher);
             var cssPathRewriter = new CssPathRewriter(cssAssetsFileHasher);
-            cssCrusher = new CssCrusher(BufferSize, retryableFileOpener, hasher, cssPathRewriter);
-            jsCrusher = new JsCrusher(BufferSize, retryableFileOpener, hasher);
+            cssCrusher = new CssCrusher(retryableFileOpener, retryableFileWriter, cssPathRewriter);
+            jsCrusher = new JsCrusher(retryableFileOpener, retryableFileWriter);
             InitManager();
         }
 
