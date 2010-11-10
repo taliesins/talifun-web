@@ -34,7 +34,8 @@ namespace Talifun.Web.Crusher
         /// <param name="files">The css files to be crushed.</param>
         public virtual void AddFiles(string outputPath, IEnumerable<CssFile> files)
         {
-            ProcessFiles(outputPath, files);
+            var crushedContent = ProcessFiles(outputPath, files);
+            SaveContentsToFile(crushedContent, outputPath);
             AddFilesToCache(outputPath, files);
         }
 
@@ -53,7 +54,7 @@ namespace Talifun.Web.Crusher
         /// </summary>
         /// <param name="outputPath">The path for the crushed css file.</param>
         /// <param name="files">The css files to be crushed.</param>
-        public virtual void ProcessFiles(string outputPath, IEnumerable<CssFile> files)
+        public virtual StringBuilder ProcessFiles(string outputPath, IEnumerable<CssFile> files)
         {
             outputPath = HostingEnvironment.MapPath(outputPath);
             var uncompressedContents = new StringBuilder();
@@ -63,7 +64,8 @@ namespace Talifun.Web.Crusher
 
             foreach (var file in files)
             {
-                var fileInfo = new FileInfo(HostingEnvironment.MapPath(file.FilePath));
+                var filePath = HostingEnvironment.MapPath(file.FilePath);
+                var fileInfo = new FileInfo(filePath);
                 var fileContents = RetryableFileOpener.ReadAllText(fileInfo);
                 var fileName = fileInfo.Name.ToLower();
 
@@ -91,77 +93,76 @@ namespace Talifun.Web.Crusher
                 }
             }
 
-            var uncompressedContent = uncompressedContents.ToString();
-            var stockYuiCompressedCompressedContent = toBeStockYuiCompressedContents.ToString();
-            var michaelAshRegexCompressedContent = toBeMichaelAshRegexCompressedContents.ToString();
-            var hybridCompressedContent = toBeHybridCompressedContents.ToString();
-
-            if (!string.IsNullOrEmpty(stockYuiCompressedCompressedContent))
+            if (toBeStockYuiCompressedContents.Length > 0)
             {
-                stockYuiCompressedCompressedContent = CssCompressor.Compress(stockYuiCompressedCompressedContent, 0, Yahoo.Yui.Compressor.CssCompressionType.StockYuiCompressor);
+                uncompressedContents.Append(CssCompressor.Compress(toBeStockYuiCompressedContents.ToString(), 0, Yahoo.Yui.Compressor.CssCompressionType.StockYuiCompressor));
             }
 
-            if (!string.IsNullOrEmpty(michaelAshRegexCompressedContent))
+            if (toBeMichaelAshRegexCompressedContents.Length > 0)
             {
-                michaelAshRegexCompressedContent = CssCompressor.Compress(michaelAshRegexCompressedContent, 0, Yahoo.Yui.Compressor.CssCompressionType.MichaelAshRegexEnhancements);
+                uncompressedContents.Append(CssCompressor.Compress(toBeMichaelAshRegexCompressedContents.ToString(), 0, Yahoo.Yui.Compressor.CssCompressionType.MichaelAshRegexEnhancements));
             }
 
-            if (!string.IsNullOrEmpty(hybridCompressedContent))
+            if (toBeHybridCompressedContents.Length > 0)
             {
-                hybridCompressedContent = CssCompressor.Compress(hybridCompressedContent, 0, Yahoo.Yui.Compressor.CssCompressionType.Hybrid);
+                uncompressedContents.Append(CssCompressor.Compress(toBeHybridCompressedContents.ToString(), 0, Yahoo.Yui.Compressor.CssCompressionType.Hybrid));
             }
 
-            using (var writer = new MemoryStream())
+            return uncompressedContents;
+        }
+
+        /// <summary>
+        /// Save StringBuilder content to file.
+        /// </summary>
+        /// <param name="output">The StringBuilder to save.</param>
+        /// <param name="outputPath">The path for the file to save.</param>
+        public virtual void SaveContentsToFile(StringBuilder output, string outputPath)
+        {
+            using (var outputStream = new MemoryStream())
             {
                 var uniEncoding = Encoding.Default;
-                if (!string.IsNullOrEmpty(uncompressedContent))
+                var uncompressedContent = output.ToString();
+
+                outputStream.Write(uniEncoding.GetBytes(uncompressedContent), 0, uniEncoding.GetByteCount(uncompressedContent));
+
+                SaveContentsToFile(outputStream, outputPath);
+            }
+        }
+
+        /// <summary>
+        /// Save stream to file.
+        /// </summary>
+        /// <param name="outputStream">The stream to save.</param>
+        /// <param name="outputPath">The path for the file to save.</param>
+        public virtual void SaveContentsToFile(Stream outputStream, string outputPath)
+        {
+            //We might be competing with the web server for the output file, so try to overwrite it at regular intervals
+            using (var outputFile = RetryableFileOpener.OpenFileStream(new FileInfo(outputPath), 5, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+            {
+                var overwrite = true;
+                if (outputFile.Length > 0)
                 {
-                    writer.Write(uniEncoding.GetBytes(uncompressedContent), 0, uniEncoding.GetByteCount(uncompressedContent));
+                    var newOutputFileHash = Hasher.CalculateMd5Etag(outputStream);
+                    var outputFileHash = Hasher.CalculateMd5Etag(outputFile);
+
+                    overwrite = (newOutputFileHash != outputFileHash);
                 }
 
-                if (!string.IsNullOrEmpty(stockYuiCompressedCompressedContent))
+                if (overwrite)
                 {
-                    writer.Write(uniEncoding.GetBytes(stockYuiCompressedCompressedContent), 0, uniEncoding.GetByteCount(stockYuiCompressedCompressedContent));
-                }
+                    outputStream.Seek(0, SeekOrigin.Begin);
+                    outputFile.SetLength(outputStream.Length); //Truncate current file
+                    outputFile.Seek(0, SeekOrigin.Begin);
 
-                if (!string.IsNullOrEmpty(michaelAshRegexCompressedContent))
-                {
-                    writer.Write(uniEncoding.GetBytes(michaelAshRegexCompressedContent), 0, uniEncoding.GetByteCount(michaelAshRegexCompressedContent));
-                }
+                    var bufferSize = Convert.ToInt32(Math.Min(outputStream.Length, BufferSize));
+                    var buffer = new byte[bufferSize];
 
-                if (!string.IsNullOrEmpty(hybridCompressedContent))
-                {
-                    writer.Write(uniEncoding.GetBytes(hybridCompressedContent), 0, uniEncoding.GetByteCount(hybridCompressedContent));
-                }
-
-                //We might be competing with the web server for the output file, so try to overwrite it at regular intervals
-                using (var outputFile = RetryableFileOpener.OpenFileStream(new FileInfo(outputPath), 5, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
-                {
-                    var overwrite = true;
-                    if (outputFile.Length > 0)
+                    int bytesRead;
+                    while ((bytesRead = outputStream.Read(buffer, 0, bufferSize)) > 0)
                     {
-                        var newOutputFileHash = Hasher.CalculateMd5Etag(writer);
-                        var outputFileHash = Hasher.CalculateMd5Etag(outputFile);
-
-                        overwrite = (newOutputFileHash != outputFileHash);
+                        outputFile.Write(buffer, 0, bytesRead);
                     }
-
-                    if (overwrite)
-                    {
-                        writer.Seek(0, SeekOrigin.Begin);
-                        outputFile.SetLength(writer.Length); //Truncate current file
-                        outputFile.Seek(0, SeekOrigin.Begin);
-
-                        var bufferSize = Convert.ToInt32(Math.Min(writer.Length, BufferSize));
-                        var buffer = new byte[bufferSize];
-
-                        int bytesRead;
-                        while ((bytesRead = writer.Read(buffer, 0, bufferSize)) > 0)
-                        {
-                            outputFile.Write(buffer, 0, bytesRead);
-                        }
-                        outputFile.Flush();
-                    }
+                    outputFile.Flush();
                 }
             }
         }

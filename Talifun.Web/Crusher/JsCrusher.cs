@@ -32,7 +32,8 @@ namespace Talifun.Web.Crusher
         /// <param name="files">The js files to be crushed</param>
         public virtual void AddFiles(string outputPath, IEnumerable<JsFile> files)
         {
-            ProcessFiles(outputPath, files);
+            var crushedContent = ProcessFiles(outputPath, files);
+            SaveContentsToFile(crushedContent, outputPath);
             AddFilesToCache(outputPath, files);
         }
 
@@ -41,14 +42,15 @@ namespace Talifun.Web.Crusher
         /// </summary>
         /// <param name="outputPath">The path for the crushed js file.</param>
         /// <param name="files">The js files to be crushed.</param>
-        public virtual void ProcessFiles(string outputPath, IEnumerable<JsFile> files)
+        public virtual StringBuilder ProcessFiles(string outputPath, IEnumerable<JsFile> files)
         {
             var uncompressedContents = new StringBuilder();
             var toBeCompressedContents = new StringBuilder();
 
             foreach (var file in files)
             {
-                var fileInfo = new FileInfo(HostingEnvironment.MapPath(file.FilePath));
+                var filePath = HostingEnvironment.MapPath(file.FilePath);
+                var fileInfo = new FileInfo(filePath);
                 var fileContents = RetryableFileOpener.ReadAllText(fileInfo);
 
                 switch (file.CompressionType)
@@ -62,55 +64,66 @@ namespace Talifun.Web.Crusher
                 }
             }
 
-            var uncompressedContent = uncompressedContents.ToString();
-            var compressedContent = toBeCompressedContents.ToString();
-
-            if (!string.IsNullOrEmpty(compressedContent))
+            if (toBeCompressedContents.Length > 0)
             {
-                compressedContent = JavaScriptCompressor.Compress(compressedContent);
+                uncompressedContents.Append(JavaScriptCompressor.Compress(toBeCompressedContents.ToString()));
             }
 
-            using (var writer = new MemoryStream())
+            return uncompressedContents;
+        }
+
+        /// <summary>
+        /// Save StringBuilder content to file.
+        /// </summary>
+        /// <param name="output">The StringBuilder to save.</param>
+        /// <param name="outputPath">The path for the file to save.</param>
+        public virtual void SaveContentsToFile(StringBuilder output, string outputPath)
+        {
+            using (var outputStream = new MemoryStream())
             {
                 var uniEncoding = Encoding.Default;
-                if (!string.IsNullOrEmpty(uncompressedContent))
+                var uncompressedContent = output.ToString();
+
+                outputStream.Write(uniEncoding.GetBytes(uncompressedContent), 0, uniEncoding.GetByteCount(uncompressedContent));
+
+                SaveContentsToFile(outputStream, outputPath);
+            }
+        }
+
+        /// <summary>
+        /// Save stream to file.
+        /// </summary>
+        /// <param name="outputStream">The stream to save.</param>
+        /// <param name="outputPath">The path for the file to save.</param>
+        public virtual void SaveContentsToFile(Stream outputStream, string outputPath)
+        {
+            //We might be competing with the web server for the output file, so try to overwrite it at regular intervals
+            using (var outputFile = RetryableFileOpener.OpenFileStream(new FileInfo(outputPath), 5, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+            {
+                var overwrite = true;
+                if (outputFile.Length > 0)
                 {
-                    writer.Write(uniEncoding.GetBytes(uncompressedContent), 0, uniEncoding.GetByteCount(uncompressedContent));
+                    var newOutputFileHash = Hasher.CalculateMd5Etag(outputStream);
+                    var outputFileHash = Hasher.CalculateMd5Etag(outputFile);
+
+                    overwrite = (newOutputFileHash != outputFileHash);
                 }
 
-                if (!string.IsNullOrEmpty(compressedContent))
+                if (overwrite)
                 {
-                    writer.Write(uniEncoding.GetBytes(compressedContent), 0, uniEncoding.GetByteCount(compressedContent));
-                }
+                    outputStream.Seek(0, SeekOrigin.Begin);
+                    outputFile.SetLength(outputStream.Length); //Truncate current file
+                    outputFile.Seek(0, SeekOrigin.Begin);
 
-                //We might be competing with the web server for the output file, so try to overwrite it at regular intervals
-                using (var outputFile = RetryableFileOpener.OpenFileStream(new FileInfo(HostingEnvironment.MapPath(outputPath)), 5, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
-                {
-                    var overwrite = true;
-                    if (outputFile.Length > 0)
+                    var bufferSize = Convert.ToInt32(Math.Min(outputStream.Length, BufferSize));
+                    var buffer = new byte[bufferSize];
+
+                    int bytesRead;
+                    while ((bytesRead = outputStream.Read(buffer, 0, bufferSize)) > 0)
                     {
-                        var newOutputFileHash = Hasher.CalculateMd5Etag(writer);
-                        var outputFileHash = Hasher.CalculateMd5Etag(outputFile);
-
-                        overwrite = (newOutputFileHash != outputFileHash);
+                        outputFile.Write(buffer, 0, bytesRead);
                     }
-
-                    if (overwrite)
-                    {
-                        writer.Seek(0, SeekOrigin.Begin);
-                        outputFile.SetLength(writer.Length); //Truncate current file
-                        outputFile.Seek(0, SeekOrigin.Begin);
-
-                        var bufferSize = Convert.ToInt32(Math.Min(writer.Length, BufferSize));
-                        var buffer = new byte[bufferSize];
-
-                        int bytesRead;
-                        while ((bytesRead = writer.Read(buffer, 0, bufferSize)) > 0)
-                        {
-                            outputFile.Write(buffer, 0, bytesRead);
-                        }
-                        outputFile.Flush();
-                    }
+                    outputFile.Flush();
                 }
             }
         }
