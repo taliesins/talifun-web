@@ -8,19 +8,28 @@ using System.Text;
 using System.Web;
 using System.Web.Caching;
 using System.Web.Hosting;
+using Talifun.Web.Helper;
 
 namespace Talifun.Web.CssSprite
 {
     /// <summary>
     /// Manages the creation of css sprites images.
     /// </summary>
-    public static class CssSpriteHelper
+    public class CssSpriteCreator : ICssSpriteCreator
     {
-        private const int BufferSize = 32768;
-        private const int ImagePadding = 2;
+        private readonly int BufferSize = 32768;
+        private readonly int ImagePadding = 2;
 
-        private static IRetryableFileOpener _retryableFileOpener = new RetryableFileOpener();
-        private static IHasher _hasher = new Hasher(_retryableFileOpener);
+        private readonly IRetryableFileOpener _retryableFileOpener;
+        private readonly IHasher _hasher;
+        private readonly IRetryableFileWriter _retryableFileWriter;
+
+        public CssSpriteCreator()
+        {
+            _retryableFileOpener = new RetryableFileOpener();
+            _hasher = new Hasher(_retryableFileOpener);
+            _retryableFileWriter = new RetryableFileWriter(BufferSize, _retryableFileOpener, _hasher);
+        }
 
         /// <summary>
         /// Add images to be generated into sprite image.
@@ -29,9 +38,10 @@ namespace Talifun.Web.CssSprite
         /// <param name="spriteImageUrl">Sprite image url.</param>
         /// <param name="cssOutputPath">Sprite css output path.</param>
         /// <param name="files">The component images for the sprite.</param>
-        public static void AddFiles(string imageOutputPath, string spriteImageUrl, string cssOutputPath, IEnumerable<ImageFile> files)
+        public virtual void AddFiles(string imageOutputPath, string spriteImageUrl, string cssOutputPath, IEnumerable<ImageFile> files)
         {
-            ProcessFiles(imageOutputPath, spriteImageUrl, cssOutputPath, files);
+            var cssContent = ProcessFiles(imageOutputPath, spriteImageUrl, cssOutputPath, files);
+            _retryableFileWriter.SaveContentsToFile(cssContent, cssOutputPath);
             AddFilesToCache(imageOutputPath, spriteImageUrl, cssOutputPath, files);
         }
 
@@ -42,7 +52,7 @@ namespace Talifun.Web.CssSprite
         /// <param name="spriteImageUrl">Sprite image url.</param>
         /// <param name="cssOutputPath">Sprite css output path.</param>
         /// <param name="files">The component images for the sprite.</param>
-        private static void ProcessFiles(string imageOutputPath, string spriteImageUrl, string cssOutputPath, IEnumerable<ImageFile> files)
+        public virtual string ProcessFiles(string imageOutputPath, string spriteImageUrl, string cssOutputPath, IEnumerable<ImageFile> files)
         {
             var spriteElements = new List<SpriteElement>();
             foreach (var file in files)
@@ -101,44 +111,7 @@ namespace Talifun.Web.CssSprite
             var cssSpriteImageUrl = string.IsNullOrEmpty(spriteImageUrl) ? VirtualPathUtility.ToAbsolute(imageOutputPath) : spriteImageUrl;
             var css = GetCssSpriteCss(spriteElements, etag, cssSpriteImageUrl);
 
-            using (var writer = new MemoryStream())
-            {
-                var uniEncoding = Encoding.Default;
-                if (!string.IsNullOrEmpty(css))
-                {
-                    writer.Write(uniEncoding.GetBytes(css), 0, uniEncoding.GetByteCount(css));
-                }
-
-                var cssFileInfo = new FileInfo(HostingEnvironment.MapPath(cssOutputPath));
-                using (var outputFile = _retryableFileOpener.OpenFileStream(cssFileInfo, 5, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
-                {
-                    var overwrite = true;
-                    if (outputFile.Length > 0)
-                    {
-                        var newOutputFileHash = _hasher.CalculateMd5Etag(writer);
-                        var outputFileHash = _hasher.CalculateMd5Etag(outputFile);
-
-                        overwrite = (newOutputFileHash != outputFileHash);
-                    }
-
-                    if (overwrite)
-                    {
-                        writer.Seek(0, SeekOrigin.Begin);
-                        outputFile.SetLength(writer.Length); //Truncate current file
-                        outputFile.Seek(0, SeekOrigin.Begin);
-
-                        var bufferSize = Convert.ToInt32(Math.Min(writer.Length, BufferSize));
-                        var buffer = new byte[bufferSize];
-
-                        int bytesRead;
-                        while ((bytesRead = writer.Read(buffer, 0, bufferSize)) > 0)
-                        {
-                            outputFile.Write(buffer, 0, bytesRead);
-                        }
-                        outputFile.Flush();
-                    }
-                }
-            }
+            return css;
         }
 
         /// <summary>
@@ -148,7 +121,7 @@ namespace Talifun.Web.CssSprite
         /// <param name="spriteImageUrl">Sprite image url.</param>
         /// <param name="cssOutputPath">Sprite css output path.</param>
         /// <param name="files">The component images for the sprite.</param>
-        private static void AddFilesToCache(string imageOutputPath, string spriteImageUrl, string cssOutputPath, IEnumerable<ImageFile> files)
+        public virtual void AddFilesToCache(string imageOutputPath, string spriteImageUrl, string cssOutputPath, IEnumerable<ImageFile> files)
         {
             var fileNames = new List<string>
                                 {
@@ -168,10 +141,10 @@ namespace Talifun.Web.CssSprite
                 Cache.NoAbsoluteExpiration,
                 Cache.NoSlidingExpiration,
                 CacheItemPriority.High,
-                fileRemovedCallback);
+                FileRemoved);
         }
 
-        private static readonly CacheItemRemovedCallback fileRemovedCallback = new CacheItemRemovedCallback(FileRemoved);
+
 
         /// <summary>
         /// When a file is removed from cache, keep it in the cache if it is unused or expired as we want to continue to monitor
@@ -181,7 +154,7 @@ namespace Talifun.Web.CssSprite
         /// <param name="key">The key of the cache item.</param>
         /// <param name="value">The value of the cache item.</param>
         /// <param name="reason">The reason the file was removed from cache.</param>
-        private static void FileRemoved(string key, object value, CacheItemRemovedReason reason)
+        public virtual void FileRemoved(string key, object value, CacheItemRemovedReason reason)
         {
             var imageOutputPath = GetImageOutputPathFromKey(key);
             var cssOutputPath = GetCssOutputPathFromKey(key);
@@ -205,7 +178,7 @@ namespace Talifun.Web.CssSprite
         /// <param name="imageOutputPath">Sprite image output path.</param>
         /// <param name="spriteImageUrl">Sprite image url.</param>
         /// <param name="cssOutputPath">Sprite css output path.</param>
-        public static void RemoveFiles(string imageOutputPath, string spriteImageUrl, string cssOutputPath)
+        public virtual void RemoveFiles(string imageOutputPath, string spriteImageUrl, string cssOutputPath)
         {
             HttpRuntime.Cache.Remove(GetKey(imageOutputPath, spriteImageUrl, cssOutputPath));
         }
@@ -217,9 +190,9 @@ namespace Talifun.Web.CssSprite
         /// <param name="spriteImageUrl">Sprite image url.</param>
         /// <param name="cssOutputPath">Sprite css output path.</param>
         /// <returns></returns>
-        private static string GetKey(string imageOutputPath, string spriteImageUrl, string cssOutputPath)
+        public virtual string GetKey(string imageOutputPath, string spriteImageUrl, string cssOutputPath)
         {
-            var prefix = typeof(CssSpriteHelper).ToString() + "|";
+            var prefix = typeof(CssSpriteCreator).ToString() + "|";
             return prefix + imageOutputPath + "|" + spriteImageUrl + "|" + cssOutputPath;
         }
 
@@ -228,9 +201,9 @@ namespace Talifun.Web.CssSprite
         /// </summary>
         /// <param name="key">Cache key.</param>
         /// <returns>Sprite image output path</returns>
-        private static string GetImageOutputPathFromKey(string key)
+        public virtual string GetImageOutputPathFromKey(string key)
         {
-            var prefix = typeof(CssSpriteHelper).ToString() + "|";
+            var prefix = typeof(CssSpriteCreator).ToString() + "|";
             var tokens = key.Substring(prefix.Length).Split(new char[] { '|' }, StringSplitOptions.None);
             return tokens[0];
         }
@@ -240,9 +213,9 @@ namespace Talifun.Web.CssSprite
         /// </summary>
         /// <param name="key">Cache key.</param>
         /// <returns>Sprite image url.</returns>
-        private static string GetSpriteImageUrlFromKey(string key)
+        public virtual string GetSpriteImageUrlFromKey(string key)
         {
-            var prefix = typeof(CssSpriteHelper).ToString() + "|";
+            var prefix = typeof(CssSpriteCreator).ToString() + "|";
             var tokens = key.Substring(prefix.Length).Split(new char[] { '|' }, StringSplitOptions.None);
             return tokens[1];
         }
@@ -252,9 +225,9 @@ namespace Talifun.Web.CssSprite
         /// </summary>
         /// <param name="key">Cache key.</param>
         /// <returns>Sprite css output path.</returns>
-        private static string GetCssOutputPathFromKey(string key)
+        public virtual string GetCssOutputPathFromKey(string key)
         {
-            var prefix = typeof(CssSpriteHelper).ToString() + "|";
+            var prefix = typeof(CssSpriteCreator).ToString() + "|";
             var tokens = key.Substring(prefix.Length).Split(new char[] {'|'}, StringSplitOptions.None);
             return tokens[2];
         }
@@ -266,7 +239,7 @@ namespace Talifun.Web.CssSprite
         /// <param name="etag">The unique hash for the sprite image.</param>
         /// <param name="cssSpriteImageUrl">The url of the sprite image.</param>
         /// <returns></returns>
-        private static string GetCssSpriteCss(IEnumerable<SpriteElement> spriteElements, string etag, string cssSpriteImageUrl)
+        public virtual string GetCssSpriteCss(IEnumerable<SpriteElement> spriteElements, string etag, string cssSpriteImageUrl)
         {
             var cssBuilder = new StringBuilder();
             var currentY = 0;
@@ -284,7 +257,7 @@ namespace Talifun.Web.CssSprite
         /// </summary>
         /// <param name="spriteElements">The sprites that make the image up.</param>
         /// <returns>Image the represents all the sprites.</returns>
-        private static Bitmap GetCssSpriteImage(IEnumerable<SpriteElement> spriteElements)
+        public virtual Bitmap GetCssSpriteImage(IEnumerable<SpriteElement> spriteElements)
         {
             var maxWidth = MaxWidth(spriteElements);
             var maxHeight = TotalHeight(spriteElements);
@@ -307,7 +280,7 @@ namespace Talifun.Web.CssSprite
         /// </summary>
         /// <param name="spriteElements">The sprites that make the image up.</param>
         /// <returns>The height if all the sprites added together.</returns>
-        private static int TotalHeight(IEnumerable<SpriteElement> spriteElements)
+        public virtual int TotalHeight(IEnumerable<SpriteElement> spriteElements)
         {
             return spriteElements.Sum(x => x.Height + ImagePadding);
         }
@@ -317,7 +290,7 @@ namespace Talifun.Web.CssSprite
         /// </summary>
         /// <param name="spriteElements">The sprites that make the image up.</param>
         /// <returns>The width of the widest sprite.</returns>
-        private static int MaxWidth(IEnumerable<SpriteElement> spriteElements)
+        public virtual int MaxWidth(IEnumerable<SpriteElement> spriteElements)
         {
             return spriteElements.Max(x => x.Width);
         }

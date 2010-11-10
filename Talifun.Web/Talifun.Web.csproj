@@ -95,9 +95,10 @@
     <Compile Include="CssSprite\Config\CurrentCssSpriteConfiguration.cs" />
     <Compile Include="CssSprite\Config\ImageFileElement.cs" />
     <Compile Include="CssSprite\Config\ImageFileElementCollection.cs" />
-    <Compile Include="CssSprite\CssSpriteHelper.cs" />
+    <Compile Include="CssSprite\CssSpriteCreator.cs" />
     <Compile Include="CssSprite\CssSpriteManager.cs" />
     <Compile Include="CssSprite\CssSpriteModule.cs" />
+    <Compile Include="CssSprite\ICssSpriteCreator.cs" />
     <Compile Include="CssSprite\ImageFile.cs" />
     <Compile Include="CssSprite\SpriteElement.cs" />
     <Compile Include="Helper\IRetryableFileWriter.cs" />

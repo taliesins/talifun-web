@@ -17,6 +17,22 @@ namespace Talifun.Web.Helper
         }
 
         /// <summary>
+        /// Save string content to file.
+        /// </summary>
+        /// <param name="output">The string to save.</param>
+        /// <param name="outputPath">The path for the file to save.</param>
+        public virtual void SaveContentsToFile(string output, string outputPath)
+        {
+            using (var outputStream = new MemoryStream())
+            {
+                var uniEncoding = Encoding.Default;
+                outputStream.Write(uniEncoding.GetBytes(output), 0, uniEncoding.GetByteCount(output));
+
+                SaveContentsToFile(outputStream, outputPath);
+            }
+        }
+
+        /// <summary>
         /// Save StringBuilder content to file.
         /// </summary>
         /// <param name="output">The StringBuilder to save.</param>
