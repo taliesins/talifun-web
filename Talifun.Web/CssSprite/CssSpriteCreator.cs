@@ -40,19 +40,20 @@ namespace Talifun.Web.CssSprite
         /// <param name="files">The component images for the sprite.</param>
         public virtual void AddFiles(string imageOutputPath, string spriteImageUrl, string cssOutputPath, IEnumerable<ImageFile> files)
         {
-            var cssContent = ProcessFiles(imageOutputPath, spriteImageUrl, cssOutputPath, files);
-            _retryableFileWriter.SaveContentsToFile(cssContent, cssOutputPath);
+            var spriteElements = ProcessFiles(files);
+            var etag = SaveSpritesImage(spriteElements, imageOutputPath);
+            var cssSpriteImageUrl = string.IsNullOrEmpty(spriteImageUrl) ? VirtualPathUtility.ToAbsolute(imageOutputPath) : spriteImageUrl;
+            var css = GetCssSpriteCss(spriteElements, etag, cssSpriteImageUrl);
+            _retryableFileWriter.SaveContentsToFile(css, cssOutputPath);
             AddFilesToCache(imageOutputPath, spriteImageUrl, cssOutputPath, files);
         }
 
         /// <summary>
-        /// Combine the images into a sprite image.
+        /// Get sprites for image files.
         /// </summary>
-        /// <param name="imageOutputPath">Sprite image output path.</param>
-        /// <param name="spriteImageUrl">Sprite image url.</param>
-        /// <param name="cssOutputPath">Sprite css output path.</param>
         /// <param name="files">The component images for the sprite.</param>
-        public virtual string ProcessFiles(string imageOutputPath, string spriteImageUrl, string cssOutputPath, IEnumerable<ImageFile> files)
+        /// <returns>A list of css sprites</returns>
+        public virtual List<SpriteElement> ProcessFiles(IEnumerable<ImageFile> files)
         {
             var spriteElements = new List<SpriteElement>();
             foreach (var file in files)
@@ -66,7 +67,17 @@ namespace Talifun.Web.CssSprite
                 }
             }
 
-            var etag = string.Empty;
+            return spriteElements;
+        }
+
+        /// <summary>
+        /// Save sprites image.
+        /// </summary>
+        /// <param name="spriteElements">The sprite elements to save</param>
+        /// <param name="imageOutputPath">The location to save the image too.</param>
+        /// <returns>etag of generated sprite file</returns>
+        public virtual string SaveSpritesImage(List<SpriteElement> spriteElements, string imageOutputPath)
+        {
             using (var image = GetCssSpriteImage(spriteElements))
             {
                 using (var writer = new MemoryStream())
@@ -74,44 +85,9 @@ namespace Talifun.Web.CssSprite
                     image.Save(writer, ImageFormat.Png);
                     writer.Flush();
 
-                    etag = _hasher.CalculateMd5Etag(writer);
-
-                    var imageFilePath = HostingEnvironment.MapPath(imageOutputPath);
-                    var imageFileInfo = new FileInfo(imageFilePath);
-                    //We might be competing with the web server for the output file, so try to overwrite it at regular intervals
-                    using (var outputFile = _retryableFileOpener.OpenFileStream(imageFileInfo, 5, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
-                    {
-                        var overwrite = true;
-                        if (outputFile.Length > 0)
-                        {
-                            var outputFileHash = _hasher.CalculateMd5Etag(outputFile);
-                            overwrite = (etag != outputFileHash);
-                        }
-
-                        if (overwrite)
-                        {
-                            writer.Seek(0, SeekOrigin.Begin);
-                            outputFile.SetLength(writer.Length); //Truncate current file
-                            outputFile.Seek(0, SeekOrigin.Begin);
-
-                            var bufferSize = Convert.ToInt32(Math.Min(writer.Length, BufferSize));
-                            var buffer = new byte[bufferSize];
-
-                            int bytesRead;
-                            while ((bytesRead = writer.Read(buffer, 0, bufferSize)) > 0)
-                            {
-                                outputFile.Write(buffer, 0, bytesRead);
-                            }
-                            outputFile.Flush();
-                        }
-                    }
+                    return _retryableFileWriter.SaveContentsToFile(writer, imageOutputPath);
                 }
             }
-
-            var cssSpriteImageUrl = string.IsNullOrEmpty(spriteImageUrl) ? VirtualPathUtility.ToAbsolute(imageOutputPath) : spriteImageUrl;
-            var css = GetCssSpriteCss(spriteElements, etag, cssSpriteImageUrl);
-
-            return css;
         }
 
         /// <summary>

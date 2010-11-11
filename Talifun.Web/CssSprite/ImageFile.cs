@@ -2,7 +2,7 @@
 {
     public class ImageFile
     {
-        public string FilePath { get; set; }
-        public string Name { get; set; }
+        public virtual string FilePath { get; set; }
+        public virtual string Name { get; set; }
     }
 }
