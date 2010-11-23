@@ -11,7 +11,7 @@ namespace Talifun.Web.LogUrl
             Expression = expression;
         }
 
-        public HttpApplication HttpApplication { get; private set; }
-        public string Expression { get; private set; }
+        public virtual HttpApplication HttpApplication { get; private set; }
+        public virtual string Expression { get; private set; }
     }
 }

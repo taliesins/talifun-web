@@ -28,10 +28,10 @@ namespace Talifun.Web.Compress
             Forth = forth;
         }
 
-        public TFirst First { get; private set; }
-        public TSecond Second { get; private set; }
-        public TThird Third { get; private set; }
-        public TFourth Forth { get; private set; }
+        public virtual TFirst First { get; private set; }
+        public virtual TSecond Second { get; private set; }
+        public virtual TThird Third { get; private set; }
+        public virtual TFourth Forth { get; private set; }
 
         public override bool Equals(object obj)
         {

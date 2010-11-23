@@ -49,7 +49,6 @@ namespace Talifun.Web.Compress
 
         #region Properties - Not supported
 
-
         public override string ApplicationName
         {
             get { throw new NotSupportedException(); }

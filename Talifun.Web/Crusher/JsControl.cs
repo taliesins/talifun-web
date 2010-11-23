@@ -18,6 +18,7 @@ namespace Talifun.Web.Crusher
         protected readonly JsGroupElementCollection JsGroups;
         protected readonly IRetryableFileOpener RetryableFileOpener;
         protected readonly IHasher Hasher;
+        protected static string JsControlType = typeof(JsControl).ToString();
 
         public JsControl()
         {
@@ -119,7 +120,7 @@ namespace Talifun.Web.Crusher
         /// <returns>The cache key to use for caching.</returns>
         private static string GetKey(string outputPath)
         {
-            var prefix = typeof(JsControl).ToString() + "|";
+            var prefix = JsControlType + "|";
             return prefix + outputPath;
         }
     }

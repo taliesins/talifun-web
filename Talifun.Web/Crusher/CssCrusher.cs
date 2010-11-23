@@ -18,6 +18,7 @@ namespace Talifun.Web.Crusher
         protected readonly IRetryableFileOpener RetryableFileOpener;
         protected readonly IRetryableFileWriter RetryableFileWriter;
         protected readonly ICssPathRewriter CssPathRewriter;
+        protected static string CssCrusherType = typeof(CssCrusher).ToString();
 
         public CssCrusher(IRetryableFileOpener retryableFileOpener, IRetryableFileWriter retryableFileWriter, ICssPathRewriter cssPathRewriter)
         {
@@ -178,7 +179,7 @@ namespace Talifun.Web.Crusher
         /// <returns>The cache key to use for caching.</returns>
         public virtual string GetKey(string outputPath)
         {
-            var prefix = typeof (CssCrusher).ToString() + "|";
+            var prefix = CssCrusherType + "|";
             return prefix + outputPath;
         }
 
@@ -189,7 +190,7 @@ namespace Talifun.Web.Crusher
         /// <returns>The path for the crushed css file.</returns>
         public virtual string GetOutputPathFromKey(string key)
         {
-            var prefix = typeof(CssCrusher).ToString() + "|";
+            var prefix = CssCrusherType + "|";
             return key.Substring(prefix.Length);
         }
     }

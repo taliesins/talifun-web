@@ -36,7 +36,7 @@ namespace Talifun.Web.Compress
         /// Check if the browser support compression
         /// </summary>
         /// <param name="context"></param>
-        /// <param name="isPage"
+        /// <param name="isPage"></param>
         /// <returns></returns>
         public static bool IsCompressionSupported(HttpContext context, bool isPage)
         {

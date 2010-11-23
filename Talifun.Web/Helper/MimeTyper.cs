@@ -7,6 +7,7 @@ namespace Talifun.Web
     public class MimeTyper : IMimeTyper
     {
         protected TimeSpan mimeTypeSlidingExpiration = new TimeSpan(24, 0, 0);
+        protected static string MimeTyperType = typeof(MimeTyper).ToString();
 
         /// <summary>
         /// Get the mime type for a file based on its extension
@@ -46,7 +47,7 @@ namespace Talifun.Web
 
         private string GetKey(string extension)
         {
-            var prefix = typeof(MimeTyper).ToString() + "|";
+            var prefix = MimeTyperType + "|";
             return prefix + extension;
         }
     }

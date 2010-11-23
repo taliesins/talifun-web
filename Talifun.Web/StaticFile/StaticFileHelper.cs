@@ -33,6 +33,7 @@ namespace Talifun.Web.StaticFile
         internal static FileExtensionMatch fileExtensionMatchDefault { get; private set; }
 
         internal static string staticFileHandlerType = typeof(StaticFileHelper).ToString();
+        internal static Type httpWorkerRequestType = typeof(HttpWorkerRequest);
 
         static StaticFileHelper()
         {
@@ -121,7 +122,7 @@ namespace Talifun.Web.StaticFile
         public static void DetectWebServerType(HttpContextBase context)
         {
             var provider = (IServiceProvider)context;
-            var worker = (HttpWorkerRequest)provider.GetService(typeof(HttpWorkerRequest)) ?? GetWorkerRequestViaReflection(context.Request);
+            var worker = (HttpWorkerRequest)provider.GetService(httpWorkerRequestType) ?? GetWorkerRequestViaReflection(context.Request);
 
             if (worker != null)
             {

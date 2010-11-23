@@ -8,10 +8,12 @@ namespace Talifun.Web.Compress
         {
             return strString;
         }
+
         internal static string GetString(string strString, string param1)
         {
             return string.Format(CultureInfo.InvariantCulture, strString, param1);
         }
+
         internal static string GetString(string strString, string param1, string param2)
         {
             return string.Format(CultureInfo.InvariantCulture, strString, param1, param2);

@@ -69,6 +69,23 @@ namespace Talifun.Web.Configuration
             // Next - if we're running in a web context, cache & return the current web configuration
             if (HttpContext.Current != null)
             {
+                string rootPath = HttpContext.Current.Request.ApplicationPath;
+                string currentPath = VirtualPathUtility.GetDirectory(HttpContext.Current.Request.AppRelativeCurrentExecutionFilePath);
+
+                while (currentPath.Length >= rootPath.Length)
+                {
+                    config = WebConfigurationManager.OpenWebConfiguration(currentPath);
+
+                    if (config.HasFile)
+                    {
+                        return (config);
+                    }
+                    else
+                    {
+                        currentPath = currentPath.Substring(0, currentPath.LastIndexOf('/'));
+                    }
+                }
+
                 config = WebConfigurationManager.OpenWebConfiguration("~");
                 return (config);
             }

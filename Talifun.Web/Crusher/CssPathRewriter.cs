@@ -20,7 +20,7 @@ namespace Talifun.Web.Crusher
 
             var relativePaths = FindDistinctRelativePathsIn(css);
 
-            foreach (string relativePath in relativePaths)
+            foreach (var relativePath in relativePaths)
             {
                 var resolvedSourcePath = new Uri(sourceUri + relativePath);
                 var resolvedOutput = outputUri.MakeRelativeUri(resolvedSourcePath);

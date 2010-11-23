@@ -24,6 +24,8 @@ namespace Talifun.Web.CssSprite
         private readonly IHasher _hasher;
         private readonly IRetryableFileWriter _retryableFileWriter;
 
+        protected static string CssSpriteCreatorType = typeof(CssSpriteCreator).ToString();
+
         public CssSpriteCreator()
         {
             _retryableFileOpener = new RetryableFileOpener();
@@ -168,7 +170,7 @@ namespace Talifun.Web.CssSprite
         /// <returns></returns>
         public virtual string GetKey(string imageOutputPath, string spriteImageUrl, string cssOutputPath)
         {
-            var prefix = typeof(CssSpriteCreator).ToString() + "|";
+            var prefix = CssSpriteCreatorType + "|";
             return prefix + imageOutputPath + "|" + spriteImageUrl + "|" + cssOutputPath;
         }
 
@@ -179,7 +181,7 @@ namespace Talifun.Web.CssSprite
         /// <returns>Sprite image output path</returns>
         public virtual string GetImageOutputPathFromKey(string key)
         {
-            var prefix = typeof(CssSpriteCreator).ToString() + "|";
+            var prefix = CssSpriteCreatorType + "|";
             var tokens = key.Substring(prefix.Length).Split(new char[] { '|' }, StringSplitOptions.None);
             return tokens[0];
         }

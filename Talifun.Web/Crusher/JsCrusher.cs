@@ -17,6 +17,7 @@ namespace Talifun.Web.Crusher
     {
         protected readonly IRetryableFileOpener RetryableFileOpener;
         protected readonly IRetryableFileWriter RetryableFileWriter;
+        protected static string JsCrusherType = typeof(JsCrusher).ToString();
 
         public JsCrusher(IRetryableFileOpener retryableFileOpener, IRetryableFileWriter retryableFileWriter)
         {
@@ -138,7 +139,7 @@ namespace Talifun.Web.Crusher
         /// <returns>The cache key to use for caching.</returns>
         public virtual string GetKey(string outputPath)
         {
-            var prefix = typeof(JsCrusher).ToString() + "|";
+            var prefix = JsCrusherType + "|";
             return prefix + outputPath;
         }
 
@@ -149,7 +150,7 @@ namespace Talifun.Web.Crusher
         /// <returns>The path for the crushed js file.</returns>
         public virtual string GetOutputPathFromKey(string key)
         {
-            var prefix = typeof(JsCrusher).ToString() + "|";
+            var prefix = JsCrusherType + "|";
             return key.Substring(prefix.Length);
         }
     }
