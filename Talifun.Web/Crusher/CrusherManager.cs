@@ -13,7 +13,7 @@ namespace Talifun.Web.Crusher
     public sealed class CrusherManager : IDisposable
     {
         private const int BufferSize = 32768;
-        private const string HashQueryStringKeyName = "etag=";
+        private string HashQueryStringKeyName = CurrentCrusherConfiguration.Current.QuerystringKeyName;
         private CssGroupElementCollection cssGroups = CurrentCrusherConfiguration.Current.CssGroups;
         private JsGroupElementCollection jsGroups = CurrentCrusherConfiguration.Current.JsGroups;
         private ICssCrusher cssCrusher;

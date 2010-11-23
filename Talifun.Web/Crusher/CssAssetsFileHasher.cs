@@ -12,7 +12,7 @@ namespace Talifun.Web.Crusher
 
         public CssAssetsFileHasher(string hashQueryStringKeyName, IHasher hasher)
         {
-            HashQueryStringKeyName = hashQueryStringKeyName;
+            HashQueryStringKeyName = hashQueryStringKeyName+"=";
             Hasher = hasher;
         }
 

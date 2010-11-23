@@ -12,11 +12,11 @@ namespace Talifun.Web.CssSprite
     public sealed class CssSpriteManager : IDisposable
     {
         private CssSpriteGroupElementCollection cssSpriteGroups = CurrentCssSpriteConfiguration.Current.CssSpriteGroups;
-        protected readonly ICssSpriteCreator CssSpriteCreator;
+        private readonly ICssSpriteCreator cssSpriteCreator;
         private CssSpriteManager()
         {
+            cssSpriteCreator = new CssSpriteCreator();
             InitManager();
-            CssSpriteCreator = new CssSpriteCreator();
         }
 
         public static CssSpriteManager Instance
@@ -78,7 +78,7 @@ namespace Talifun.Web.CssSprite
                     files.Add(file);
                 }
 
-                CssSpriteCreator.AddFiles(imageOutputPath, group.ImageUrl, cssOutputPath, files);
+                cssSpriteCreator.AddFiles(imageOutputPath, group.ImageUrl, cssOutputPath, files);
             }
         }
 
@@ -89,7 +89,7 @@ namespace Talifun.Web.CssSprite
                 var imageOutputPath = group.ImageOutputFilePath;
                 var cssOutputPath = group.CssOutputFilePath;
 
-                CssSpriteCreator.RemoveFiles(imageOutputPath, group.ImageUrl, cssOutputPath);
+                cssSpriteCreator.RemoveFiles(imageOutputPath, group.ImageUrl, cssOutputPath);
             }
 
             if (AppDomain.CurrentDomain != null)
