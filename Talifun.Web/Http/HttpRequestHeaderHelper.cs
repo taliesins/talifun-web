@@ -9,12 +9,12 @@ namespace Talifun.Web
 {
     public class HttpRequestHeaderHelper : IHttpRequestHeaderHelper
     {
-        public const string DEFLATE = "deflate";
-        public const string GZIP = "gzip";
-        public const string XGZIP = "x-gzip";
-        public const string HTTP_HEADER_UNLESS_MODIFIED_SINCE = "Unless-Modified-Since";
+        public const string Deflate = "deflate";
+        public const string Gzip = "gzip";
+        public const string Xgzip = "x-gzip";
+        public const string HttpHeaderUnlessModifiedSince = "Unless-Modified-Since";
 
-        protected HeaderValueQValueComparer headerValueQValueComparer = new HeaderValueQValueComparer();
+        protected HeaderValueQValueComparer HeaderValueQValueComparer = new HeaderValueQValueComparer();
 
         /// <summary>
         /// Get the value for an http header. 
@@ -143,27 +143,27 @@ namespace Talifun.Web
         /// <returns>The compression mode to use.</returns>
         public ResponseCompressionType GetCompressionMode(HttpRequestBase request)
         {
-            var acceptEncodingValues = GetHttpHeaderWithQValues(request, HttpRequestHeader.AcceptEncoding).OrderByDescending(x => x, headerValueQValueComparer);
+            var acceptEncodingValues = GetHttpHeaderWithQValues(request, HttpRequestHeader.AcceptEncoding).OrderByDescending(x => x, HeaderValueQValueComparer);
 
             if (!acceptEncodingValues.Any()) return ResponseCompressionType.None;
 
-            var acceptEncodingToUse = acceptEncodingValues.Where(x => (x.Identity.Equals(DEFLATE, StringComparison.InvariantCultureIgnoreCase) || x.Identity.Equals(GZIP, StringComparison.InvariantCultureIgnoreCase) || x.Identity.Equals(XGZIP, StringComparison.InvariantCultureIgnoreCase) || x.Identity == "*") && (!x.QValue.HasValue || x.QValue.Value > 0)).FirstOrDefault();
+            var acceptEncodingToUse = acceptEncodingValues.Where(x => (x.Identity.Equals(Deflate, StringComparison.InvariantCultureIgnoreCase) || x.Identity.Equals(Gzip, StringComparison.InvariantCultureIgnoreCase) || x.Identity.Equals(Xgzip, StringComparison.InvariantCultureIgnoreCase) || x.Identity == "*") && (!x.QValue.HasValue || x.QValue.Value > 0)).FirstOrDefault();
 
             if (acceptEncodingToUse == null) return ResponseCompressionType.None;
 
             if (acceptEncodingToUse.Identity == "*")
             {
                 //Wildcard logic is everything that is not in the list, so we are assuming they can handle what ever we can send to them
-                if (!acceptEncodingValues.Any(x => x.Identity.Equals(DEFLATE, StringComparison.InvariantCultureIgnoreCase))) return ResponseCompressionType.Deflate;
-                if (!acceptEncodingValues.Any(x => x.Identity.Equals(GZIP, StringComparison.InvariantCultureIgnoreCase) || x.Identity.Equals(XGZIP, StringComparison.InvariantCultureIgnoreCase))) return ResponseCompressionType.GZip;
+                if (!acceptEncodingValues.Any(x => x.Identity.Equals(Deflate, StringComparison.InvariantCultureIgnoreCase))) return ResponseCompressionType.Deflate;
+                if (!acceptEncodingValues.Any(x => x.Identity.Equals(Gzip, StringComparison.InvariantCultureIgnoreCase) || x.Identity.Equals(Xgzip, StringComparison.InvariantCultureIgnoreCase))) return ResponseCompressionType.GZip;
 
                 //We tried our best to use wild card but we got no results, so see if we can send based on any other acceptable identities
-                acceptEncodingToUse = acceptEncodingValues.Where(x => (x.Identity.Equals(DEFLATE, StringComparison.InvariantCultureIgnoreCase) || x.Identity.Equals(GZIP, StringComparison.InvariantCultureIgnoreCase) || x.Identity.Equals(XGZIP, StringComparison.InvariantCultureIgnoreCase)) && (!x.QValue.HasValue || x.QValue.Value > 0)).FirstOrDefault();
+                acceptEncodingToUse = acceptEncodingValues.Where(x => (x.Identity.Equals(Deflate, StringComparison.InvariantCultureIgnoreCase) || x.Identity.Equals(Gzip, StringComparison.InvariantCultureIgnoreCase) || x.Identity.Equals(Xgzip, StringComparison.InvariantCultureIgnoreCase)) && (!x.QValue.HasValue || x.QValue.Value > 0)).FirstOrDefault();
             }
 
             switch (acceptEncodingToUse.Identity.ToLowerInvariant())
             {
-                case DEFLATE:
+                case Deflate:
                     return ResponseCompressionType.Deflate;
                 default:
                     return ResponseCompressionType.GZip;
@@ -261,7 +261,7 @@ namespace Talifun.Web
         /// </returns>
         public bool? CheckUnlessModifiedSince(HttpRequestBase request, DateTime lastModified)
         {
-            var requestHeaderUnlessModifiedSince = GetHttpHeaderValue(request, HTTP_HEADER_UNLESS_MODIFIED_SINCE, string.Empty);
+            var requestHeaderUnlessModifiedSince = GetHttpHeaderValue(request, HttpHeaderUnlessModifiedSince, string.Empty);
 
             if (string.IsNullOrEmpty(requestHeaderUnlessModifiedSince))
             {

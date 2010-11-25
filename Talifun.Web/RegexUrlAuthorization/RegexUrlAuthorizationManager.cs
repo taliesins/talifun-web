@@ -1,25 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading;
-using Talifun.Web.CssSprite.Config;
+using Talifun.Web.RegexUrlAuthorization.Config;
 
-namespace Talifun.Web.CssSprite
+namespace Talifun.Web.RegexUrlAuthorization
 {
-    /// <summary>
-    /// We only want one instance of this running. It has file watchers that look for changes to sprite component 
-    /// images and will update the sprite image.
-    /// </summary>
-    public sealed class CssSpriteManager : IDisposable
+    public sealed class RegexUrlAuthorizationManager : IDisposable
     {
-        private readonly CssSpriteGroupElementCollection _cssSpriteGroups = CurrentCssSpriteConfiguration.Current.CssSpriteGroups;
-        private readonly ICssSpriteCreator _cssSpriteCreator;
-        private CssSpriteManager()
+        private readonly UrlMatchElementCollection _urlMatches = CurrentRegexUrlAuthorizationConfiguration.Current.UrlMatches;
+        private const RegexOptions RegxOptions = RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Singleline;
+
+        private RegexUrlAuthorizationManager()
         {
-            _cssSpriteCreator = new CssSpriteCreator();
             InitManager();
         }
 
-        public static CssSpriteManager Instance
+        public static RegexUrlAuthorizationManager Instance
         {
             get
             {
@@ -35,11 +31,11 @@ namespace Talifun.Web.CssSprite
             {
             }
 
-            internal static readonly CssSpriteManager instance = new CssSpriteManager();
+            internal static readonly RegexUrlAuthorizationManager instance = new RegexUrlAuthorizationManager();
         }
 
         /// <summary>
-        /// We want to release the manager when app domain is unloaded. So we removed the reference, as nothing will be referencing
+        /// We want to release the manager when app domain is unloaded. So we removed the reference, as nothing will then be referencing
         /// the manager, garbage collector will dispose it.
         /// </summary>
         /// <param name="sender"></param>
@@ -61,37 +57,10 @@ namespace Talifun.Web.CssSprite
         private void InitManager()
         {
             AppDomain.CurrentDomain.DomainUnload += OnDomainUnload;
-
-            foreach (CssSpriteGroupElement group in _cssSpriteGroups)
-            {
-                var files = new List<ImageFile>();
-                var imageOutputPath = group.ImageOutputFilePath;
-                var cssOutputPath = group.CssOutputFilePath;
-
-                foreach (ImageFileElement imageFile in group.Files)
-                {
-                    var file = new ImageFile()
-                    {
-                        FilePath = imageFile.FilePath,
-                        Name = imageFile.Name
-                    };
-                    files.Add(file);
-                }
-
-                _cssSpriteCreator.AddFiles(imageOutputPath, group.ImageUrl, cssOutputPath, files);
-            }
         }
 
         private void DisposeManager()
         {
-            foreach (CssSpriteGroupElement group in _cssSpriteGroups)
-            {
-                var imageOutputPath = group.ImageOutputFilePath;
-                var cssOutputPath = group.CssOutputFilePath;
-
-                _cssSpriteCreator.RemoveFiles(imageOutputPath, group.ImageUrl, cssOutputPath);
-            }
-
             if (AppDomain.CurrentDomain != null)
             {
                 AppDomain.CurrentDomain.DomainUnload -= OnDomainUnload;
@@ -101,7 +70,7 @@ namespace Talifun.Web.CssSprite
         #region IDisposable Members
         private int alreadyDisposed = 0;
 
-        ~CssSpriteManager()
+        ~RegexUrlAuthorizationManager()
         {
             // call Dispose with false.  Since we're in the
             // destructor call, the managed resources will be
@@ -141,5 +110,20 @@ namespace Talifun.Web.CssSprite
         }
 
         #endregion
+
+        public bool IsAuthorized(string rawUrl, System.Security.Principal.IPrincipal user, string requestType) 
+        {
+            UrlMatchElement urlMatched = null;
+            foreach (UrlMatchElement urlMatch in _urlMatches)
+            {
+                if (!Regex.IsMatch(rawUrl, urlMatch.Expression, RegxOptions)) continue;
+                urlMatched = urlMatch;
+                break;
+            }
+
+            if (urlMatched == null) return true;
+
+            return urlMatched.EveryoneAllowed || urlMatched.IsUserAllowed(user, requestType);
+        }
     }
 }

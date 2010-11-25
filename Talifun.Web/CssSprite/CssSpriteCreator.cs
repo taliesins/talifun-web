@@ -17,20 +17,20 @@ namespace Talifun.Web.CssSprite
     /// </summary>
     public class CssSpriteCreator : ICssSpriteCreator
     {
-        private readonly int BufferSize = 32768;
-        private readonly int ImagePadding = 2;
+        protected readonly int BufferSize = 32768;
+        protected readonly int ImagePadding = 2;
 
-        private readonly IRetryableFileOpener _retryableFileOpener;
-        private readonly IHasher _hasher;
-        private readonly IRetryableFileWriter _retryableFileWriter;
+        protected readonly IRetryableFileOpener RetryableFileOpener;
+        protected readonly IHasher Hasher;
+        protected readonly IRetryableFileWriter RetryableFileWriter;
 
         protected static string CssSpriteCreatorType = typeof(CssSpriteCreator).ToString();
 
         public CssSpriteCreator()
         {
-            _retryableFileOpener = new RetryableFileOpener();
-            _hasher = new Hasher(_retryableFileOpener);
-            _retryableFileWriter = new RetryableFileWriter(BufferSize, _retryableFileOpener, _hasher);
+            RetryableFileOpener = new RetryableFileOpener();
+            Hasher = new Hasher(RetryableFileOpener);
+            RetryableFileWriter = new RetryableFileWriter(BufferSize, RetryableFileOpener, Hasher);
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace Talifun.Web.CssSprite
             var etag = SaveSpritesImage(spriteElements, imageOutputPath);
             var cssSpriteImageUrl = string.IsNullOrEmpty(spriteImageUrl) ? VirtualPathUtility.ToAbsolute(imageOutputPath) : spriteImageUrl;
             var css = GetCssSpriteCss(spriteElements, etag, cssSpriteImageUrl);
-            _retryableFileWriter.SaveContentsToFile(css, cssOutputPath);
+            RetryableFileWriter.SaveContentsToFile(css, cssOutputPath);
             AddFilesToCache(imageOutputPath, spriteImageUrl, cssOutputPath, files);
         }
 
@@ -62,7 +62,7 @@ namespace Talifun.Web.CssSprite
             {
                 var filePath = HostingEnvironment.MapPath(file.FilePath);
                 var fileInfo = new FileInfo(filePath);
-                using (var reader = _retryableFileOpener.OpenFileStream(fileInfo, 5, FileMode.Open, FileAccess.Read, FileShare.Read))
+                using (var reader = RetryableFileOpener.OpenFileStream(fileInfo, 5, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
                     var spriteElement = new SpriteElement(file.Name, reader);
                     spriteElements.Add(spriteElement);
@@ -87,7 +87,7 @@ namespace Talifun.Web.CssSprite
                     image.Save(writer, ImageFormat.Png);
                     writer.Flush();
 
-                    return _retryableFileWriter.SaveContentsToFile(writer, imageOutputPath);
+                    return RetryableFileWriter.SaveContentsToFile(writer, imageOutputPath);
                 }
             }
         }

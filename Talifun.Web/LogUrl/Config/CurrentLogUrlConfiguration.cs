@@ -7,7 +7,7 @@ namespace Talifun.Web.LogUrl.Config
     /// </summary>
     public static class CurrentLogUrlConfiguration
     {
-        private static LogUrlSection current;
+        private static LogUrlSection _current;
         /// <summary>
         /// Gets the static instance of <see cref="LogUrlSection" /> representing the current application configuration.
         /// </summary>
@@ -15,11 +15,11 @@ namespace Talifun.Web.LogUrl.Config
         {
             get
             {
-                if (current == null)
+                if (_current == null)
                 {
-                    current = CurrentConfigurationManager.GetSection<LogUrlSection>();
+                    _current = CurrentConfigurationManager.GetSection<LogUrlSection>();
                 }
-                return current;
+                return _current;
             }
         }
     }

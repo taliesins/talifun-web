@@ -12,8 +12,11 @@ namespace Talifun.Web.LogUrl
     /// </summary>
     public class LogUrlModule : HttpModuleBase
     {
-        private UrlMatchElementCollection urlMatches = CurrentLogUrlConfiguration.Current.UrlMatches;
-        private const RegexOptions regxOptions = RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Singleline;
+        /// <summary>
+        /// We want to initialize the crusher manager.
+        /// </summary>
+        protected static LogUrlManager LogUrlManager = LogUrlManager.Instance;
+
 
         protected override void OnInit(HttpApplication httpApplication)
         {
@@ -27,15 +30,7 @@ namespace Talifun.Web.LogUrl
             //We only want to log request to url if they are successfull and lets also ignore partial requests
             if (application.Context.Error != null || !(application.Response.StatusCode == (int)HttpStatusCode.OK || application.Response.StatusCode == (int)HttpStatusCode.NotModified)) return;
 
-            var rawUrl = application.Request.RawUrl;
-            foreach (UrlMatchElement urlMatch in urlMatches)
-            {
-                if (!Regex.IsMatch(rawUrl, urlMatch.Expression, regxOptions)) continue;
-
-                LogUrlManager.Instance.RaiseLogUrlEvent(application, urlMatch.Expression);
-
-                break;
-            }
+            LogUrlManager.LogUrl(application);
         }
 
         /// <summary>

@@ -6,7 +6,7 @@ namespace Talifun.Web
 {
     public class MimeTyper : IMimeTyper
     {
-        protected TimeSpan mimeTypeSlidingExpiration = new TimeSpan(24, 0, 0);
+        protected TimeSpan MimeTypeSlidingExpiration = new TimeSpan(24, 0, 0);
         protected static string MimeTyperType = typeof(MimeTyper).ToString();
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace Talifun.Web
                 mime,
                 null,
                 Cache.NoAbsoluteExpiration,
-                mimeTypeSlidingExpiration,
+                MimeTypeSlidingExpiration,
                 CacheItemPriority.Normal,
                 null);
 

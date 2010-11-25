@@ -15,14 +15,14 @@ namespace Talifun.Web.Configuration
         /// </summary>
         [SuppressMessage("Microsoft.Usage", "CA2211:NonConstantFieldsShouldNotBeVisible", Justification = "Visibility is limted to derived classes which should close the generic type and treat the field as private")]
         [SuppressMessage("Microsoft.Design", "CA1000:DoNotDeclareStaticMembersOnGenericTypes", Justification = "Visibility is limted to derived classes which should close the generic type and treat the field as private")]
-        protected static ConfigurationPropertyCollection properties = new ConfigurationPropertyCollection();
+        protected static ConfigurationPropertyCollection _properties = new ConfigurationPropertyCollection();
 
         /// <summary>
         /// Gets the collection of configuration properties contained by this configuration element collection.
         /// </summary>
         protected override ConfigurationPropertyCollection Properties
         {
-            get { return properties; }
+            get { return _properties; }
         }
 
         /// <summary>

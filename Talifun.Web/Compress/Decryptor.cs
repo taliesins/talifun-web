@@ -8,9 +8,9 @@ namespace Talifun.Web.Compress
 {
     public class Decryptor
     {
-        private const bool ReflectionAlloweded = true;
-        private static MethodInfo decryptString;
-        private static readonly Object getMethodLock = new Object();
+        protected const bool ReflectionAlloweded = true;
+        protected static MethodInfo decryptString;
+        protected static readonly Object getMethodLock = new Object();
 
         /// <summary>
         /// Decrypt a string using MachineKey

@@ -1,25 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading;
-using Talifun.Web.CssSprite.Config;
+using Talifun.Web.IpAddressAuthentication.Config;
 
-namespace Talifun.Web.CssSprite
+namespace Talifun.Web.IpAddressAuthentication
 {
-    /// <summary>
-    /// We only want one instance of this running. It has file watchers that look for changes to sprite component 
-    /// images and will update the sprite image.
-    /// </summary>
-    public sealed class CssSpriteManager : IDisposable
+    public sealed class IpAddressAuthenticationManager : IDisposable
     {
-        private readonly CssSpriteGroupElementCollection _cssSpriteGroups = CurrentCssSpriteConfiguration.Current.CssSpriteGroups;
-        private readonly ICssSpriteCreator _cssSpriteCreator;
-        private CssSpriteManager()
+        private const RegexOptions RegxOptions = RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Singleline;
+        private readonly UrlMatchElementCollection _urlMatches = CurrentIpAddressAuthenticationConfiguration.Current.UrlMatches;
+
+        private IpAddressAuthenticationManager()
         {
-            _cssSpriteCreator = new CssSpriteCreator();
             InitManager();
         }
 
-        public static CssSpriteManager Instance
+        public static IpAddressAuthenticationManager Instance
         {
             get
             {
@@ -35,11 +32,11 @@ namespace Talifun.Web.CssSprite
             {
             }
 
-            internal static readonly CssSpriteManager instance = new CssSpriteManager();
+            internal static readonly IpAddressAuthenticationManager instance = new IpAddressAuthenticationManager();
         }
 
         /// <summary>
-        /// We want to release the manager when app domain is unloaded. So we removed the reference, as nothing will be referencing
+        /// We want to release the manager when app domain is unloaded. So we removed the reference, as nothing will then be referencing
         /// the manager, garbage collector will dispose it.
         /// </summary>
         /// <param name="sender"></param>
@@ -61,37 +58,10 @@ namespace Talifun.Web.CssSprite
         private void InitManager()
         {
             AppDomain.CurrentDomain.DomainUnload += OnDomainUnload;
-
-            foreach (CssSpriteGroupElement group in _cssSpriteGroups)
-            {
-                var files = new List<ImageFile>();
-                var imageOutputPath = group.ImageOutputFilePath;
-                var cssOutputPath = group.CssOutputFilePath;
-
-                foreach (ImageFileElement imageFile in group.Files)
-                {
-                    var file = new ImageFile()
-                    {
-                        FilePath = imageFile.FilePath,
-                        Name = imageFile.Name
-                    };
-                    files.Add(file);
-                }
-
-                _cssSpriteCreator.AddFiles(imageOutputPath, group.ImageUrl, cssOutputPath, files);
-            }
         }
 
         private void DisposeManager()
         {
-            foreach (CssSpriteGroupElement group in _cssSpriteGroups)
-            {
-                var imageOutputPath = group.ImageOutputFilePath;
-                var cssOutputPath = group.CssOutputFilePath;
-
-                _cssSpriteCreator.RemoveFiles(imageOutputPath, group.ImageUrl, cssOutputPath);
-            }
-
             if (AppDomain.CurrentDomain != null)
             {
                 AppDomain.CurrentDomain.DomainUnload -= OnDomainUnload;
@@ -101,7 +71,7 @@ namespace Talifun.Web.CssSprite
         #region IDisposable Members
         private int alreadyDisposed = 0;
 
-        ~CssSpriteManager()
+        ~IpAddressAuthenticationManager()
         {
             // call Dispose with false.  Since we're in the
             // destructor call, the managed resources will be
@@ -141,5 +111,59 @@ namespace Talifun.Web.CssSprite
         }
 
         #endregion
+
+        public bool IsAuthorized(string rawUrl, string userHostAddress)
+        {
+            UrlMatchElement urlMatched = null;
+            foreach (UrlMatchElement urlMatch in _urlMatches)
+            {
+                if (!Regex.IsMatch(rawUrl, urlMatch.Expression, RegxOptions)) continue;
+                urlMatched = urlMatch;
+                break;
+            }
+
+            if (urlMatched == null) return true;
+
+            var ipAddress = IPAddress.Parse(userHostAddress);
+            return IsValidIpAddress(urlMatched, ipAddress);
+        }
+
+        private bool IsValidIpAddress(UrlMatchElement urlMatched, IPAddress ipAddress)
+        {
+            foreach (IpAddressMatchElement ipAddressMatch in urlMatched.IpAddressMatches)
+            {
+                if (ipAddressMatch.NetMask == null)
+                {
+                    if (ipAddressMatch.IpAddress == ipAddress)
+                    {
+                        return ipAddressMatch.Access;
+                    }
+                }
+                else
+                {
+                    if (IsAddressOnSubnet(ipAddress, ipAddressMatch.IpAddress, ipAddressMatch.NetMask))
+                    {
+                        return ipAddressMatch.Access;
+                    }
+                }
+            }
+
+            return urlMatched.DefaultAccess;
+        }
+
+        private bool IsAddressOnSubnet(IPAddress address, IPAddress subnet, IPAddress mask)
+        {
+            var addrBytes = address.GetAddressBytes();
+            var maskBytes = mask.GetAddressBytes();
+            var maskedAddressBytes = new byte[addrBytes.Length];
+
+            for (var i = 0; i < maskedAddressBytes.Length; ++i)
+            {
+                maskedAddressBytes[i] = (byte)(addrBytes[i] & maskBytes[i]);
+            }
+
+            var maskedAddress = new IPAddress(maskedAddressBytes);
+            return subnet.Equals(maskedAddress);
+        }
     }
 }

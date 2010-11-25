@@ -15,12 +15,12 @@ namespace Talifun.Web.StaticFile
     public static class StaticFileHelper
     {
         private const int BufferSize = 32768;
-        private const long MAX_FILE_SIZE_TO_SERVE = int.MaxValue;
+        private const long MaxFileSizeToServe = int.MaxValue;
 
-        internal const string HTTP_METHOD_GET = "GET";
-        internal const string HTTP_METHOD_HEAD = "HEAD";
+        internal const string HttpMethodGet = "GET";
+        internal const string HttpMethodHead = "HEAD";
 
-        internal const uint ERROR_THE_REMOTE_HOST_CLOSED_THE_CONNECTION = 0x80072746; //WSAECONNRESET (10054)
+        internal const uint ErrorTheRemoteHostClosedTheConnection = 0x80072746; //WSAECONNRESET (10054)
 
         private static IRetryableFileOpener _retryableFileOpener = new RetryableFileOpener();
         private static IMimeTyper _mimeTyper = new MimeTyper();
@@ -29,17 +29,17 @@ namespace Talifun.Web.StaticFile
         private static IHttpResponseHeaderHelper _httpResponseHeaderHelper = null;
         
         internal static WebServerType WebServerType { get; set; }
-        internal static Dictionary<string, FileExtensionMatch> fileExtensionMatches { get; private set; }
-        internal static FileExtensionMatch fileExtensionMatchDefault { get; private set; }
+        internal static Dictionary<string, FileExtensionMatch> FileExtensionMatches { get; private set; }
+        internal static FileExtensionMatch FileExtensionMatchDefault { get; private set; }
 
-        internal static string staticFileHandlerType = typeof(StaticFileHelper).ToString();
-        internal static Type httpWorkerRequestType = typeof(HttpWorkerRequest);
+        internal static string StaticFileHandlerType = typeof(StaticFileHelper).ToString();
+        internal static Type HttpWorkerRequestType = typeof(HttpWorkerRequest);
 
         static StaticFileHelper()
         {
             WebServerType = CurrentStaticFileHandlerConfiguration.Current.WebServerType;
-            fileExtensionMatches = GetFileExtensionsForMatches();
-            fileExtensionMatchDefault = GetDefaultFileExtensionForNoMatches();
+            FileExtensionMatches = GetFileExtensionsForMatches();
+            FileExtensionMatchDefault = GetDefaultFileExtensionForNoMatches();
         }
 
         private static Dictionary<string, FileExtensionMatch> GetFileExtensionsForMatches()
@@ -122,7 +122,7 @@ namespace Talifun.Web.StaticFile
         public static void DetectWebServerType(HttpContextBase context)
         {
             var provider = (IServiceProvider)context;
-            var worker = (HttpWorkerRequest)provider.GetService(httpWorkerRequestType) ?? GetWorkerRequestViaReflection(context.Request);
+            var worker = (HttpWorkerRequest)provider.GetService(HttpWorkerRequestType) ?? GetWorkerRequestViaReflection(context.Request);
 
             if (worker != null)
             {
@@ -202,9 +202,9 @@ namespace Talifun.Web.StaticFile
                 var compressionType = _httpRequestHeaderHelper.GetCompressionMode(request);
 
                 FileExtensionMatch fileExtensionMatch = null;
-                if (!fileExtensionMatches.TryGetValue(file.Extension.ToLower(), out fileExtensionMatch))
+                if (!FileExtensionMatches.TryGetValue(file.Extension.ToLower(), out fileExtensionMatch))
                 {
-                    fileExtensionMatch = fileExtensionMatchDefault;
+                    fileExtensionMatch = FileExtensionMatchDefault;
                 }
 
                 // If this is a binary file like image, then we won't compress it.
@@ -231,7 +231,7 @@ namespace Talifun.Web.StaticFile
                     }
 
                     //File too large to send
-                    if (file.Length > MAX_FILE_SIZE_TO_SERVE)
+                    if (file.Length > MaxFileSizeToServe)
                     {
                         _httpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatus.RequestEntityTooLarge);
                         return;
@@ -271,7 +271,7 @@ namespace Talifun.Web.StaticFile
                         _httpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatus.PartialContent);
                         break;
                     case HttpStatusCode.OK:
-                        _httpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatus.OK);
+                        _httpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatus.Ok);
                         break;
                     default:
                         //Unhandled status code
@@ -293,7 +293,7 @@ namespace Talifun.Web.StaticFile
             catch (HttpException httpException)
             {
                 //Client disconnected half way through us sending data
-                if (httpException.ErrorCode != ERROR_THE_REMOTE_HOST_CLOSED_THE_CONNECTION)
+                if (httpException.ErrorCode != ErrorTheRemoteHostClosedTheConnection)
                     return;
 
                 throw;
@@ -357,7 +357,7 @@ namespace Talifun.Web.StaticFile
             fileHandlerCacheItem = null;
 
             // If the response bytes are already cached, then deliver the bytes directly from cache
-            var cacheKey = staticFileHandlerType + ":" + entityStoredWithCompressionType + ":" + file.FullName;
+            var cacheKey = StaticFileHandlerType + ":" + entityStoredWithCompressionType + ":" + file.FullName;
 
             var cachedValue = HttpRuntime.Cache.Get(cacheKey);
             if (cachedValue != null)
@@ -373,7 +373,7 @@ namespace Talifun.Web.StaticFile
                 }
 
                 //File too large to send
-                if (file.Length > MAX_FILE_SIZE_TO_SERVE)
+                if (file.Length > MaxFileSizeToServe)
                 {
                     return false;
                 }
@@ -480,7 +480,7 @@ namespace Talifun.Web.StaticFile
         /// <returns>True if http method is supported; false if it is not</returns>
         internal static bool ValidateHttpMethod(HttpRequestBase request)
         {
-            return (request.HttpMethod == HTTP_METHOD_GET || request.HttpMethod == HTTP_METHOD_HEAD);
+            return (request.HttpMethod == HttpMethodGet || request.HttpMethod == HttpMethodHead);
         }
 
         /// <summary>

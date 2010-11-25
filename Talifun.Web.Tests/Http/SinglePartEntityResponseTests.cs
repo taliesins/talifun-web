@@ -35,7 +35,7 @@ namespace Talifun.Web.Tests.Http
             entity.Stub(x => x.CompressionType).Return(entityCompressionType);
 
             httpResponseHeaderHelper.Expect(x => x.SetContentEncoding(httpResponse, responseCompressionType));
-            httpResponseHeaderHelper.Expect(x => x.AppendHeader(httpResponse, SinglePartEntityResponse.HTTP_HEADER_CONTENT_LENGTH, contentLength.ToString()));
+            httpResponseHeaderHelper.Expect(x => x.AppendHeader(httpResponse, SinglePartEntityResponse.HttpHeaderContentLength, contentLength.ToString()));
             httpResponse.Expect(x => x.ContentType = entity.ContentType);
 
             //Act

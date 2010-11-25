@@ -8,13 +8,13 @@ namespace Talifun.Web
 {
     public class MultiPartEntityResponse : IEntityResponse
     {
-        public const string MULTIPART_BOUNDARY = "<q1w2e3r4t5y6u7i8o9p0>";
-        public const string MULTIPART_CONTENTTYPE = "multipart/byteranges; boundary=" + MULTIPART_BOUNDARY;
+        public const string MultipartBoundary = "<q1w2e3r4t5y6u7i8o9p0>";
+        public const string MultipartContenttype = "multipart/byteranges; boundary=" + MultipartBoundary;
 
-        public const string HTTP_HEADER_CONTENT_TYPE = "Content-Type";
-        public const string HTTP_HEADER_CONTENT_RANGE = "Content-Range";
-        public const string HTTP_HEADER_CONTENT_LENGTH = "Content-Length";
-        public const string BYTES = "bytes";
+        public const string HttpHeaderContentType = "Content-Type";
+        public const string HttpHeaderContentRange = "Content-Range";
+        public const string HttpHeaderContentLength = "Content-Length";
+        public const string Bytes = "bytes";
 
         protected readonly IHttpResponseHeaderHelper HttpResponseHeaderHelper;
         protected readonly IEnumerable<RangeItem> Ranges;
@@ -40,7 +40,7 @@ namespace Talifun.Web
             {
                 case ResponseCompressionType.None:
                     var partialContentLength = GetMultipartPartialRequestLength(Ranges, entity.ContentType, entity.ContentLength);
-                    HttpResponseHeaderHelper.AppendHeader(response, HTTP_HEADER_CONTENT_LENGTH, partialContentLength.ToString());
+                    HttpResponseHeaderHelper.AppendHeader(response, HttpHeaderContentLength, partialContentLength.ToString());
                     break;
                 case ResponseCompressionType.GZip:
                     response.Filter = new GZipStream(response.Filter, CompressionMode.Compress);
@@ -52,7 +52,7 @@ namespace Talifun.Web
                     break;
             }
 
-            response.ContentType = MULTIPART_CONTENTTYPE;
+            response.ContentType = MultipartContenttype;
         }
 
         public void SendBody(HttpMethod requestHttpMethod, HttpResponseBase response, ITransmitEntityStrategy transmitEntity)
@@ -83,9 +83,9 @@ namespace Talifun.Web
             var multiPartHeader = new StringBuilder();
 
             multiPartHeader.AppendLine();
-            multiPartHeader.AppendLine("--" + MULTIPART_BOUNDARY);
-            multiPartHeader.AppendLine(HTTP_HEADER_CONTENT_TYPE + ": " + contentType);
-            multiPartHeader.AppendLine(HTTP_HEADER_CONTENT_RANGE + ": " + BYTES + " " +
+            multiPartHeader.AppendLine("--" + MultipartBoundary);
+            multiPartHeader.AppendLine(HttpHeaderContentType + ": " + contentType);
+            multiPartHeader.AppendLine(HttpHeaderContentRange + ": " + Bytes + " " +
                                       startRange + "-" +
                                       endRange + "/" +
                                       contentLength);
@@ -102,7 +102,7 @@ namespace Talifun.Web
         {
             var multiPartFooter = new StringBuilder();
             multiPartFooter.AppendLine();
-            multiPartFooter.AppendLine("--" + MULTIPART_BOUNDARY + "--");
+            multiPartFooter.AppendLine("--" + MultipartBoundary + "--");
             return multiPartFooter.ToString();
         }
 

@@ -4,7 +4,7 @@
     {
         Continue,
         SwitchingProtocols,
-        OK,
+        Ok,
         Created,
         Accepted,
         NonAuthoritativeInformation,

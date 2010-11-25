@@ -10,7 +10,7 @@ namespace Talifun.Web.CssSprite
         /// <summary>
         /// We want to initialize the css sprite manager.
         /// </summary>
-        private static CssSpriteManager cssSpriteManager = CssSpriteManager.Instance;
+        protected static CssSpriteManager CssSpriteManager = CssSpriteManager.Instance;
 
         /// <summary>
         /// Determines whether the module will be registered for discovery

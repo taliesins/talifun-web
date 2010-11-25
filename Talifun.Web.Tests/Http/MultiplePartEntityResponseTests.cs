@@ -41,17 +41,17 @@ namespace Talifun.Web.Tests.Http
 
             var rangeItems = new[] { firstRangeItem, secondRangeItem };
 
-            var firstHeader = "\r\n--" + MultiPartEntityResponse.MULTIPART_BOUNDARY + "\r\n"
-                + MultiPartEntityResponse.HTTP_HEADER_CONTENT_TYPE + ": " + entityType + "\r\n"
-                + MultiPartEntityResponse.HTTP_HEADER_CONTENT_RANGE + ": " + MultiPartEntityResponse.BYTES + " " + firstStartRange + "-" + firstEndRange + "/" + entityLength + "\r\n"
+            var firstHeader = "\r\n--" + MultiPartEntityResponse.MultipartBoundary + "\r\n"
+                + MultiPartEntityResponse.HttpHeaderContentType + ": " + entityType + "\r\n"
+                + MultiPartEntityResponse.HttpHeaderContentRange + ": " + MultiPartEntityResponse.Bytes + " " + firstStartRange + "-" + firstEndRange + "/" + entityLength + "\r\n"
                 + "\r\n";
 
-            var secondHeader = "\r\n--" + MultiPartEntityResponse.MULTIPART_BOUNDARY + "\r\n"
-                + MultiPartEntityResponse.HTTP_HEADER_CONTENT_TYPE + ": " + entityType + "\r\n"
-                + MultiPartEntityResponse.HTTP_HEADER_CONTENT_RANGE + ": " + MultiPartEntityResponse.BYTES + " " + secondStartRange + "-" + secondEndRange + "/" + entityLength + "\r\n"
+            var secondHeader = "\r\n--" + MultiPartEntityResponse.MultipartBoundary + "\r\n"
+                + MultiPartEntityResponse.HttpHeaderContentType + ": " + entityType + "\r\n"
+                + MultiPartEntityResponse.HttpHeaderContentRange + ": " + MultiPartEntityResponse.Bytes + " " + secondStartRange + "-" + secondEndRange + "/" + entityLength + "\r\n"
                 + "\r\n";
 
-            var footer = "\r\n--" + MultiPartEntityResponse.MULTIPART_BOUNDARY + "--\r\n";
+            var footer = "\r\n--" + MultiPartEntityResponse.MultipartBoundary + "--\r\n";
 
             var contentLength = firstHeader.Length + firstEndRange - firstStartRange + 1
                 + secondHeader.Length + secondEndRange - secondStartRange + 1
@@ -62,8 +62,8 @@ namespace Talifun.Web.Tests.Http
             entity.Stub(x => x.CompressionType).Return(entityCompressionType);
 
             httpResponseHeaderHelper.Expect(x => x.SetContentEncoding(httpResponse, responseCompressionType));
-            httpResponseHeaderHelper.Expect(x => x.AppendHeader(httpResponse, MultiPartEntityResponse.HTTP_HEADER_CONTENT_LENGTH, contentLength.ToString()));
-            httpResponse.Expect(x => x.ContentType = MultiPartEntityResponse.MULTIPART_CONTENTTYPE);
+            httpResponseHeaderHelper.Expect(x => x.AppendHeader(httpResponse, MultiPartEntityResponse.HttpHeaderContentLength, contentLength.ToString()));
+            httpResponse.Expect(x => x.ContentType = MultiPartEntityResponse.MultipartContenttype);
 
             //Act
             var multiPartEntityResponse = new MultiPartEntityResponse(httpResponseHeaderHelper, rangeItems);
@@ -108,7 +108,7 @@ namespace Talifun.Web.Tests.Http
             httpResponse.Filter = new MemoryStream();
 
             httpResponseHeaderHelper.Expect(x => x.SetContentEncoding(httpResponse, responseCompressionType));
-            httpResponse.Expect(x => x.ContentType = MultiPartEntityResponse.MULTIPART_CONTENTTYPE);
+            httpResponse.Expect(x => x.ContentType = MultiPartEntityResponse.MultipartContenttype);
 
             //Act
             var multiPartEntityResponse = new MultiPartEntityResponse(httpResponseHeaderHelper, rangeItems);
@@ -155,7 +155,7 @@ namespace Talifun.Web.Tests.Http
             httpResponse.Filter = new MemoryStream();
 
             httpResponseHeaderHelper.Expect(x => x.SetContentEncoding(httpResponse, responseCompressionType));
-            httpResponse.Expect(x => x.ContentType = MultiPartEntityResponse.MULTIPART_CONTENTTYPE);
+            httpResponse.Expect(x => x.ContentType = MultiPartEntityResponse.MultipartContenttype);
 
             //Act
             var multiPartEntityResponse = new MultiPartEntityResponse(httpResponseHeaderHelper, rangeItems);
@@ -446,17 +446,17 @@ namespace Talifun.Web.Tests.Http
 
             var rangeItems = new[] { firstRangeItem, secondRangeItem };
 
-            var firstHeader = "\r\n--" + MultiPartEntityResponse.MULTIPART_BOUNDARY + "\r\n"
-                + MultiPartEntityResponse.HTTP_HEADER_CONTENT_TYPE + ": " + contentType + "\r\n"
-                + MultiPartEntityResponse.HTTP_HEADER_CONTENT_RANGE + ": " + MultiPartEntityResponse.BYTES + " " + firstStartRange + "-" + firstEndRange + "/" + contentLength + "\r\n"
+            var firstHeader = "\r\n--" + MultiPartEntityResponse.MultipartBoundary + "\r\n"
+                + MultiPartEntityResponse.HttpHeaderContentType + ": " + contentType + "\r\n"
+                + MultiPartEntityResponse.HttpHeaderContentRange + ": " + MultiPartEntityResponse.Bytes + " " + firstStartRange + "-" + firstEndRange + "/" + contentLength + "\r\n"
                 + "\r\n";
 
-            var secondHeader = "\r\n--" + MultiPartEntityResponse.MULTIPART_BOUNDARY + "\r\n"
-                + MultiPartEntityResponse.HTTP_HEADER_CONTENT_TYPE + ": " + contentType + "\r\n"
-                + MultiPartEntityResponse.HTTP_HEADER_CONTENT_RANGE + ": " + MultiPartEntityResponse.BYTES + " " + secondStartRange + "-" + secondEndRange + "/" + contentLength + "\r\n"
+            var secondHeader = "\r\n--" + MultiPartEntityResponse.MultipartBoundary + "\r\n"
+                + MultiPartEntityResponse.HttpHeaderContentType + ": " + contentType + "\r\n"
+                + MultiPartEntityResponse.HttpHeaderContentRange + ": " + MultiPartEntityResponse.Bytes + " " + secondStartRange + "-" + secondEndRange + "/" + contentLength + "\r\n"
                 + "\r\n";
 
-            var footer = "\r\n--" + MultiPartEntityResponse.MULTIPART_BOUNDARY + "--\r\n";
+            var footer = "\r\n--" + MultiPartEntityResponse.MultipartBoundary + "--\r\n";
 
             transmitEntityStrategy.Stub(x => x.Entity).Return(entity);
             entity.Stub(x => x.ContentType).Return(contentType);
@@ -511,17 +511,17 @@ namespace Talifun.Web.Tests.Http
 
             var rangeItems = new[] { firstRangeItem, secondRangeItem };
 
-            var firstHeader = "\r\n--" + MultiPartEntityResponse.MULTIPART_BOUNDARY + "\r\n"
-                + MultiPartEntityResponse.HTTP_HEADER_CONTENT_TYPE + ": " + contentType + "\r\n"
-                + MultiPartEntityResponse.HTTP_HEADER_CONTENT_RANGE + ": " + MultiPartEntityResponse.BYTES + " " + firstStartRange + "-" + firstEndRange + "/" + contentLength + "\r\n"
+            var firstHeader = "\r\n--" + MultiPartEntityResponse.MultipartBoundary + "\r\n"
+                + MultiPartEntityResponse.HttpHeaderContentType + ": " + contentType + "\r\n"
+                + MultiPartEntityResponse.HttpHeaderContentRange + ": " + MultiPartEntityResponse.Bytes + " " + firstStartRange + "-" + firstEndRange + "/" + contentLength + "\r\n"
                 + "\r\n";
 
-            var secondHeader = "\r\n--" + MultiPartEntityResponse.MULTIPART_BOUNDARY + "\r\n"
-                + MultiPartEntityResponse.HTTP_HEADER_CONTENT_TYPE + ": " + contentType + "\r\n"
-                + MultiPartEntityResponse.HTTP_HEADER_CONTENT_RANGE + ": " + MultiPartEntityResponse.BYTES + " " + secondStartRange + "-" + secondEndRange + "/" + contentLength + "\r\n"
+            var secondHeader = "\r\n--" + MultiPartEntityResponse.MultipartBoundary + "\r\n"
+                + MultiPartEntityResponse.HttpHeaderContentType + ": " + contentType + "\r\n"
+                + MultiPartEntityResponse.HttpHeaderContentRange + ": " + MultiPartEntityResponse.Bytes + " " + secondStartRange + "-" + secondEndRange + "/" + contentLength + "\r\n"
                 + "\r\n";
 
-            var footer = "\r\n--" + MultiPartEntityResponse.MULTIPART_BOUNDARY + "--\r\n";
+            var footer = "\r\n--" + MultiPartEntityResponse.MultipartBoundary + "--\r\n";
 
             transmitEntityStrategy.Stub(x => x.Entity).Return(entity);
             entity.Stub(x => x.ContentType).Return(contentType);

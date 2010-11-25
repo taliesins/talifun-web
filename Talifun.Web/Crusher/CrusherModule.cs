@@ -10,7 +10,7 @@ namespace Talifun.Web.Crusher
         /// <summary>
         /// We want to initialize the crusher manager.
         /// </summary>
-        private static CrusherManager crusherManager = CrusherManager.Instance;
+        protected static readonly CrusherManager CrusherManager = CrusherManager.Instance;
 
         /// <summary>
         /// Determines whether the module will be registered for discovery

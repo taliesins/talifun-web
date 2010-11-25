@@ -7,7 +7,7 @@ namespace Talifun.Web.IpAddressAuthentication.Config
     /// </summary>
     public static class CurrentIpAddressAuthenticationConfiguration
     {
-        private static IpAddressAuthenticationSection current;
+        private static IpAddressAuthenticationSection _current;
         /// <summary>
         /// Gets the static instance of <see cref="IpAddressAuthenticationSection" /> representing the current application configuration.
         /// </summary>
@@ -15,11 +15,11 @@ namespace Talifun.Web.IpAddressAuthentication.Config
         {
             get
             {
-                if (current == null)
+                if (_current == null)
                 {
-                    current = CurrentConfigurationManager.GetSection<IpAddressAuthenticationSection>();
+                    _current = CurrentConfigurationManager.GetSection<IpAddressAuthenticationSection>();
                 }
-                return current;
+                return _current;
             }
         }
     }

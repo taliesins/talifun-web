@@ -13,7 +13,7 @@ namespace Talifun.Web.Compress
         public const string DEFLATE = "deflate";
         public const string InternetExplorer = "IE";
 
-        private static readonly StringDictionary compressibleTypes = new StringDictionary
+        private static readonly StringDictionary CompressibleTypes = new StringDictionary
                                                                          {
                                                                              {"text/css", null},
                                                                              {"application/x-javascript", null},
@@ -132,7 +132,7 @@ namespace Talifun.Web.Compress
         /// <returns></returns>
         public static bool IsContentTypeCompressible(string contentType)
         {
-            return compressibleTypes.ContainsKey(contentType);
+            return CompressibleTypes.ContainsKey(contentType);
         }
     }
 }

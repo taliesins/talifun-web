@@ -11,7 +11,7 @@ namespace Talifun.Web.Configuration
     /// </summary>
     public class CurrentConfigurationManager
     {
-        private static volatile System.Configuration.Configuration config = null;
+        protected static volatile System.Configuration.Configuration Config = null;
         /// <summary>
         /// Finds the first configuration section matching any of the supplied <paramref name="sectionNames"/>,
         /// attempt to cast it to the generic type parameter <typeparamref name="T"/> and return the result
@@ -64,21 +64,21 @@ namespace Talifun.Web.Configuration
         private static System.Configuration.Configuration GetCurrentConfiguration()
         {
             // First - if we've previously cached the current configuration, return it
-            if (config != null) return (config);
+            if (Config != null) return (Config);
 
             // Next - if we're running in a web context, cache & return the current web configuration
             if (HttpContext.Current != null)
             {
-                string rootPath = HttpContext.Current.Request.ApplicationPath;
-                string currentPath = VirtualPathUtility.GetDirectory(HttpContext.Current.Request.AppRelativeCurrentExecutionFilePath);
+                var rootPath = HttpContext.Current.Request.ApplicationPath;
+                var currentPath = VirtualPathUtility.GetDirectory(HttpContext.Current.Request.AppRelativeCurrentExecutionFilePath);
 
                 while (currentPath.Length >= rootPath.Length)
                 {
-                    config = WebConfigurationManager.OpenWebConfiguration(currentPath);
+                    Config = WebConfigurationManager.OpenWebConfiguration(currentPath);
 
-                    if (config.HasFile)
+                    if (Config.HasFile)
                     {
-                        return (config);
+                        return (Config);
                     }
                     else
                     {
@@ -86,8 +86,8 @@ namespace Talifun.Web.Configuration
                     }
                 }
 
-                config = WebConfigurationManager.OpenWebConfiguration("~");
-                return (config);
+                Config = WebConfigurationManager.OpenWebConfiguration("~");
+                return (Config);
             }
 
             var configFileName = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
@@ -96,14 +96,14 @@ namespace Talifun.Web.Configuration
             // check for design mode
             if (configFileName.ToLower(CultureInfo.InvariantCulture).Contains("devenv.exe"))
             {
-                config = GetDesignTimeConfiguration();
+                Config = GetDesignTimeConfiguration();
             }
             else
             {
-                config = GetRuntimeTimeConfiguration();
+                Config = GetRuntimeTimeConfiguration();
             }
 
-            return config;
+            return Config;
         }
 
         /// <summary>

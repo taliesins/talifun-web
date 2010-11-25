@@ -15,7 +15,7 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpResponse = MockRepository.GenerateMock<HttpResponseBase>();
-            var httpStatus = HttpStatus.OK;
+            var httpStatus = HttpStatus.Ok;
             var statusCode = (int)StringifyHttpHeaders.HttpStatusCodeFromHttpStatus(httpStatus);
             var statusDescription = StringifyHttpHeaders.StringFromHttpStatus(httpStatus);
             var webServerType = WebServerType.Unknown;
@@ -194,7 +194,7 @@ namespace Talifun.Web.Tests.Http
             var httpResponse = MockRepository.GenerateMock<HttpResponseBase>();
 
             var headerName = StringifyHttpHeaders.StringFromResponseHeader(HttpResponseHeader.AcceptRanges);
-            var headerValue = HttpResponseHeaderHelper.HTTP_HEADER_ACCEPT_RANGES_BYTES;
+            var headerValue = HttpResponseHeaderHelper.HttpHeaderAcceptRangesBytes;
             var webServerType = WebServerType.Unknown;
 
             httpResponse.Expect(x => x.AddHeader(headerName, headerValue));

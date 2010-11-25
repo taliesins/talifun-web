@@ -109,8 +109,10 @@ namespace Talifun.Web.Tests.Http
             var transmitEntityStrategyForByteArray = new TransmitEntityStrategyForFile(retryableFileOpener, entity, fileInfo, bufferSize);
             transmitEntityStrategyForByteArray.Transmit(httpResponse, offset, length);
 
+            var outputByteArray = outputStream.ToArray();
+
             //Assert
-            Assert.AreEqual(outputStream.ToArray(), expectedByteArray);
+            Assert.AreEqual(outputByteArray, expectedByteArray);
         }
 
         [Test]

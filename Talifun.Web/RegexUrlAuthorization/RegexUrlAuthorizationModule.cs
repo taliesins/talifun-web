@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using System.Web;
 using Talifun.Web.Module;
-using Talifun.Web.RegexUrlAuthorization.Config;
 
 namespace Talifun.Web.RegexUrlAuthorization
 {
@@ -15,47 +13,46 @@ namespace Talifun.Web.RegexUrlAuthorization
     /// </remarks>
     public class RegexUrlAuthorizationModule : HttpModuleBase
     {
-        private UrlMatchElementCollection urlMatches = CurrentRegexUrlAuthorizationConfiguration.Current.UrlMatches;
-        private const RegexOptions regxOptions = RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Singleline;
+        /// <summary>
+        /// We want to initialize the ip address authentication manager.
+        /// </summary>
+        private static readonly RegexUrlAuthorizationManager RegexUrlAuthorizationManager = RegexUrlAuthorizationManager.Instance;
 
+        private static readonly MethodInfo GetErrorTextMethod = typeof(System.Web.Configuration.UrlMapping).Assembly.GetType("System.Web.Configuration.UrlAuthFailedErrorFormatter").GetMethod("GetErrorText", BindingFlags.Static | BindingFlags.NonPublic, null, new Type[] { }, null);
+        private static readonly MethodInfo GenerateResponseHeadersForHandlerMethod = typeof(HttpResponse).GetMethod("GenerateResponseHeadersForHandler", BindingFlags.Instance | BindingFlags.NonPublic);
+        
         protected override void OnInit(HttpApplication httpApplication)
         {
-            httpApplication.AuthorizeRequest += new EventHandler(this.OnEnter);
+            httpApplication.AuthorizeRequest += new EventHandler(OnEnter);
         }
 
-        private void OnEnter(object source, EventArgs eventArgs)
+        private static void OnEnter(object source, EventArgs eventArgs)
         {
             var application = (HttpApplication)source;
             var context = application.Context;
             if (context.SkipAuthorization) return;
 
-            var rawUrl = application.Request.RawUrl;
-            UrlMatchElement urlMatched = null;
-            foreach (UrlMatchElement urlMatch in urlMatches)
+            var rawUrl = context.Request.RawUrl;
+            var user = context.User;
+            var requestType = context.Request.RequestType;
+
+            if (RegexUrlAuthorizationManager.IsAuthorized(rawUrl, user, requestType))
             {
-                if (!Regex.IsMatch(rawUrl, urlMatch.Expression, regxOptions)) continue;
-                urlMatched = urlMatch;
-                break;
+                return;
             }
 
-            if (urlMatched == null) return;
-
-            if (urlMatched.EveryoneAllowed || urlMatched.IsUserAllowed(context.User, context.Request.RequestType)) return;
-
             context.Response.StatusCode = 401;
-            this.WriteErrorMessage(context);
+            WriteErrorMessage(context);
             application.CompleteRequest();
         }
 
-        private static MethodInfo getErrorTextMethod = typeof(System.Web.Configuration.UrlMapping).Assembly.GetType("System.Web.Configuration.UrlAuthFailedErrorFormatter").GetMethod("GetErrorText", BindingFlags.Static | BindingFlags.NonPublic, null, new Type[] { }, null);
-        private static MethodInfo generateResponseHeadersForHandlerMethod = typeof(HttpResponse).GetMethod("GenerateResponseHeadersForHandler", BindingFlags.Instance | BindingFlags.NonPublic);
-        private void WriteErrorMessage(HttpContext context)
+        private static void WriteErrorMessage(HttpContext context)
         {
             //context.Response.Write(UrlAuthFailedErrorFormatter.GetErrorText());
             //context.Response.GenerateResponseHeadersForHandler();
 
-            context.Response.Write(getErrorTextMethod.Invoke(null, null));
-            generateResponseHeadersForHandlerMethod.Invoke(context.Response, null);
+            context.Response.Write(GetErrorTextMethod.Invoke(null, null));
+            GenerateResponseHeadersForHandlerMethod.Invoke(context.Response, null);
         }
 
         /// <summary>

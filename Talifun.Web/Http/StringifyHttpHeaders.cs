@@ -146,7 +146,7 @@ namespace Talifun.Web
                         new object[] { HttpStatus.NotFound, HttpStatusCode.NotFound, "Not Found" },
                         new object[] { HttpStatus.NotImplemented, HttpStatusCode.NotImplemented, "Not Implemented" },
                         new object[] { HttpStatus.NotModified, HttpStatusCode.NotModified, "Not Modified" },
-                        new object[] { HttpStatus.OK, HttpStatusCode.OK, "OK" },
+                        new object[] { HttpStatus.Ok, HttpStatusCode.OK, "OK" },
                         new object[] { HttpStatus.PartialContent, HttpStatusCode.PartialContent, "Partial content" },
                         new object[] { HttpStatus.PaymentRequired, HttpStatusCode.PaymentRequired, "Payment Required" },
                         new object[] { HttpStatus.PreconditionFailed, HttpStatusCode.PreconditionFailed, "Precondition Failed" },

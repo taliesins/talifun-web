@@ -20,7 +20,7 @@ namespace Talifun.Web.Compress
     public class WebResourceCompressionModule : HttpModuleBase
     {
         private static readonly TimeSpan Expires = new TimeSpan(7,0,0,0);
-        private static readonly IDictionary webResourceCache = Hashtable.Synchronized(new Hashtable());
+        private static readonly IDictionary WebResourceCache = Hashtable.Synchronized(new Hashtable());
 
         protected override void OnInit(HttpApplication httpApplication)
         {
@@ -50,14 +50,14 @@ namespace Talifun.Web.Compress
                 // Load the assembly
                 var assembly = GetAssembly(urlInfo.First, urlInfo.Second);
 
-                if (assembly == null) ThrowHttpException(404, SR.WebResourceCompressionModule_AssemblyNotFound, urlInfo.Forth);
+                if (assembly == null) ThrowHttpException(404, SR.WebResourceCompressionModuleAssemblyNotFound, urlInfo.Forth);
 
                 //var lastModified = File.GetLastWriteTimeUtc(assembly.Location);
 
                 // Get the resource info from assembly.
                 var resourceInfo = GetResourceInfo(assembly, urlInfo.Third);
 
-                if (!resourceInfo.First) ThrowHttpException(404, SR.WebResourceCompressionModule_AssemblyNotFound, urlInfo.Forth);
+                if (!resourceInfo.First) ThrowHttpException(404, SR.WebResourceCompressionModuleAssemblyNotFound, urlInfo.Forth);
 
                 // If the WebResource needs to perform substitution (WebResource inside WebResource), we leave it to the original AssemblyResourceLoader handler ;-)
                 if (resourceInfo.Second) return;
@@ -158,7 +158,7 @@ namespace Talifun.Web.Compress
             // Create a unique cache key
             var cacheKey = CombineHashCodes(assembly.GetHashCode(), resourceName.GetHashCode());
 
-            var resourceInfo = webResourceCache[cacheKey] as Quadruplet<bool, bool, string, bool>;
+            var resourceInfo = WebResourceCache[cacheKey] as Quadruplet<bool, bool, string, bool>;
 
             // Assembly info was not in the cache
             if (resourceInfo == null)
@@ -181,7 +181,7 @@ namespace Talifun.Web.Compress
                     break;
                 }
                 resourceInfo = new Quadruplet<bool, bool, string, bool>(first, second, third, forth);
-                webResourceCache[cacheKey] = resourceInfo;
+                WebResourceCache[cacheKey] = resourceInfo;
             }
             return resourceInfo;
         }
@@ -210,7 +210,7 @@ namespace Talifun.Web.Compress
                         var strArray = assemblyName.Split(new char[] { ',' });
                         if (strArray.Length != 4)
                         {
-                            ThrowHttpException(400, SR.WebResourceCompressionModule_InvalidRequest);
+                            ThrowHttpException(400, SR.WebResourceCompressionModuleInvalidRequest);
                         }
                         var assemblyRef = new AssemblyName
                                               {
@@ -230,7 +230,7 @@ namespace Talifun.Web.Compress
                         break;
                     }
                 default:
-                    ThrowHttpException(400, SR.WebResourceCompressionModule_InvalidRequest);
+                    ThrowHttpException(400, SR.WebResourceCompressionModuleInvalidRequest);
                     break;
             }
             return assembly;
@@ -246,7 +246,7 @@ namespace Talifun.Web.Compress
             var queryParam = queryString["d"];
             if (string.IsNullOrEmpty(queryParam))
             {
-                ThrowHttpException(400, SR.WebResourceCompressionModule_InvalidRequest);
+                ThrowHttpException(400, SR.WebResourceCompressionModuleInvalidRequest);
             }
             var decryptedParam = string.Empty; ;
             try
@@ -255,22 +255,22 @@ namespace Talifun.Web.Compress
             }
             catch (MethodAccessException mae)
             {
-                ThrowHttpException(403, SR.WebResourceCompressionModule_ReflectionNotAllowd, mae);
+                ThrowHttpException(403, SR.WebResourceCompressionModuleReflectionNotAllowd, mae);
             }
             catch (Exception ex)
             {
-                ThrowHttpException(400, SR.WebResourceCompressionModule_InvalidRequest, ex);
+                ThrowHttpException(400, SR.WebResourceCompressionModuleInvalidRequest, ex);
             }
 
             var pipeIndex = decryptedParam.IndexOf('|');
 
             if (pipeIndex < 1 || pipeIndex > (decryptedParam.Length - 2))
             {
-                ThrowHttpException(404, SR.WebResourceCompressionModule_AssemblyNotFound, decryptedParam);
+                ThrowHttpException(404, SR.WebResourceCompressionModuleAssemblyNotFound, decryptedParam);
             }
             if (pipeIndex > (decryptedParam.Length - 2))
             {
-                ThrowHttpException(404, SR.WebResourceCompressionModule_ResourceNotFound, decryptedParam);
+                ThrowHttpException(404, SR.WebResourceCompressionModuleResourceNotFound, decryptedParam);
             }
             var assemblyName = decryptedParam.Substring(1, pipeIndex - 1);
             var resourceName = decryptedParam.Substring(pipeIndex + 1);

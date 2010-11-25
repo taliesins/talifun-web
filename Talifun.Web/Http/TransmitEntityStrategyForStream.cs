@@ -58,23 +58,22 @@ namespace Talifun.Web
         /// <param name="response">The <see cref="HttpResponse" /> of the current HTTP request.</param>
         /// <param name="stream">A <see cref="FileInfo" /> we are going to transmit to the browser.</param>
         /// <param name="bufferSize">The buffer size to use when transmitting file to browser.</param>
-        /// <param name="startRange">Start range</param>
-        /// <param name="endRange">End range</param>
-        public virtual void TransmitFile(HttpResponseBase response, Stream stream, long bufferSize, long startRange, long endRange)
+        /// <param name="offset">Start range</param>
+        /// <param name="length">End range</param>
+        public virtual void TransmitFile(HttpResponseBase response, Stream stream, long bufferSize, long offset, long length)
         {
-            stream.Seek(startRange, SeekOrigin.Begin);
+            stream.Seek(offset, SeekOrigin.Begin);
 
-            var bytesToRead = endRange - startRange + 1;
             var buffer = new byte[bufferSize];
-            while (bytesToRead > 0)
+            while (length > 0)
             {
-                var lengthOfReadChunk = stream.Read(buffer, 0, (int)Math.Min(bufferSize, bytesToRead));
+                var lengthOfReadChunk = stream.Read(buffer, 0, (int)Math.Min(bufferSize, length));
 
                 // Write the data to the current output stream.
                 response.OutputStream.Write(buffer, 0, lengthOfReadChunk);
 
                 // Reduce BytesToRead
-                bytesToRead -= lengthOfReadChunk;
+                length -= lengthOfReadChunk;
             }
         }
         #endregion

@@ -19,10 +19,10 @@ namespace Talifun.Web.Compress
             return string.Format(CultureInfo.InvariantCulture, strString, param1, param2);
         }
 
-        internal const string WebResourceCompressionModule_InvalidRequest = "This is an invalid webresource request.";
-        internal const string WebResourceCompressionModule_AssemblyNotFound = "Assembly {0} not found.";
-        internal const string WebResourceCompressionModule_ResourceNotFound = "Resource {0} not found in assembly.";
-        internal const string WebResourceCompressionModule_ReflectionNotAllowd = "Your server does not allow using reflection from your code. (Method: System.Reflection.MethodBase.Invoke(Object obj, Object[] parameters not allowed) Add the attribute 'reflectionAlloweded=\"false\"' to your web.config in the CompressorSettings section.";
-        internal const string File_FileNotFound = "/* The requested file: '{0}' (phisical path: {1}) was not found */";
+        internal const string WebResourceCompressionModuleInvalidRequest = "This is an invalid webresource request.";
+        internal const string WebResourceCompressionModuleAssemblyNotFound = "Assembly {0} not found.";
+        internal const string WebResourceCompressionModuleResourceNotFound = "Resource {0} not found in assembly.";
+        internal const string WebResourceCompressionModuleReflectionNotAllowd = "Your server does not allow using reflection from your code. (Method: System.Reflection.MethodBase.Invoke(Object obj, Object[] parameters not allowed) Add the attribute 'reflectionAlloweded=\"false\"' to your web.config in the CompressorSettings section.";
+        internal const string FileFileNotFound = "/* The requested file: '{0}' (phisical path: {1}) was not found */";
     }
 }

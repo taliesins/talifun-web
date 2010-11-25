@@ -7,7 +7,7 @@ namespace Talifun.Web.CssSprite.Config
     /// </summary>
     public static class CurrentCssSpriteConfiguration
     {
-        private static CssSpriteSection current;
+        private static CssSpriteSection _current;
         /// <summary>
         /// Gets the static instance of <see cref="CssSpriteSection" /> representing the current application configuration.
         /// </summary>
@@ -15,11 +15,11 @@ namespace Talifun.Web.CssSprite.Config
         {
             get
             {
-                if (current == null)
+                if (_current == null)
                 {
-                    current = CurrentConfigurationManager.GetSection<CssSpriteSection>();
+                    _current = CurrentConfigurationManager.GetSection<CssSpriteSection>();
                 }
-                return current;
+                return _current;
             }
         }
     }

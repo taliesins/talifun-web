@@ -6,7 +6,7 @@ namespace Talifun.Web
 {
     public class FullEntityResponse : IEntityResponse
     {
-        public const string HTTP_HEADER_CONTENT_LENGTH = "Content-Length";
+        public const string HttpHeaderContentLength = "Content-Length";
 
         protected readonly IHttpResponseHeaderHelper HttpResponseHeaderHelper;
 
@@ -34,7 +34,7 @@ namespace Talifun.Web
             if (entity.CompressionType == compressionType)
             {
                 //We have the entity stored in the correct compression format so just stream it    
-                HttpResponseHeaderHelper.AppendHeader(response, HTTP_HEADER_CONTENT_LENGTH, entity.ContentLength.ToString());
+                HttpResponseHeaderHelper.AppendHeader(response, HttpHeaderContentLength, entity.ContentLength.ToString());
             }
             else if (entity.CompressionType == ResponseCompressionType.None)
             {

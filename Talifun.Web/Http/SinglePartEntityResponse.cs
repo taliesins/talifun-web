@@ -6,9 +6,9 @@ namespace Talifun.Web
 {
     public class SinglePartEntityResponse : IEntityResponse
     {
-        public const string HTTP_HEADER_CONTENT_LENGTH = "Content-Length";
-        public const string HTTP_HEADER_CONTENT_RANGE = "Content-Range";
-        public const string BYTES = "bytes";
+        public const string HttpHeaderContentLength = "Content-Length";
+        public const string HttpHeaderContentRange = "Content-Range";
+        public const string Bytes = "bytes";
 
         protected readonly RangeItem Range;
         protected readonly IHttpResponseHeaderHelper HttpResponseHeaderHelper;
@@ -34,7 +34,7 @@ namespace Talifun.Web
             {
                 case ResponseCompressionType.None:
                     var contentLength = Range.EndRange - Range.StartRange + 1;
-                    HttpResponseHeaderHelper.AppendHeader(response, HTTP_HEADER_CONTENT_LENGTH, contentLength.ToString());
+                    HttpResponseHeaderHelper.AppendHeader(response, HttpHeaderContentLength, contentLength.ToString());
                     break;
                 case ResponseCompressionType.GZip:
                     response.Filter = new GZipStream(response.Filter, CompressionMode.Compress);
@@ -47,7 +47,7 @@ namespace Talifun.Web
             }
 
             response.ContentType = entity.ContentType;
-            HttpResponseHeaderHelper.AppendHeader(response, HTTP_HEADER_CONTENT_RANGE, BYTES + " " + Range.StartRange + "-" + Range.EndRange + "/" + entity.ContentLength);
+            HttpResponseHeaderHelper.AppendHeader(response, HttpHeaderContentRange, Bytes + " " + Range.StartRange + "-" + Range.EndRange + "/" + entity.ContentLength);
         }
 
         public void SendBody(HttpMethod requestHttpMethod, HttpResponseBase response, ITransmitEntityStrategy transmitEntity)

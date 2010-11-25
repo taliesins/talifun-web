@@ -13,21 +13,21 @@ namespace Talifun.Web.Crusher
     public sealed class CrusherManager : IDisposable
     {
         private const int BufferSize = 32768;
-        private string HashQueryStringKeyName = CurrentCrusherConfiguration.Current.QuerystringKeyName;
-        private CssGroupElementCollection cssGroups = CurrentCrusherConfiguration.Current.CssGroups;
-        private JsGroupElementCollection jsGroups = CurrentCrusherConfiguration.Current.JsGroups;
-        private ICssCrusher cssCrusher;
-        private IJsCrusher jsCrusher;
+        private readonly string _hashQueryStringKeyName = CurrentCrusherConfiguration.Current.QuerystringKeyName;
+        private readonly CssGroupElementCollection _cssGroups = CurrentCrusherConfiguration.Current.CssGroups;
+        private readonly JsGroupElementCollection _jsGroups = CurrentCrusherConfiguration.Current.JsGroups;
+        private readonly ICssCrusher _cssCrusher;
+        private readonly IJsCrusher _jsCrusher;
 
         private CrusherManager()
         {
             var retryableFileOpener = new RetryableFileOpener();
             var hasher = new Hasher(retryableFileOpener);
             var retryableFileWriter = new RetryableFileWriter(BufferSize, retryableFileOpener, hasher); 
-            var cssAssetsFileHasher = new CssAssetsFileHasher(HashQueryStringKeyName, hasher);
+            var cssAssetsFileHasher = new CssAssetsFileHasher(_hashQueryStringKeyName, hasher);
             var cssPathRewriter = new CssPathRewriter(cssAssetsFileHasher);
-            cssCrusher = new CssCrusher(retryableFileOpener, retryableFileWriter, cssPathRewriter);
-            jsCrusher = new JsCrusher(retryableFileOpener, retryableFileWriter);
+            _cssCrusher = new CssCrusher(retryableFileOpener, retryableFileWriter, cssPathRewriter);
+            _jsCrusher = new JsCrusher(retryableFileOpener, retryableFileWriter);
             InitManager();
         }
 
@@ -74,7 +74,7 @@ namespace Talifun.Web.Crusher
         {
             AppDomain.CurrentDomain.DomainUnload += OnDomainUnload;
 
-            foreach (CssGroupElement group in cssGroups)
+            foreach (CssGroupElement group in _cssGroups)
             {
                 var files = new List<CssFile>();
                 var outputPath = group.OutputFilePath;
@@ -89,10 +89,10 @@ namespace Talifun.Web.Crusher
                     files.Add(file);
                 } 
 
-                cssCrusher.AddFiles(outputPath, files);
+                _cssCrusher.AddFiles(outputPath, files);
             }
 
-            foreach (JsGroupElement group in jsGroups)
+            foreach (JsGroupElement group in _jsGroups)
             {
                 var files = new List<JsFile>();
                 var outputPath = group.OutputFilePath;
@@ -107,20 +107,20 @@ namespace Talifun.Web.Crusher
                     files.Add(file);
                 }
 
-                jsCrusher.AddFiles(outputPath, files);
+                _jsCrusher.AddFiles(outputPath, files);
             }
         }
 
         private void DisposeManager()
         {
-            foreach (CssGroupElement group in cssGroups)
+            foreach (CssGroupElement group in _cssGroups)
             {
-                cssCrusher.RemoveFiles(group.OutputFilePath);
+                _cssCrusher.RemoveFiles(group.OutputFilePath);
             }
 
-            foreach (JsGroupElement group in jsGroups)
+            foreach (JsGroupElement group in _jsGroups)
             {
-                jsCrusher.RemoveFiles(group.OutputFilePath);
+                _jsCrusher.RemoveFiles(group.OutputFilePath);
             }
 
             if (AppDomain.CurrentDomain != null)

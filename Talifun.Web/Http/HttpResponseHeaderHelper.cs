@@ -6,7 +6,7 @@ namespace Talifun.Web
 {
     public class HttpResponseHeaderHelper : IHttpResponseHeaderHelper
     {
-        public const string HTTP_HEADER_ACCEPT_RANGES_BYTES = "bytes";
+        public const string HttpHeaderAcceptRangesBytes = "bytes";
         protected WebServerType WebServerType { get; private set; }
 
         public HttpResponseHeaderHelper(WebServerType webServerType)
@@ -82,7 +82,7 @@ namespace Talifun.Web
         public void SetResponseResumable(HttpResponseBase response)
         {
             // Tell the client software that we accept Range request
-            AppendHeader(response, HttpResponseHeader.AcceptRanges, HTTP_HEADER_ACCEPT_RANGES_BYTES);
+            AppendHeader(response, HttpResponseHeader.AcceptRanges, HttpHeaderAcceptRangesBytes);
         }
 
         /// <summary>

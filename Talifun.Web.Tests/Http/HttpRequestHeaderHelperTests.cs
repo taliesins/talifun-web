@@ -981,7 +981,7 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
             var headerValue = string.Empty;
-            var headerName = HttpRequestHeaderHelper.HTTP_HEADER_UNLESS_MODIFIED_SINCE;
+            var headerName = HttpRequestHeaderHelper.HttpHeaderUnlessModifiedSince;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -1001,7 +1001,7 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
             var headerValue = lastModified.AddSeconds(1).ToString("r");
-            var headerName = HttpRequestHeaderHelper.HTTP_HEADER_UNLESS_MODIFIED_SINCE;
+            var headerName = HttpRequestHeaderHelper.HttpHeaderUnlessModifiedSince;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
             
@@ -1022,7 +1022,7 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
             var headerValue = lastModified.AddSeconds(-1).ToString("r");
-            var headerName = HttpRequestHeaderHelper.HTTP_HEADER_UNLESS_MODIFIED_SINCE;
+            var headerName = HttpRequestHeaderHelper.HttpHeaderUnlessModifiedSince;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -1043,7 +1043,7 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
             var headerValue = "Invalid";
-            var headerName = HttpRequestHeaderHelper.HTTP_HEADER_UNLESS_MODIFIED_SINCE;
+            var headerName = HttpRequestHeaderHelper.HttpHeaderUnlessModifiedSince;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 

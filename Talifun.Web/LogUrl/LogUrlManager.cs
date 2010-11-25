@@ -1,14 +1,18 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Web;
+using Talifun.Web.LogUrl.Config;
 
 namespace Talifun.Web.LogUrl
 {
     public sealed class LogUrlManager : IDisposable
     {
-        private readonly TimeSpan lockTimeout = TimeSpan.FromSeconds(10);
-        private readonly AsyncOperation asyncOperation = AsyncOperationManager.CreateOperation(null);
+        private readonly TimeSpan _lockTimeout = TimeSpan.FromSeconds(10);
+        private readonly AsyncOperation _asyncOperation = AsyncOperationManager.CreateOperation(null);
+        private readonly UrlMatchElementCollection _urlMatches = CurrentLogUrlConfiguration.Current.UrlMatches;
+        private const RegexOptions RegxOptions = RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Singleline;
 
         private LogUrlManager()
         {
@@ -93,7 +97,7 @@ namespace Talifun.Web.LogUrl
         {
             add
             {
-                if (!Monitor.TryEnter(logUrlEventLock, lockTimeout))
+                if (!Monitor.TryEnter(logUrlEventLock, _lockTimeout))
                 {
                     throw new ApplicationException("Timeout waiting for lock - LogUrlEvent.add");
                 }
@@ -108,7 +112,7 @@ namespace Talifun.Web.LogUrl
             }
             remove
             {
-                if (!Monitor.TryEnter(logUrlEventLock, lockTimeout))
+                if (!Monitor.TryEnter(logUrlEventLock, _lockTimeout))
                 {
                     throw new ApplicationException("Timeout waiting for lock - LogUrlEvent.remove");
                 }
@@ -127,7 +131,7 @@ namespace Talifun.Web.LogUrl
         {
             add
             {
-                if (!Monitor.TryEnter(beforeLogUrlEventLock, lockTimeout))
+                if (!Monitor.TryEnter(beforeLogUrlEventLock, _lockTimeout))
                 {
                     throw new ApplicationException("Timeout waiting for lock - BeforeLogUrlEvent.add");
                 }
@@ -142,7 +146,7 @@ namespace Talifun.Web.LogUrl
             }
             remove
             {
-                if (!Monitor.TryEnter(beforeLogUrlEventLock, lockTimeout))
+                if (!Monitor.TryEnter(beforeLogUrlEventLock, _lockTimeout))
                 {
                     throw new ApplicationException("Timeout waiting for lock - BeforeLogUrlEvent.remove");
                 }
@@ -161,7 +165,7 @@ namespace Talifun.Web.LogUrl
         {
             add
             {
-                if (!Monitor.TryEnter(afterLogUrlEventLock, lockTimeout))
+                if (!Monitor.TryEnter(afterLogUrlEventLock, _lockTimeout))
                 {
                     throw new ApplicationException("Timeout waiting for lock - AfterLogUrlEvent.add");
                 }
@@ -177,7 +181,7 @@ namespace Talifun.Web.LogUrl
             remove
             {
 
-                if (!Monitor.TryEnter(afterLogUrlEventLock, lockTimeout))
+                if (!Monitor.TryEnter(afterLogUrlEventLock, _lockTimeout))
                 {
                     throw new ApplicationException("Timeout waiting for lock - AfterLogUrlEvent.remove");
                 }
@@ -223,7 +227,7 @@ namespace Talifun.Web.LogUrl
         /// <param name="args">The state to be passed to the event.</param>
         private void RaiseCrossThreadOnLogUrlEvent(LogUrlEventArgs args)
         {
-            asyncOperation.SynchronizationContext.Send(new SendOrPostCallback(AsynchronousOnLogUrlEventRaised), args);
+            _asyncOperation.SynchronizationContext.Send(new SendOrPostCallback(AsynchronousOnLogUrlEventRaised), args);
         }
 
         /// <summary>
@@ -234,7 +238,7 @@ namespace Talifun.Web.LogUrl
         /// <param name="args">The state to be passed to the event.</param>
         private void RaiseAsynchronousOnLogUrlEvent(LogUrlEventArgs args)
         {
-            asyncOperation.Post(new SendOrPostCallback(AsynchronousOnLogUrlEventRaised), args);
+            _asyncOperation.Post(new SendOrPostCallback(AsynchronousOnLogUrlEventRaised), args);
         }
 
         /// <summary>
@@ -250,7 +254,7 @@ namespace Talifun.Web.LogUrl
 
             LogUrlEventHandler eventHandler;
 
-            if (!Monitor.TryEnter(logUrlEventLock, lockTimeout))
+            if (!Monitor.TryEnter(logUrlEventLock, _lockTimeout))
             {
                 throw new ApplicationException("Timeout waiting for lock - RaiseOnLogUrlEvent");
             }
@@ -284,7 +288,7 @@ namespace Talifun.Web.LogUrl
         /// <param name="args">The state to be passed to the event.</param>
         private void RaiseCrossThreadOnBeforeLogUrlEvent(BeforeLogUrlEventArgs args)
         {
-            asyncOperation.SynchronizationContext.Send(new SendOrPostCallback(AsynchronousOnBeforeLogUrlEventRaised), args);
+            _asyncOperation.SynchronizationContext.Send(new SendOrPostCallback(AsynchronousOnBeforeLogUrlEventRaised), args);
         }
 
         /*
@@ -314,7 +318,7 @@ namespace Talifun.Web.LogUrl
 
             BeforeLogUrlEventHandler eventHandler;
 
-            if (!Monitor.TryEnter(beforeLogUrlEventLock, lockTimeout))
+            if (!Monitor.TryEnter(beforeLogUrlEventLock, _lockTimeout))
             {
                 throw new ApplicationException("Timeout waiting for lock - RaiseOnBeforeLogUrlEvent");
             }
@@ -348,7 +352,7 @@ namespace Talifun.Web.LogUrl
         /// <param name="args">The state to be passed to the event.</param>
         private void RaiseCrossThreadOnAfterLogUrlEvent(AfterLogUrlEventArgs args)
         {
-            asyncOperation.SynchronizationContext.Send(new SendOrPostCallback(AsynchronousOnAfterLogUrlEventRaised), args);
+            _asyncOperation.SynchronizationContext.Send(new SendOrPostCallback(AsynchronousOnAfterLogUrlEventRaised), args);
         }
 
         /// <summary>
@@ -359,7 +363,7 @@ namespace Talifun.Web.LogUrl
         /// <param name="args">The state to be passed to the event.</param>
         private void RaiseAsynchronousOnAfterLogUrlEvent(AfterLogUrlEventArgs args)
         {
-            asyncOperation.Post(new SendOrPostCallback(AsynchronousOnAfterLogUrlEventRaised), args);
+            _asyncOperation.Post(new SendOrPostCallback(AsynchronousOnAfterLogUrlEventRaised), args);
         }
 
         /// <summary>
@@ -375,7 +379,7 @@ namespace Talifun.Web.LogUrl
 
             AfterLogUrlEventHandler eventHandler;
 
-            if (!Monitor.TryEnter(afterLogUrlEventLock, lockTimeout))
+            if (!Monitor.TryEnter(afterLogUrlEventLock, _lockTimeout))
             {
                 throw new ApplicationException("Timeout waiting for lock - RaiseOnAfterLogUrlEvent");
             }
@@ -446,7 +450,7 @@ namespace Talifun.Web.LogUrl
         /// </summary>
         /// <param name="httpApplication">The httpApplication the request was raised on.</param>
         /// <param name="expression">The expression that matched the url.</param>
-        internal void RaiseLogUrlEvent(HttpApplication httpApplication, string expression)
+        private void RaiseLogUrlEvent(HttpApplication httpApplication, string expression)
         {
             var beforeLogUrlEventArgs = new BeforeLogUrlEventArgs(httpApplication, expression);
             RaiseOnBeforeLogUrlEvent(beforeLogUrlEventArgs);
@@ -458,6 +462,19 @@ namespace Talifun.Web.LogUrl
 
             var afterLogUrlEventArgs = new AfterLogUrlEventArgs(httpApplication, expression);
             RaiseOnAfterLogUrlEvent(afterLogUrlEventArgs);
+        }
+
+        public void LogUrl(HttpApplication application)
+        {
+            var rawUrl = application.Request.RawUrl;
+            foreach (UrlMatchElement urlMatch in _urlMatches)
+            {
+                if (!Regex.IsMatch(rawUrl, urlMatch.Expression, RegxOptions)) continue;
+
+                RaiseLogUrlEvent(application, urlMatch.Expression);
+
+                break;
+            }
         }
     }
 }

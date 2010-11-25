@@ -133,6 +133,7 @@
     <Compile Include="IpAddressAuthentication\Config\IpAddressAuthenticationSection.cs" />
     <Compile Include="IpAddressAuthentication\Config\UrlMatchElement.cs" />
     <Compile Include="IpAddressAuthentication\Config\UrlMatchElementCollection.cs" />
+    <Compile Include="IpAddressAuthentication\IpAddressAuthenticationManager.cs" />
     <Compile Include="IpAddressAuthentication\IpAddressAuthenticationModule.cs" />
     <Compile Include="LogUrl\AfterLogUrlEventArgs.cs" />
     <Compile Include="LogUrl\AfterLogUrlEventHandler.cs" />
@@ -180,6 +181,7 @@
     <Compile Include="RegexUrlAuthorization\Config\RegexUrlAuthorizationSection.cs" />
     <Compile Include="RegexUrlAuthorization\Config\UrlMatchElement.cs" />
     <Compile Include="RegexUrlAuthorization\Config\UrlMatchElementCollection.cs" />
+    <Compile Include="RegexUrlAuthorization\RegexUrlAuthorizationManager.cs" />
     <Compile Include="RegexUrlAuthorization\RegexUrlAuthorizationModule.cs" />
     <Compile Include="StaticFile\Config\CurrentStaticFileHandlerConfiguration.cs" />
     <Compile Include="StaticFile\Config\FileExtensionDefaultElement.cs" />
