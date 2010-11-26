@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Web;
-using System.Net;
 
 namespace Talifun.Web
 {
@@ -18,11 +17,11 @@ namespace Talifun.Web
         /// Set the Status Code and Status Description of the http response.
         /// </summary>
         /// <param name="response">The Http Response.</param>
-        /// <param name="httpStatus">The status to set.</param>
-        public void SendHttpStatusHeaders(HttpResponseBase response, HttpStatus httpStatus)
+        /// <param name="httpStatusCode">The status to set.</param>
+        public void SendHttpStatusHeaders(HttpResponseBase response, HttpStatusCode httpStatusCode)
         {
-            response.StatusCode = (int)StringifyHttpHeaders.HttpStatusCodeFromHttpStatus(httpStatus);
-            response.StatusDescription = StringifyHttpHeaders.StringFromHttpStatus(httpStatus);
+            response.StatusCode = (int)httpStatusCode;
+            response.StatusDescription = (string)httpStatusCode;
         }
 
         /// <summary>
@@ -32,11 +31,11 @@ namespace Talifun.Web
         /// Seems like appendheader only works with IIS 7
         /// </remarks>
         /// <param name="response"></param>
-        /// <param name="headerName"></param>
+        /// <param name="httpResponseHeader"></param>
         /// <param name="headerValue"></param>
         public void AppendHeader(HttpResponseBase response, HttpResponseHeader httpResponseHeader, string headerValue)
         {
-            var httpResponseHeaderString = StringifyHttpHeaders.StringFromResponseHeader(httpResponseHeader);
+            var httpResponseHeaderString = (string)httpResponseHeader;
             AppendHeader(response, httpResponseHeaderString, headerValue);
         }
 

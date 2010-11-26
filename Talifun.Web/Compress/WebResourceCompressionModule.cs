@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.IO;
-using System.Net;
 using System.Reflection;
 using System.Web;
 using System.Web.Handlers;

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Net;
-using System.Text.RegularExpressions;
 using System.Web;
-using Talifun.Web.LogUrl.Config;
 using Talifun.Web.Module;
 
 namespace Talifun.Web.LogUrl
@@ -17,7 +14,6 @@ namespace Talifun.Web.LogUrl
         /// </summary>
         protected static LogUrlManager LogUrlManager = LogUrlManager.Instance;
 
-
         protected override void OnInit(HttpApplication httpApplication)
         {
             httpApplication.EndRequest += new EventHandler(OnEndRequest);
@@ -28,7 +24,7 @@ namespace Talifun.Web.LogUrl
             var application = (HttpApplication)sender;
 
             //We only want to log request to url if they are successfull and lets also ignore partial requests
-            if (application.Context.Error != null || !(application.Response.StatusCode == (int)HttpStatusCode.OK || application.Response.StatusCode == (int)HttpStatusCode.NotModified)) return;
+            if (application.Context.Error != null || !(application.Response.StatusCode == (int)HttpStatusCode.Ok || application.Response.StatusCode == (int)HttpStatusCode.NotModified)) return;
 
             LogUrlManager.LogUrl(application);
         }

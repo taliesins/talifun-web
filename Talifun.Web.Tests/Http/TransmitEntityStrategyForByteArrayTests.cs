@@ -3,7 +3,6 @@ using System.Text;
 using System.Web;
 using NUnit.Framework;
 using Rhino.Mocks;
-using System.Linq;
 
 namespace Talifun.Web.Tests.Http
 {

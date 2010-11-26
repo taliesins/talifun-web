@@ -15,9 +15,9 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpResponse = MockRepository.GenerateMock<HttpResponseBase>();
-            var httpStatus = HttpStatus.Ok;
-            var statusCode = (int)StringifyHttpHeaders.HttpStatusCodeFromHttpStatus(httpStatus);
-            var statusDescription = StringifyHttpHeaders.StringFromHttpStatus(httpStatus);
+            var httpStatus = HttpStatusCode.Ok;
+            var statusCode = (int)httpStatus;
+            var statusDescription = (string)httpStatus;
             var webServerType = WebServerType.Unknown;
 
             httpResponse.Expect(x => x.StatusCode = statusCode);
@@ -40,7 +40,7 @@ namespace Talifun.Web.Tests.Http
             //Arrange
             var httpResponse = MockRepository.GenerateMock<HttpResponseBase>();
             var httpResponseHeader = HttpResponseHeader.ETag;
-            var headerName = StringifyHttpHeaders.StringFromResponseHeader(httpResponseHeader);
+            var headerName = (string)httpResponseHeader;
             var headerValue = "Test";
             var webServerType = WebServerType.Unknown;
 
@@ -61,7 +61,7 @@ namespace Talifun.Web.Tests.Http
             //Arrange
             var httpResponse = MockRepository.GenerateMock<HttpResponseBase>();
             var httpResponseHeader = HttpResponseHeader.ETag;
-            var headerName = StringifyHttpHeaders.StringFromResponseHeader(httpResponseHeader);
+            var headerName = (string)httpResponseHeader;
             var headerValue = "Test";
             var webServerType = WebServerType.Unknown;
 
@@ -82,7 +82,7 @@ namespace Talifun.Web.Tests.Http
             //Arrange
             var httpResponse = MockRepository.GenerateMock<HttpResponseBase>();
             var httpResponseHeader = HttpResponseHeader.ETag;
-            var headerName = StringifyHttpHeaders.StringFromResponseHeader(httpResponseHeader);
+            var headerName = (string)httpResponseHeader;
             var headerValue = "Test";
             var webServerType = WebServerType.IIS7;
 
@@ -103,7 +103,7 @@ namespace Talifun.Web.Tests.Http
             //Arrange
             var httpResponse = MockRepository.GenerateMock<HttpResponseBase>();
             var httpResponseHeader = HttpResponseHeader.ETag;
-            var headerName = StringifyHttpHeaders.StringFromResponseHeader(httpResponseHeader);
+            var headerName = (string)httpResponseHeader;
             var headerValue = "Test";
             var webServerType = WebServerType.IIS7;
 
@@ -128,7 +128,7 @@ namespace Talifun.Web.Tests.Http
             var responseCompressionType = ResponseCompressionType.None;
 
             var httpResponseHeader = HttpResponseHeader.ContentEncoding;
-            var headerName = StringifyHttpHeaders.StringFromResponseHeader(httpResponseHeader);
+            var headerName = (string)httpResponseHeader;
             var headerValue = responseCompressionType.ToString().ToLower();
             var webServerType = WebServerType.Unknown;
 
@@ -149,7 +149,7 @@ namespace Talifun.Web.Tests.Http
             var responseCompressionType = ResponseCompressionType.Deflate;
 
             var httpResponseHeader = HttpResponseHeader.ContentEncoding;
-            var headerName = StringifyHttpHeaders.StringFromResponseHeader(httpResponseHeader);
+            var headerName = (string)httpResponseHeader;
             var headerValue = responseCompressionType.ToString().ToLower();
             var webServerType = WebServerType.Unknown;
 
@@ -171,7 +171,7 @@ namespace Talifun.Web.Tests.Http
             var responseCompressionType = ResponseCompressionType.GZip;
 
             var httpResponseHeader = HttpResponseHeader.ContentEncoding;
-            var headerName = StringifyHttpHeaders.StringFromResponseHeader(httpResponseHeader);
+            var headerName = (string)httpResponseHeader;
             var headerValue = responseCompressionType.ToString().ToLower();
             var webServerType = WebServerType.Unknown;
 
@@ -193,7 +193,7 @@ namespace Talifun.Web.Tests.Http
             //Arrange
             var httpResponse = MockRepository.GenerateMock<HttpResponseBase>();
 
-            var headerName = StringifyHttpHeaders.StringFromResponseHeader(HttpResponseHeader.AcceptRanges);
+            var headerName = (string)HttpResponseHeader.AcceptRanges;
             var headerValue = HttpResponseHeaderHelper.HttpHeaderAcceptRangesBytes;
             var webServerType = WebServerType.Unknown;
 

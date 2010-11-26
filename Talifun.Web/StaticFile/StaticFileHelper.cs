@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Net;
 using System.Reflection;
 using System.Security.Permissions;
 using System.Web;
@@ -17,15 +16,12 @@ namespace Talifun.Web.StaticFile
         private const int BufferSize = 32768;
         private const long MaxFileSizeToServe = int.MaxValue;
 
-        internal const string HttpMethodGet = "GET";
-        internal const string HttpMethodHead = "HEAD";
-
         internal const uint ErrorTheRemoteHostClosedTheConnection = 0x80072746; //WSAECONNRESET (10054)
 
-        private static IRetryableFileOpener _retryableFileOpener = new RetryableFileOpener();
-        private static IMimeTyper _mimeTyper = new MimeTyper();
-        private static IHasher _hasher = new Hasher(_retryableFileOpener);
-        private static IHttpRequestHeaderHelper _httpRequestHeaderHelper = new HttpRequestHeaderHelper();
+        private static readonly IRetryableFileOpener RetryableFileOpener = new RetryableFileOpener();
+        private static readonly IMimeTyper MimeTyper = new MimeTyper();
+        private static readonly IHasher Hasher = new Hasher(RetryableFileOpener);
+        private static readonly IHttpRequestHeaderHelper HttpRequestHeaderHelper = new HttpRequestHeaderHelper();
         private static IHttpResponseHeaderHelper _httpResponseHeaderHelper = null;
         
         internal static WebServerType WebServerType { get; set; }
@@ -182,24 +178,23 @@ namespace Talifun.Web.StaticFile
       
             try
             {
-                if (!ValidateHttpMethod(request))
+                if (!IsHttpMethodAllowed(request))
                 {
                     //If we are unable to parse url send 405 Method not allowed
-                    _httpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatus.MethodNotAllowed);
+                    _httpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatusCode.MethodNotAllowed);
                     return;
                 }
 
-                if (file.FullName.EndsWith(".asp", StringComparison.InvariantCultureIgnoreCase) ||
-                    file.FullName.EndsWith(".aspx", StringComparison.InvariantCultureIgnoreCase))
+                if (!IsAllowedToServeRequestedFile(file))
                 {
                     //If we are unable to parse url send 403 Path Forbidden
-                    _httpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatus.Forbidden);
+                    _httpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatusCode.Forbidden);
                     return;
                 }
 
-                var requestHttpMethod = _httpRequestHeaderHelper.GetHttpMethod(request);
+                var requestHttpMethod = HttpRequestHeaderHelper.GetHttpMethod(request);
 
-                var compressionType = _httpRequestHeaderHelper.GetCompressionMode(request);
+                var compressionType = HttpRequestHeaderHelper.GetCompressionMode(request);
 
                 FileExtensionMatch fileExtensionMatch = null;
                 if (!FileExtensionMatches.TryGetValue(file.Extension.ToLower(), out fileExtensionMatch))
@@ -213,7 +208,7 @@ namespace Talifun.Web.StaticFile
 
                 // If it is a partial request we need to get bytes of orginal entity data, we will compress the byte ranges returned
                 var entityStoredWithCompressionType = compressionType;
-                var isRangeRequest = _httpRequestHeaderHelper.IsRangeRequest(request);
+                var isRangeRequest = HttpRequestHeaderHelper.IsRangeRequest(request);
                 if (isRangeRequest)
                 {
                     entityStoredWithCompressionType = ResponseCompressionType.None;
@@ -226,14 +221,14 @@ namespace Talifun.Web.StaticFile
                     //File does not exist
                     if (!file.Exists)
                     {
-                        _httpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatus.NotFound);
+                        _httpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatusCode.NotFound);
                         return;
                     }
 
                     //File too large to send
                     if (file.Length > MaxFileSizeToServe)
                     {
-                        _httpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatus.RequestEntityTooLarge);
+                        _httpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatusCode.RequestEntityTooLarge);
                         return;
                     }
                 }
@@ -241,41 +236,28 @@ namespace Talifun.Web.StaticFile
                 if (fileHandlerCacheItem.EntityData == null && !file.Exists)
                 {
                     //If we have cached the properties of the file but its to large to serve from memory then we must check that the file exists each time.
-                    _httpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatus.NotFound);
+                    _httpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatusCode.NotFound);
                     return;
                 }
 
                 //Unable to parse request range header
                 IEnumerable<RangeItem> ranges = null;
-                var requestRange = _httpRequestHeaderHelper.GetRanges(request, fileHandlerCacheItem.ContentLength, out ranges);
+                var requestRange = HttpRequestHeaderHelper.GetRanges(request, fileHandlerCacheItem.ContentLength, out ranges);
                 if (requestRange.HasValue && !requestRange.Value)
                 {
-                    _httpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatus.RequestedRangeNotSatisfiable);
+                    _httpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatusCode.RequestedRangeNotSatisfiable);
                     return;
                 }
 
                 //Check if cached response is valid and if it is send appropriate response headers
-                var httpStatusCode = GetResponseHttpStatusCode(request, response, fileHandlerCacheItem.LastModified,
+                var httpStatus = GetResponseHttpStatus(request, fileHandlerCacheItem.LastModified,
                                                              fileHandlerCacheItem.Etag);
 
-                switch (httpStatusCode)
+                _httpResponseHeaderHelper.SendHttpStatusHeaders(response, httpStatus);
+
+                if (httpStatus == HttpStatusCode.NotModified  || httpStatus == HttpStatusCode.PreconditionFailed)
                 {
-                    case HttpStatusCode.NotModified:
-                        //Browser cache is ok so, just load from cache
-                        _httpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatus.NotModified);
-                        return;
-                    case HttpStatusCode.PreconditionFailed:
-                        _httpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatus.PreconditionFailed);
-                        return;
-                    case HttpStatusCode.PartialContent:
-                        _httpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatus.PartialContent);
-                        break;
-                    case HttpStatusCode.OK:
-                        _httpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatus.Ok);
-                        break;
-                    default:
-                        //Unhandled status code
-                        break;
+                    return;
                 }
 
                 //Tell the client it supports resumable requests
@@ -385,14 +367,14 @@ namespace Talifun.Web.StaticFile
                 var lastModified = new DateTime(lastModifiedFileTime.Year, lastModifiedFileTime.Month,
                                                 lastModifiedFileTime.Day, lastModifiedFileTime.Hour,
                                                 lastModifiedFileTime.Minute, lastModifiedFileTime.Second);
-                var contentType = _mimeTyper.GetMimeType(file.Extension);
+                var contentType = MimeTyper.GetMimeType(file.Extension);
                 var contentLength = file.Length;
 
                 //ETAG is always calculated from uncompressed entity data
                 switch (fileExtensionMatch.EtagMethod)
                 {
                     case EtagMethodType.MD5:
-                        etag = _hasher.CalculateMd5Etag(file);
+                        etag = Hasher.CalculateMd5Etag(file);
                         break;
                     case EtagMethodType.LastModified:
                         etag = lastModified.ToString();
@@ -457,7 +439,7 @@ namespace Talifun.Web.StaticFile
             using (var outputStream = (compressionType == ResponseCompressionType.None ? stream : (compressionType == ResponseCompressionType.GZip ? (Stream)new GZipStream(stream, CompressionMode.Compress, true) : (Stream)new DeflateStream(stream, CompressionMode.Compress))))
             {
                 // We can compress and cache this file
-                using (var fs = _retryableFileOpener.OpenFileStream(file, 5, FileMode.Open, FileAccess.Read, FileShare.Read))
+                using (var fs = RetryableFileOpener.OpenFileStream(file, 5, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
                     var bufferSize = Convert.ToInt32(Math.Min(file.Length, BufferSize));
                     var buffer = new byte[bufferSize];
@@ -474,37 +456,48 @@ namespace Talifun.Web.StaticFile
         }
 
         /// <summary>
+        /// Determine of requested filke can be served.
+        /// </summary>
+        /// <param name="file">File to serve.</param>
+        /// <returns>True if file can be served; false if it can not be.</returns>
+        internal static bool IsAllowedToServeRequestedFile(FileInfo file)
+        {
+            return !(file.FullName.EndsWith(".asp", StringComparison.InvariantCultureIgnoreCase) ||
+                   file.FullName.EndsWith(".aspx", StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        /// <summary>
         /// Determine whether the http method is supported. Currently we only support get and head methods.
         /// </summary>
         /// <param name="request">An HTTP request.</param>
         /// <returns>True if http method is supported; false if it is not</returns>
-        internal static bool ValidateHttpMethod(HttpRequestBase request)
+        internal static bool IsHttpMethodAllowed(HttpRequestBase request)
         {
-            return (request.HttpMethod == HttpMethodGet || request.HttpMethod == HttpMethodHead);
+            var httpMethod = HttpRequestHeaderHelper.GetHttpMethod(request);
+            return (httpMethod == HttpMethod.Get || httpMethod == HttpMethod.Head);
         }
 
         /// <summary>
         /// Process the http request to calculate its http response code.
         /// </summary>
         /// <param name="request">An HTTP request.</param>
-        /// <param name="response">An HTTP response.</param>
         /// <param name="lastModified">The last modified date of the entity.</param>
         /// <param name="etag">The etag of the entity.</param>
         /// <returns>
-        /// Returns HttpStatusCode for Http request.
+        /// Returns httpStatusCode for Http request.
         /// </returns>
         /// <remarks>
         /// When the browser has a satisfiable cached response, the appropriate header is also set
         /// so there is no need to continue the processing of the entity.
         /// </remarks>
-        internal static HttpStatusCode GetResponseHttpStatusCode(HttpRequestBase request, HttpResponseBase response, DateTime lastModified, string etag)
+        internal static HttpStatusCode GetResponseHttpStatus(HttpRequestBase request, DateTime lastModified, string etag)
         {
             lastModified = lastModified.ToUniversalTime();
 
             //Always assume we going to send whole entity
-            var responseCode = HttpStatusCode.OK;
+            var responseCode = HttpStatusCode.Ok;
 
-            if (_httpRequestHeaderHelper.IsRangeRequest(request))
+            if (HttpRequestHeaderHelper.IsRangeRequest(request))
             {
                 //It is a partial request
                 responseCode = HttpStatusCode.PartialContent;
@@ -516,12 +509,12 @@ namespace Talifun.Web.StaticFile
             if ((((int)responseCode >= 200 && (int)responseCode <= 299 || (int)responseCode == 304)))
             {
                 //If there no matches then we do not want a cached response
-                ifNoneMatch = _httpRequestHeaderHelper.CheckIfNoneMatch(request, etag, true);
+                ifNoneMatch = HttpRequestHeaderHelper.CheckIfNoneMatch(request, etag, true);
                 if (ifNoneMatch.HasValue)
                 {
                     if (ifNoneMatch.Value && responseCode == HttpStatusCode.NotModified)
                     {
-                        responseCode = HttpStatusCode.OK;
+                        responseCode = HttpStatusCode.Ok;
                     }
                     else
                     {
@@ -534,7 +527,7 @@ namespace Talifun.Web.StaticFile
 
             if ((((int)responseCode >= 200 && (int)responseCode <= 299 || (int)responseCode == 304)))
             {
-                ifMatch = _httpRequestHeaderHelper.CheckIfMatch(request, etag, true);
+                ifMatch = HttpRequestHeaderHelper.CheckIfMatch(request, etag, true);
                 if (ifMatch.HasValue && !ifMatch.Value)
                 {
                     //If none of the entity tags match, or if "*" is given and no current 
@@ -559,7 +552,7 @@ namespace Talifun.Web.StaticFile
 
                 if ((((int)responseCode >= 200 && (int)responseCode <= 299 || (int)responseCode == 304)))
                 {
-                    unlessModifiedSince = _httpRequestHeaderHelper.CheckUnlessModifiedSince(request, lastModified);
+                    unlessModifiedSince = HttpRequestHeaderHelper.CheckUnlessModifiedSince(request, lastModified);
                     if (unlessModifiedSince.HasValue && !unlessModifiedSince.Value)
                     {
                         //If the requested variant has been modified since the specified time, 
@@ -575,7 +568,7 @@ namespace Talifun.Web.StaticFile
 
                 if ((((int)responseCode >= 200 && (int)responseCode <= 299 || (int)responseCode == 304)))
                 {
-                    ifUnmodifiedSince = _httpRequestHeaderHelper.CheckIfUnmodifiedSince(request, lastModified);
+                    ifUnmodifiedSince = HttpRequestHeaderHelper.CheckIfUnmodifiedSince(request, lastModified);
                     if (ifUnmodifiedSince.HasValue && !ifUnmodifiedSince.Value)
                     {
                         //If the requested variant has been modified since the specified time, 
@@ -591,13 +584,13 @@ namespace Talifun.Web.StaticFile
 
                 if ((((int)responseCode >= 200 && (int)responseCode <= 299 || (int)responseCode == 304)))
                 {
-                    ifModifiedSince = _httpRequestHeaderHelper.CheckIfModifiedSince(request, lastModified);
+                    ifModifiedSince = HttpRequestHeaderHelper.CheckIfModifiedSince(request, lastModified);
                     if (ifModifiedSince.HasValue)
                     {
                         if (ifModifiedSince.Value && responseCode == HttpStatusCode.NotModified)
                         {
                             //ifNoneMatch must be ignored if ifModifiedSince does not match so return entire entity
-                            responseCode = HttpStatusCode.OK;
+                            responseCode = HttpStatusCode.Ok;
                         }
                         else
                         {
@@ -609,8 +602,8 @@ namespace Talifun.Web.StaticFile
 
             //If its not modified there is no need to send it
             if ((((int)responseCode >= 200 && (int)responseCode <= 299)))
-            {    
-                var ifRange = _httpRequestHeaderHelper.CheckIfRange(request, etag, lastModified);
+            {
+                var ifRange = HttpRequestHeaderHelper.CheckIfRange(request, etag, lastModified);
                 if (ifRange.HasValue)
                 {
                     //GET /foo HTTP/1.1
@@ -628,12 +621,12 @@ namespace Talifun.Web.StaticFile
                     }
                     else
                     {
-                        responseCode = HttpStatusCode.OK;
+                        responseCode = HttpStatusCode.Ok;
                     }
                 }
             }
 
             return responseCode;
-        }        
+        }
     }
 }

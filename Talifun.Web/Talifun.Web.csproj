@@ -114,8 +114,10 @@
     <Compile Include="Http\HttpHeaderValue.cs" />
     <Compile Include="Http\HttpMethod.cs" />
     <Compile Include="Http\HttpProtocolVersion.cs" />
+    <Compile Include="Http\HttpRequestHeader.cs" />
+    <Compile Include="Http\HttpResponseHeader.cs" />
     <Compile Include="Http\HttpResponseHeaderHelper.cs" />
-    <Compile Include="Http\HttpStatus.cs" />
+    <Compile Include="Http\HttpStatusCode.cs" />
     <Compile Include="Http\IHttpRequestHeaderHelper.cs" />
     <Compile Include="Http\IHttpResponseHeaderHelper.cs" />
     <Compile Include="Http\IByteRangeResponse.cs" />
@@ -198,7 +200,6 @@
     <Compile Include="Http\RangeItem.cs" />
     <Compile Include="Http\ResponseCompressionType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Http\StringifyHttpHeaders.cs" />
     <Compile Include="Http\WebServerType.cs" />
   </ItemGroup>
   <ItemGroup>

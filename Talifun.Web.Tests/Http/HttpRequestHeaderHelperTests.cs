@@ -21,7 +21,7 @@ namespace Talifun.Web.Tests.Http
             var headerDefaultValue = "Unknown User Agent";
             var headerValue = "Talifun Browser";
             var headerType = HttpRequestHeader.UserAgent;
-            var headerName =  StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName =  (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -42,7 +42,7 @@ namespace Talifun.Web.Tests.Http
             var headerDefaultValue = "Unknown User Agent";
             var headerValue = string.Empty; //means that header was not set
             var headerType = HttpRequestHeader.UserAgent;
-            var headerName =  StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName =  (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -63,7 +63,7 @@ namespace Talifun.Web.Tests.Http
             var headerDefaultValue = "Unknown User Agent";
             var headerValue = "Talifun Browser";
             var headerType = HttpRequestHeader.UserAgent;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
    
@@ -84,7 +84,7 @@ namespace Talifun.Web.Tests.Http
             var headerDefaultValue = "Unknown User Agent";
             var headerValue = string.Empty;
             var headerType = HttpRequestHeader.UserAgent;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -106,7 +106,7 @@ namespace Talifun.Web.Tests.Http
             var userAgent = "Talifun Browser";
             var headerValue = "\"" + userAgent + "\"";
             var headerType = HttpRequestHeader.UserAgent;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -127,7 +127,7 @@ namespace Talifun.Web.Tests.Http
             var headerDefaultValue = "abcdef";
             var headerValue = "abcdeF";
             var headerType = HttpRequestHeader.UserAgent;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -149,7 +149,7 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var headerValue = string.Empty;
             var headerType = HttpRequestHeader.IfMatch;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
             
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -169,7 +169,7 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var headerValue = "1234567";
             var headerType = HttpRequestHeader.IfMatch;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -192,7 +192,7 @@ namespace Talifun.Web.Tests.Http
             var identity2 = "deflate";
             var headerValue = identity1 + "," + identity2;
             var headerType = HttpRequestHeader.IfMatch;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -216,7 +216,7 @@ namespace Talifun.Web.Tests.Http
             var identity2 = "deflate";
             var headerValue = identity1 + " , " + identity2;
             var headerType = HttpRequestHeader.IfMatch;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -240,7 +240,7 @@ namespace Talifun.Web.Tests.Http
             var identity2 = "gzip, hello";
             var headerValue = identity1 + " , \"" + identity2 + "\"";
             var headerType = HttpRequestHeader.IfMatch;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -262,7 +262,7 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var headerValue = "abcdeF";
             var headerType = HttpRequestHeader.IfMatch;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
            
@@ -285,7 +285,7 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var headerValue = string.Empty;
             var headerType = HttpRequestHeader.AcceptEncoding;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
             
@@ -305,7 +305,7 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var headerValue = "gzip";
             var headerType = HttpRequestHeader.AcceptEncoding;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -329,7 +329,7 @@ namespace Talifun.Web.Tests.Http
             var qValue = 0.5f;
             var headerValue = identity + ";q=" + qValue.ToString("N1");
             var headerType = HttpRequestHeader.AcceptEncoding;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -358,7 +358,7 @@ namespace Talifun.Web.Tests.Http
 
             var headerValue = identity1 + ";q=" + qValue1.ToString("N1") + "," + identity2 + ";q=" + qValue2.ToString("N1");
             var headerType = HttpRequestHeader.AcceptEncoding;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -392,7 +392,7 @@ namespace Talifun.Web.Tests.Http
 
             var headerValue = identity1 + " ; q = " + qValue1.ToString("N1") + " , " + identity2 + "; q=" + qValue2.ToString("N1");
             var headerType = HttpRequestHeader.AcceptEncoding;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -426,7 +426,7 @@ namespace Talifun.Web.Tests.Http
 
             var headerValue = identity1 + ";q=" + qValue1.ToString("N1") + ",\"" + identity2 + "\";q=" + qValue2.ToString("N1");
             var headerType = HttpRequestHeader.AcceptEncoding;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -454,7 +454,7 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var headerValue = "abcdeF";
             var headerType = HttpRequestHeader.AcceptEncoding;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -478,7 +478,7 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var headerValue = string.Empty;
             var headerType = HttpRequestHeader.AcceptEncoding;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
             
@@ -498,7 +498,7 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var headerValue = "invalid;q=0.5";
             var headerType = HttpRequestHeader.AcceptEncoding;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -518,7 +518,7 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var headerValue = "compression, test, testdeflater";
             var headerType = HttpRequestHeader.AcceptEncoding;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -538,7 +538,7 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var headerValue = "deflate";
             var headerType = HttpRequestHeader.AcceptEncoding;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -558,7 +558,7 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var headerValue = "gzip";
             var headerType = HttpRequestHeader.AcceptEncoding;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -578,7 +578,7 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var headerValue = "gzip, deflate";
             var headerType = HttpRequestHeader.AcceptEncoding;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -598,7 +598,7 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var headerValue = "deflate;q=0.5, gzip;q=0.9, compress";
             var headerType = HttpRequestHeader.AcceptEncoding;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -618,7 +618,7 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var headerValue = "*";
             var headerType = HttpRequestHeader.AcceptEncoding;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -638,7 +638,7 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var headerValue = "*, gzip";
             var headerType = HttpRequestHeader.AcceptEncoding;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -658,7 +658,7 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var headerValue = "*, deflate";
             var headerType = HttpRequestHeader.AcceptEncoding;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -678,7 +678,7 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var headerValue = " * , gzip ; q = 0.5, deflate; q=0.9";
             var headerType = HttpRequestHeader.AcceptEncoding;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -698,7 +698,7 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var headerValue = " * , gzip ; q = 0.5, deflate; q=0.7, invalid;q=0.9";
             var headerType = HttpRequestHeader.AcceptEncoding;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -718,7 +718,7 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var headerValue = "Gzip";
             var headerType = HttpRequestHeader.AcceptEncoding;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -739,7 +739,7 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpMethodType = HttpMethod.Get;
-            var httpMethodValue = StringifyHttpHeaders.StringFromHttpMethod(httpMethodType);
+            var httpMethodValue = (string)httpMethodType;
 
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             httpRequest.Expect(x => x.HttpMethod).Return(httpMethodValue);
@@ -762,7 +762,7 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var headerValue = "bytes=500-600,601-999";
             var headerType = HttpRequestHeader.Range;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -782,7 +782,7 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var headerValue = string.Empty; 
             var headerType = HttpRequestHeader.Range;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -805,7 +805,7 @@ namespace Talifun.Web.Tests.Http
             var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
             var headerValue = string.Empty;
             var headerType = HttpRequestHeader.IfModifiedSince;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -826,7 +826,7 @@ namespace Talifun.Web.Tests.Http
             var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
             var headerValue = lastModified.AddSeconds(-1).ToString("r");
             var headerType = HttpRequestHeader.IfModifiedSince;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -848,7 +848,7 @@ namespace Talifun.Web.Tests.Http
             var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
             var headerValue = lastModified.AddSeconds(1).ToString("r");
             var headerType = HttpRequestHeader.IfModifiedSince;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -870,7 +870,7 @@ namespace Talifun.Web.Tests.Http
             var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
             var headerValue = "invalid";
             var headerType = HttpRequestHeader.IfModifiedSince;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -894,7 +894,7 @@ namespace Talifun.Web.Tests.Http
             var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
             var headerValue = string.Empty;
             var headerType = HttpRequestHeader.IfUnmodifiedSince;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -915,7 +915,7 @@ namespace Talifun.Web.Tests.Http
             var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
             var headerValue = lastModified.AddSeconds(1).ToString("r");
             var headerType = HttpRequestHeader.IfUnmodifiedSince;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -937,7 +937,7 @@ namespace Talifun.Web.Tests.Http
             var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
             var headerValue = lastModified.AddSeconds(-1).ToString("r");
             var headerType = HttpRequestHeader.IfUnmodifiedSince;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -959,7 +959,7 @@ namespace Talifun.Web.Tests.Http
             var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
             var headerValue = "Invalid";
             var headerType = HttpRequestHeader.IfUnmodifiedSince;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -981,7 +981,8 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
             var headerValue = string.Empty;
-            var headerName = HttpRequestHeaderHelper.HttpHeaderUnlessModifiedSince;
+            var headerType = HttpRequestHeader.UnlessModifiedSince;
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -1001,7 +1002,8 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
             var headerValue = lastModified.AddSeconds(1).ToString("r");
-            var headerName = HttpRequestHeaderHelper.HttpHeaderUnlessModifiedSince;
+            var headerType = HttpRequestHeader.UnlessModifiedSince;
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
             
@@ -1022,7 +1024,8 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
             var headerValue = lastModified.AddSeconds(-1).ToString("r");
-            var headerName = HttpRequestHeaderHelper.HttpHeaderUnlessModifiedSince;
+            var headerType = HttpRequestHeader.UnlessModifiedSince;
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -1043,7 +1046,8 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
             var headerValue = "Invalid";
-            var headerName = HttpRequestHeaderHelper.HttpHeaderUnlessModifiedSince;
+            var headerType = HttpRequestHeader.UnlessModifiedSince;
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -1069,7 +1073,7 @@ namespace Talifun.Web.Tests.Http
             var etag = "1234567";
             var headerValue = string.Empty;
             var headerType = HttpRequestHeader.Range;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Headers.Expect(x => x[headerName]).Return(headerValue);
 
@@ -1096,11 +1100,11 @@ namespace Talifun.Web.Tests.Http
 
             var rangeRequestHeaderValue = "bytes=500-600,601-999";
             var rangeRequestHeaderType = HttpRequestHeader.Range;
-            var rangeRequestHeaderName = StringifyHttpHeaders.StringFromRequestHeader(rangeRequestHeaderType);
+            var rangeRequestHeaderName = (string)rangeRequestHeaderType;
 
             var ifRangeHeaderValue = string.Empty;
             var ifRangeHeaderType = HttpRequestHeader.IfRange;
-            var ifRangeHeaderName = StringifyHttpHeaders.StringFromRequestHeader(ifRangeHeaderType);
+            var ifRangeHeaderName = (string)ifRangeHeaderType;
 
             httpRequest.Headers.Expect(x => x[rangeRequestHeaderName]).Return(rangeRequestHeaderValue);
             httpRequest.Headers.Expect(x => x[ifRangeHeaderName]).Return(ifRangeHeaderValue);
@@ -1128,11 +1132,11 @@ namespace Talifun.Web.Tests.Http
 
             var rangeRequestHeaderValue = "bytes=500-600,601-999";
             var rangeRequestHeaderType = HttpRequestHeader.Range;
-            var rangeRequestHeaderName = StringifyHttpHeaders.StringFromRequestHeader(rangeRequestHeaderType);
+            var rangeRequestHeaderName = (string)rangeRequestHeaderType;
 
             var ifRangeHeaderValue = etag;
             var ifRangeHeaderType = HttpRequestHeader.IfRange;
-            var ifRangeHeaderName = StringifyHttpHeaders.StringFromRequestHeader(ifRangeHeaderType);
+            var ifRangeHeaderName = (string)ifRangeHeaderType;
 
             httpRequest.Headers.Expect(x => x[rangeRequestHeaderName]).Return(rangeRequestHeaderValue);
             httpRequest.Headers.Expect(x => x[ifRangeHeaderName]).Return(ifRangeHeaderValue);
@@ -1161,11 +1165,11 @@ namespace Talifun.Web.Tests.Http
 
             var rangeRequestHeaderValue = "bytes=500-600,601-999";
             var rangeRequestHeaderType = HttpRequestHeader.Range;
-            var rangeRequestHeaderName = StringifyHttpHeaders.StringFromRequestHeader(rangeRequestHeaderType);
+            var rangeRequestHeaderName = (string)rangeRequestHeaderType;
 
             var ifRangeHeaderValue = etag + "8";
             var ifRangeHeaderType = HttpRequestHeader.IfRange;
-            var ifRangeHeaderName = StringifyHttpHeaders.StringFromRequestHeader(ifRangeHeaderType);
+            var ifRangeHeaderName = (string)ifRangeHeaderType;
 
             httpRequest.Headers.Expect(x => x[rangeRequestHeaderName]).Return(rangeRequestHeaderValue);
             httpRequest.Headers.Expect(x => x[ifRangeHeaderName]).Return(ifRangeHeaderValue);
@@ -1194,11 +1198,11 @@ namespace Talifun.Web.Tests.Http
 
             var rangeRequestHeaderValue = "bytes=500-600,601-999";
             var rangeRequestHeaderType = HttpRequestHeader.Range;
-            var rangeRequestHeaderName = StringifyHttpHeaders.StringFromRequestHeader(rangeRequestHeaderType);
+            var rangeRequestHeaderName = (string)rangeRequestHeaderType;
 
             var ifRangeHeaderValue = lastModified.ToString("r");
             var ifRangeHeaderType = HttpRequestHeader.IfRange;
-            var ifRangeHeaderName = StringifyHttpHeaders.StringFromRequestHeader(ifRangeHeaderType);
+            var ifRangeHeaderName = (string)ifRangeHeaderType;
 
             httpRequest.Headers.Expect(x => x[rangeRequestHeaderName]).Return(rangeRequestHeaderValue);
             httpRequest.Headers.Expect(x => x[ifRangeHeaderName]).Return(ifRangeHeaderValue);
@@ -1227,11 +1231,11 @@ namespace Talifun.Web.Tests.Http
 
             var rangeRequestHeaderValue = "bytes=500-600,601-999";
             var rangeRequestHeaderType = HttpRequestHeader.Range;
-            var rangeRequestHeaderName = StringifyHttpHeaders.StringFromRequestHeader(rangeRequestHeaderType);
+            var rangeRequestHeaderName = (string)rangeRequestHeaderType;
 
             var ifRangeHeaderValue = lastModified.AddSeconds(-1).ToString("r");
             var ifRangeHeaderType = HttpRequestHeader.IfRange;
-            var ifRangeHeaderName = StringifyHttpHeaders.StringFromRequestHeader(ifRangeHeaderType);
+            var ifRangeHeaderName = (string)ifRangeHeaderType;
 
             httpRequest.Headers.Expect(x => x[rangeRequestHeaderName]).Return(rangeRequestHeaderValue);
             httpRequest.Headers.Expect(x => x[ifRangeHeaderName]).Return(ifRangeHeaderValue);
@@ -1260,7 +1264,7 @@ namespace Talifun.Web.Tests.Http
             var doesEntityExists = true;
             var headerValue = string.Empty;
             var headerType = HttpRequestHeader.IfMatch;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -1282,7 +1286,7 @@ namespace Talifun.Web.Tests.Http
             var doesEntityExists = true;
             var headerValue = entityTag;
             var headerType = HttpRequestHeader.IfMatch;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -1305,7 +1309,7 @@ namespace Talifun.Web.Tests.Http
             var doesEntityExists = true;
             var headerValue = "7654321," + entityTag;
             var headerType = HttpRequestHeader.IfMatch;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -1328,7 +1332,7 @@ namespace Talifun.Web.Tests.Http
             var doesEntityExists = true;
             var headerValue = entityTag + "8";
             var headerType = HttpRequestHeader.IfMatch;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -1351,7 +1355,7 @@ namespace Talifun.Web.Tests.Http
             var doesEntityExists = true;
             var headerValue = "7654321," + entityTag + "8";
             var headerType = HttpRequestHeader.IfMatch;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -1374,7 +1378,7 @@ namespace Talifun.Web.Tests.Http
             var doesEntityExists = true;
             var headerValue = "abcdeF";
             var headerType = HttpRequestHeader.IfMatch;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -1397,7 +1401,7 @@ namespace Talifun.Web.Tests.Http
             var doesEntityExists = true;
             var headerValue = "*";
             var headerType = HttpRequestHeader.IfMatch;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -1420,7 +1424,7 @@ namespace Talifun.Web.Tests.Http
             var doesEntityExists = false;
             var headerValue = "*";
             var headerType = HttpRequestHeader.IfMatch;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -1445,7 +1449,7 @@ namespace Talifun.Web.Tests.Http
             var doesEntityExists = true;
             var headerValue = string.Empty;
             var headerType = HttpRequestHeader.IfNoneMatch;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -1467,7 +1471,7 @@ namespace Talifun.Web.Tests.Http
             var doesEntityExists = true;
             var headerValue = entityTag;
             var headerType = HttpRequestHeader.IfNoneMatch;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -1490,7 +1494,7 @@ namespace Talifun.Web.Tests.Http
             var doesEntityExists = true;
             var headerValue = "7654321," + entityTag;
             var headerType = HttpRequestHeader.IfNoneMatch;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
             
@@ -1513,7 +1517,7 @@ namespace Talifun.Web.Tests.Http
             var doesEntityExists = true;
             var headerValue = entityTag + "8";
             var headerType = HttpRequestHeader.IfNoneMatch;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -1536,7 +1540,7 @@ namespace Talifun.Web.Tests.Http
             var doesEntityExists = true;
             var headerValue = "7654321," + entityTag + "8";
             var headerType = HttpRequestHeader.IfNoneMatch;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -1559,7 +1563,7 @@ namespace Talifun.Web.Tests.Http
             var doesEntityExists = true;
             var headerValue = "abcdeF";
             var headerType = HttpRequestHeader.IfNoneMatch;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -1582,7 +1586,7 @@ namespace Talifun.Web.Tests.Http
             var doesEntityExists = true;
             var headerValue = "*";
             var headerType = HttpRequestHeader.IfNoneMatch;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -1605,7 +1609,7 @@ namespace Talifun.Web.Tests.Http
             var doesEntityExists = false;
             var headerValue = "*";
             var headerType = HttpRequestHeader.IfNoneMatch;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -1629,7 +1633,7 @@ namespace Talifun.Web.Tests.Http
             var contentLength = 10000;
             var headerValue = string.Empty;
             var headerType = HttpRequestHeader.Range;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -1653,7 +1657,7 @@ namespace Talifun.Web.Tests.Http
             var contentLength = 10000;
             var headerValue = "bytes=unknown-9999";
             var headerType = HttpRequestHeader.Range;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -1677,7 +1681,7 @@ namespace Talifun.Web.Tests.Http
             var contentLength = 10000;
             var headerValue = "bytes=0-unknown";
             var headerType = HttpRequestHeader.Range;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
             
@@ -1701,7 +1705,7 @@ namespace Talifun.Web.Tests.Http
             var contentLength = 10000;
             var headerValue = "bytes=0-499,5=100";
             var headerType = HttpRequestHeader.Range;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -1725,7 +1729,7 @@ namespace Talifun.Web.Tests.Http
             var contentLength = 10000;
             var headerValue = "bytes=499-0";
             var headerType = HttpRequestHeader.Range;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
             
@@ -1749,7 +1753,7 @@ namespace Talifun.Web.Tests.Http
             var contentLength = 10000;
             var headerValue = "bytes=0-20000";
             var headerType = HttpRequestHeader.Range;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -1773,7 +1777,7 @@ namespace Talifun.Web.Tests.Http
             var contentLength = 10000;
             var headerValue = "bytes=-20000";
             var headerType = HttpRequestHeader.Range;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -1797,7 +1801,7 @@ namespace Talifun.Web.Tests.Http
             var contentLength = 10000;
             var headerValue = "bytes=20000-";
             var headerType = HttpRequestHeader.Range;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -1821,7 +1825,7 @@ namespace Talifun.Web.Tests.Http
             var contentLength = 10000;
             var headerValue = "bytes=0-499";
             var headerType = HttpRequestHeader.Range;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -1850,7 +1854,7 @@ namespace Talifun.Web.Tests.Http
             var contentLength = 10000;
             var headerValue = "bytes=500-999";
             var headerType = HttpRequestHeader.Range;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
             
@@ -1879,7 +1883,7 @@ namespace Talifun.Web.Tests.Http
             var contentLength = 10000;
             var headerValue = "bytes=0-499,500-999";
             var headerType = HttpRequestHeader.Range;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -1911,7 +1915,7 @@ namespace Talifun.Web.Tests.Http
             var contentLength = 10000;
             var headerValue = "bytes=-500";
             var headerType = HttpRequestHeader.Range;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -1940,7 +1944,7 @@ namespace Talifun.Web.Tests.Http
             var contentLength = 10000;
             var headerValue = "bytes=9500-";
             var headerType = HttpRequestHeader.Range;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -1969,7 +1973,7 @@ namespace Talifun.Web.Tests.Http
             var contentLength = 10000;
             var headerValue = "bytes=0-0";
             var headerType = HttpRequestHeader.Range;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 
@@ -1998,7 +2002,7 @@ namespace Talifun.Web.Tests.Http
             var contentLength = 10000;
             var headerValue = "bytes=-1";
             var headerType = HttpRequestHeader.Range;
-            var headerName = StringifyHttpHeaders.StringFromRequestHeader(headerType);
+            var headerName = (string)headerType;
 
             httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Net;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Collections.Generic;
@@ -12,7 +11,6 @@ namespace Talifun.Web
         public const string Deflate = "deflate";
         public const string Gzip = "gzip";
         public const string Xgzip = "x-gzip";
-        public const string HttpHeaderUnlessModifiedSince = "Unless-Modified-Since";
 
         protected HeaderValueQValueComparer HeaderValueQValueComparer = new HeaderValueQValueComparer();
 
@@ -25,7 +23,7 @@ namespace Talifun.Web
         /// <returns>If the header exists return the header value; else return the default value specified.</returns>
         public string GetHttpHeaderValue(HttpRequestBase request, HttpRequestHeader httpRequestHeader, string defaultValue)
         {
-            var httpRequestHeaderString = StringifyHttpHeaders.StringFromRequestHeader(httpRequestHeader);
+            var httpRequestHeaderString = (string)httpRequestHeader;
             return GetHttpHeaderValue(request, httpRequestHeaderString, defaultValue);
         }
 
@@ -57,7 +55,7 @@ namespace Talifun.Web
         /// <remarks>Supports quoted identities.</remarks>
         public List<string> GetHttpHeaderValues(HttpRequestBase request, HttpRequestHeader httpRequestHeader)
         {
-            var httpRequestHeaderString = StringifyHttpHeaders.StringFromRequestHeader(httpRequestHeader);
+            var httpRequestHeaderString = (string)httpRequestHeader;
             return GetHttpHeaderValues(request, httpRequestHeaderString);
         }
 
@@ -98,7 +96,7 @@ namespace Talifun.Web
         /// <remarks>Supports quoted identities.</remarks>
         public List<HttpHeaderValue> GetHttpHeaderWithQValues(HttpRequestBase request, HttpRequestHeader httpRequestHeader)
         {
-            var httpRequestHeaderString = StringifyHttpHeaders.StringFromRequestHeader(httpRequestHeader);
+            var httpRequestHeaderString = (string)httpRequestHeader;
             return GetHttpHeaderWithQValues(request, httpRequestHeaderString);
         }
 
@@ -177,7 +175,7 @@ namespace Talifun.Web
         /// <returns>The http method to use.</returns>
         public HttpMethod GetHttpMethod(HttpRequestBase request)
         {
-            return StringifyHttpHeaders.HttpMethodFromString(request.HttpMethod);
+            return (HttpMethod)request.HttpMethod;
         }
 
         /// <summary>
@@ -261,7 +259,7 @@ namespace Talifun.Web
         /// </returns>
         public bool? CheckUnlessModifiedSince(HttpRequestBase request, DateTime lastModified)
         {
-            var requestHeaderUnlessModifiedSince = GetHttpHeaderValue(request, HttpHeaderUnlessModifiedSince, string.Empty);
+            var requestHeaderUnlessModifiedSince = GetHttpHeaderValue(request, HttpRequestHeader.UnlessModifiedSince, string.Empty);
 
             if (string.IsNullOrEmpty(requestHeaderUnlessModifiedSince))
             {
