@@ -191,16 +191,22 @@
     <Compile Include="StaticFile\Config\StaticFileHandlerSection.cs" />
     <Compile Include="StaticFile\Config\FileExtensionElement.cs" />
     <Compile Include="StaticFile\EtagMethodType.cs" />
-    <Compile Include="StaticFile\FileExtensionMatch.cs" />
-    <Compile Include="StaticFile\FileHandlerCacheItem.cs" />
+    <Compile Include="StaticFile\FileEntity.cs" />
+    <Compile Include="StaticFile\FileEntitySetting.cs" />
+    <Compile Include="StaticFile\FileEntityCacheItem.cs" />
     <Compile Include="Compress\PageCompressionModule.cs" />
     <Compile Include="Http\HttpRequestHeaderHelper.cs" />
+    <Compile Include="StaticFile\FileEntitySettingProvider.cs" />
+    <Compile Include="StaticFile\IFileEntity.cs" />
+    <Compile Include="StaticFile\IHttpRequestResponder.cs" />
     <Compile Include="StaticFile\StaticFileHelper.cs" />
     <Compile Include="StaticFile\StaticFileHandler.cs" />
     <Compile Include="Http\RangeItem.cs" />
     <Compile Include="Http\ResponseCompressionType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Http\WebServerType.cs" />
+    <Compile Include="StaticFile\HttpRequestResponder.cs" />
+    <Compile Include="StaticFile\WebServerDetector.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Crusher\Config\Crusher.xsd" />

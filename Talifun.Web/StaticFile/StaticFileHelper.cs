@@ -1,13 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Reflection;
-using System.Security.Permissions;
 using System.Web;
-using System.Web.Caching;
-using Talifun.Web.StaticFile.Config;
 
 namespace Talifun.Web.StaticFile
 {
@@ -22,133 +16,10 @@ namespace Talifun.Web.StaticFile
         private static readonly IMimeTyper MimeTyper = new MimeTyper();
         private static readonly IHasher Hasher = new Hasher(RetryableFileOpener);
         private static readonly IHttpRequestHeaderHelper HttpRequestHeaderHelper = new HttpRequestHeaderHelper();
-        private static IHttpResponseHeaderHelper _httpResponseHeaderHelper = null;
-        
-        internal static WebServerType WebServerType { get; set; }
-        internal static Dictionary<string, FileExtensionMatch> FileExtensionMatches { get; private set; }
-        internal static FileExtensionMatch FileExtensionMatchDefault { get; private set; }
-
-        internal static string StaticFileHandlerType = typeof(StaticFileHelper).ToString();
-        internal static Type HttpWorkerRequestType = typeof(HttpWorkerRequest);
-
-        static StaticFileHelper()
-        {
-            WebServerType = CurrentStaticFileHandlerConfiguration.Current.WebServerType;
-            FileExtensionMatches = GetFileExtensionsForMatches();
-            FileExtensionMatchDefault = GetDefaultFileExtensionForNoMatches();
-        }
-
-        private static Dictionary<string, FileExtensionMatch> GetFileExtensionsForMatches()
-        {
-            var fileExtensionMatches = new Dictionary<string, FileExtensionMatch>();
-
-            var fileExtensionElements = CurrentStaticFileHandlerConfiguration.Current.FileExtensions;
-            foreach (FileExtensionElement fileExtension in fileExtensionElements)
-            {
-                var extensions = fileExtension.Extension.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
-
-                foreach (var extension in extensions)
-                {
-                    var key = extension.Trim().ToLower();
-                    if (!key.StartsWith("."))
-                    {
-                        key = "." + key;
-                    }
-
-                    var fileExtensionElement = new FileExtensionMatch
-                    {
-                        Compress = fileExtension.Compress,
-                        Extension = fileExtension.Extension,
-                        MaxMemorySize = fileExtension.MaxMemorySize,
-                        ServeFromMemory = fileExtension.ServeFromMemory,
-                        EtagMethod = fileExtension.EtagMethod,
-                        Expires = fileExtension.Expires,
-                        MemorySlidingExpiration = fileExtension.MemorySlidingExpiration
-                    };
-
-                    fileExtensionMatches.Add(key, fileExtensionElement);
-                }
-            }
-
-            return fileExtensionMatches;
-        }
-
-        static FileExtensionMatch GetDefaultFileExtensionForNoMatches()
-        {
-            var fileExtensionElementDefault = CurrentStaticFileHandlerConfiguration.Current.FileExtensionDefault;
-
-            return new FileExtensionMatch
-            {
-                Compress = fileExtensionElementDefault.Compress,
-                Extension = string.Empty,
-                MaxMemorySize = fileExtensionElementDefault.MaxMemorySize,
-                ServeFromMemory = fileExtensionElementDefault.ServeFromMemory,
-                EtagMethod = fileExtensionElementDefault.EtagMethod,
-                Expires = fileExtensionElementDefault.Expires,
-                MemorySlidingExpiration = fileExtensionElementDefault.MemorySlidingExpiration
-            };
-        }
-
-        /// <summary>
-        /// Return the http worker request for the current request.
-        /// </summary>
-        /// <remarks>
-        /// This is needed for when we manually create an HttpContext.
-        /// </remarks>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        [ReflectionPermission(SecurityAction.Assert, RestrictedMemberAccess = true)]
-        public static HttpWorkerRequest GetWorkerRequestViaReflection(HttpRequestBase request)
-        {
-            const BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic;
-
-            // In Mono, the field has a different name.
-            var wrField = request.GetType().GetField("_wr", bindingFlags) ?? request.GetType().GetField("worker_request", bindingFlags);
-
-            if (wrField == null) return null;
-
-            return (HttpWorkerRequest)wrField.GetValue(request);
-        }
-
-        /// <summary>
-        /// Detect the web server being used to serve requests
-        /// </summary>
-        /// <param name="context">Http context</param>
-        [SecurityPermission(SecurityAction.Assert, UnmanagedCode=true)]
-        public static void DetectWebServerType(HttpContextBase context)
-        {
-            var provider = (IServiceProvider)context;
-            var worker = (HttpWorkerRequest)provider.GetService(HttpWorkerRequestType) ?? GetWorkerRequestViaReflection(context.Request);
-
-            if (worker != null)
-            {
-                var workerType = worker.GetType();
-                if (workerType != null)
-                {
-                    switch (workerType.FullName)
-                    {
-                        case "System.Web.Hosting.ISAPIWorkerRequest":
-                            //IIS 7 in Classic mode gets lumped in here too
-                            WebServerType = WebServerType.IIS6orIIS7ClassicMode;
-                            break;
-                        case "Microsoft.VisualStudio.WebHost.Request":
-                        case "Cassini.Request":
-                            WebServerType = WebServerType.Cassini;
-                            break;
-                        case "System.Web.Hosting.IIS7WorkerRequest":
-                            WebServerType = WebServerType.IIS7;
-                            break;
-                        default:
-                            WebServerType = WebServerType.Unknown;
-                            break;
-                    }
-
-                    return;
-                }
-            }
-
-            WebServerType = WebServerType.Unknown;
-        }
+        private static readonly FileEntitySettingProvider FileEntitySettingProvider = new FileEntitySettingProvider();
+        private static IHttpResponseHeaderHelper _httpResponseHeaderHelper;
+        private static IHttpRequestResponder _httpRequestResponder;
+        private static WebServerType _webServerType;
 
         public static void ProcessRequest(HttpContextBase context)
         {
@@ -163,14 +34,19 @@ namespace Talifun.Web.StaticFile
             var request = context.Request;
             var response = context.Response;
 
-            if (WebServerType == WebServerType.NotSet)
+            var fileSettingEntity = FileEntitySettingProvider.GetSetting(file);
+
+            var fileEntity = new FileEntity(RetryableFileOpener, MimeTyper, Hasher, MaxFileSizeToServe, BufferSize, file, fileSettingEntity);
+
+            if (_webServerType == WebServerType.NotSet)
             {
-                DetectWebServerType(context);
+                _webServerType = WebServerDetector.DetectWebServerType(context);
             }
 
             if (_httpResponseHeaderHelper == null)
             {
-                _httpResponseHeaderHelper = new HttpResponseHeaderHelper(WebServerType);
+                _httpResponseHeaderHelper = new HttpResponseHeaderHelper(_webServerType);
+                _httpRequestResponder = new HttpRequestResponder(HttpRequestHeaderHelper, _httpResponseHeaderHelper);
             }
 
             //We don't want to use up all the servers memory keeping a copy of the file, we just want to stream file to client
@@ -178,14 +54,14 @@ namespace Talifun.Web.StaticFile
       
             try
             {
-                if (!IsHttpMethodAllowed(request))
+                if (!_httpRequestResponder.IsHttpMethodAllowed(request))
                 {
                     //If we are unable to parse url send 405 Method not allowed
                     _httpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatusCode.MethodNotAllowed);
                     return;
                 }
 
-                if (!IsAllowedToServeRequestedFile(file))
+                if (!fileEntity.IsAllowedToServeRequestedEntity)
                 {
                     //If we are unable to parse url send 403 Path Forbidden
                     _httpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatusCode.Forbidden);
@@ -196,15 +72,11 @@ namespace Talifun.Web.StaticFile
 
                 var compressionType = HttpRequestHeaderHelper.GetCompressionMode(request);
 
-                FileExtensionMatch fileExtensionMatch = null;
-                if (!FileExtensionMatches.TryGetValue(file.Extension.ToLower(), out fileExtensionMatch))
-                {
-                    fileExtensionMatch = FileExtensionMatchDefault;
-                }
-
                 // If this is a binary file like image, then we won't compress it.
-                if (!fileExtensionMatch.Compress)
+                if (!fileEntity.IsCompressable)
+                {
                     compressionType = ResponseCompressionType.None;
+                }
 
                 // If it is a partial request we need to get bytes of orginal entity data, we will compress the byte ranges returned
                 var entityStoredWithCompressionType = compressionType;
@@ -214,26 +86,26 @@ namespace Talifun.Web.StaticFile
                     entityStoredWithCompressionType = ResponseCompressionType.None;
                 }
 
-                FileHandlerCacheItem fileHandlerCacheItem = null;
+                FileEntityCacheItem fileEntityCacheItem = null;
 
-                if (!TryGetFileHandlerCacheItem(fileExtensionMatch, file, entityStoredWithCompressionType, out fileHandlerCacheItem))
+                if (!fileEntity.TryGetFileHandlerCacheItem(entityStoredWithCompressionType, out fileEntityCacheItem))
                 {
                     //File does not exist
-                    if (!file.Exists)
+                    if (!fileEntity.DoesEntityExists)
                     {
                         _httpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatusCode.NotFound);
                         return;
                     }
 
                     //File too large to send
-                    if (file.Length > MaxFileSizeToServe)
+                    if (fileEntity.IsEntityLargerThanMaxFileSize)
                     {
                         _httpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatusCode.RequestEntityTooLarge);
                         return;
                     }
                 }
 
-                if (fileHandlerCacheItem.EntityData == null && !file.Exists)
+                if (fileEntityCacheItem.EntityData == null && !fileEntity.DoesEntityExists)
                 {
                     //If we have cached the properties of the file but its to large to serve from memory then we must check that the file exists each time.
                     _httpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatusCode.NotFound);
@@ -242,7 +114,7 @@ namespace Talifun.Web.StaticFile
 
                 //Unable to parse request range header
                 IEnumerable<RangeItem> ranges = null;
-                var requestRange = HttpRequestHeaderHelper.GetRanges(request, fileHandlerCacheItem.ContentLength, out ranges);
+                var requestRange = HttpRequestHeaderHelper.GetRanges(request, fileEntityCacheItem.ContentLength, out ranges);
                 if (requestRange.HasValue && !requestRange.Value)
                 {
                     _httpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatusCode.RequestedRangeNotSatisfiable);
@@ -250,8 +122,8 @@ namespace Talifun.Web.StaticFile
                 }
 
                 //Check if cached response is valid and if it is send appropriate response headers
-                var httpStatus = GetResponseHttpStatus(request, fileHandlerCacheItem.LastModified,
-                                                             fileHandlerCacheItem.Etag);
+                var httpStatus = _httpRequestResponder.GetResponseHttpStatus(request, fileEntityCacheItem.LastModified,
+                                                             fileEntityCacheItem.Etag);
 
                 _httpResponseHeaderHelper.SendHttpStatusHeaders(response, httpStatus);
 
@@ -264,12 +136,12 @@ namespace Talifun.Web.StaticFile
                 _httpResponseHeaderHelper.SetResponseResumable(response);
 
                 //How the entity should be cached on the client
-                _httpResponseHeaderHelper.SetResponseCachable(response, DateTime.Now, fileHandlerCacheItem.LastModified, fileHandlerCacheItem.Etag, fileExtensionMatch.Expires);
+                _httpResponseHeaderHelper.SetResponseCachable(response, DateTime.Now, fileEntityCacheItem.LastModified, fileEntityCacheItem.Etag, fileEntity.Expires);
 
-                var entityResponseForEntity = GetEntityResponse(response, ranges);
-                entityResponseForEntity.SendHeaders(response, compressionType, fileHandlerCacheItem);
+                var entityResponseForEntity = _httpRequestResponder.GetEntityResponse(response, ranges);
+                entityResponseForEntity.SendHeaders(response, compressionType, fileEntityCacheItem);
 
-                var transmitEntity = GetTransmitEntityStrategy(fileHandlerCacheItem, file);
+                var transmitEntity = fileEntity.GetTransmitEntityStrategy(fileEntityCacheItem);
                 entityResponseForEntity.SendBody(requestHttpMethod, response, transmitEntity);
             }
             catch (HttpException httpException)
@@ -280,353 +152,6 @@ namespace Talifun.Web.StaticFile
 
                 throw;
             }
-        }
-
-        /// <summary>
-        /// The entity respose type to use.
-        /// </summary>
-        /// <param name="response">An HTTP response.</param>
-        /// <param name="ranges">The byte ranges to serve.</param>
-        /// <returns>Entity respose type to use</returns>
-        public static IEntityResponse GetEntityResponse(HttpResponseBase response, IEnumerable<RangeItem> ranges)
-        {
-            if (response.StatusCode != (int) HttpStatusCode.PartialContent)
-            {
-                //Send a full response
-                return new FullEntityResponse(_httpResponseHeaderHelper);
-            }
-
-            if (ranges.Count() == 1)
-            {
-                //Single byte range request, send a partial response
-                return new SinglePartEntityResponse(_httpResponseHeaderHelper, ranges.First());
-            }
-
-            //Multi byte range request, send a partial response
-            return new MultiPartEntityResponse(_httpResponseHeaderHelper, ranges);
-        }
-
-        /// <summary>
-        /// The transmit entity strategy to use.
-        /// </summary>
-        /// <param name="fileHandlerCacheItem">The cache item.</param>
-        /// <param name="file">File to send.</param>
-        /// <returns></returns>
-        public static ITransmitEntityStrategy GetTransmitEntityStrategy(FileHandlerCacheItem fileHandlerCacheItem, FileInfo file)
-        {
-            if (fileHandlerCacheItem.EntityData == null)
-            {
-                //Let IIS send file content with TransmitFile
-                return new TransmitEntityStrategyForIIS(fileHandlerCacheItem, file.FullName);
-            }
-            else
-            {
-                //We will serve the in memory file
-                return new TransmitEntityStrategyForByteArray(fileHandlerCacheItem, fileHandlerCacheItem.EntityData);
-            }
-        }
-
-        /// <summary>
-        /// Get a fileHanderCacheItem for the requested file.
-        /// </summary>
-        /// <param name="fileExtensionMatch">The configuration to use for this extension.</param>
-        /// <param name="file">The file to serve.</param>
-        /// <param name="entityStoredWithCompressionType">The compression type to use for the file.</param>
-        /// <param name="fileHandlerCacheItem">The fileHandlerCacheItem </param>
-        /// <returns>Returns true if a fileHandlerCacheItem can be created; otherwise false.</returns>
-        internal static bool TryGetFileHandlerCacheItem(FileExtensionMatch fileExtensionMatch, FileInfo file, ResponseCompressionType entityStoredWithCompressionType, out FileHandlerCacheItem fileHandlerCacheItem)
-        {
-            fileHandlerCacheItem = null;
-
-            // If the response bytes are already cached, then deliver the bytes directly from cache
-            var cacheKey = StaticFileHandlerType + ":" + entityStoredWithCompressionType + ":" + file.FullName;
-
-            var cachedValue = HttpRuntime.Cache.Get(cacheKey);
-            if (cachedValue != null)
-            {
-                fileHandlerCacheItem = (FileHandlerCacheItem)cachedValue;
-            }
-            else
-            {
-                //File does not exist
-                if (!file.Exists)
-                {
-                    return false;
-                }
-
-                //File too large to send
-                if (file.Length > MaxFileSizeToServe)
-                {
-                    return false;
-                }
-
-                var etag = string.Empty;
-                var lastModifiedFileTime = file.LastWriteTime.ToUniversalTime();
-                //When a browser sets the If-Modified-Since field to 13-1-2010 10:30:58, another DateTime instance is created, but this one has a Ticks value of 633989754580000000
-                //But the time from the file system is accurate to a tick. So it might be 633989754586086250.
-                var lastModified = new DateTime(lastModifiedFileTime.Year, lastModifiedFileTime.Month,
-                                                lastModifiedFileTime.Day, lastModifiedFileTime.Hour,
-                                                lastModifiedFileTime.Minute, lastModifiedFileTime.Second);
-                var contentType = MimeTyper.GetMimeType(file.Extension);
-                var contentLength = file.Length;
-
-                //ETAG is always calculated from uncompressed entity data
-                switch (fileExtensionMatch.EtagMethod)
-                {
-                    case EtagMethodType.MD5:
-                        etag = Hasher.CalculateMd5Etag(file);
-                        break;
-                    case EtagMethodType.LastModified:
-                        etag = lastModified.ToString();
-                        break;
-                    default:
-                        throw new Exception("Unknown etag method generation");
-                }
-
-                fileHandlerCacheItem = new FileHandlerCacheItem
-                {
-                    Etag = etag,
-                    LastModified = lastModified,
-                    ContentLength = contentLength,
-                    ContentType = contentType,
-                    CompressionType = entityStoredWithCompressionType
-                };
-
-                if (fileExtensionMatch.ServeFromMemory
-                    && (contentLength <= fileExtensionMatch.MaxMemorySize))
-                {
-                    // When not compressed, buffer is the size of the file but when compressed, 
-                    // initial buffer size is one third of the file size. Assuming, compression 
-                    // will give us less than 1/3rd of the size
-                    using (var memoryStream = new MemoryStream(
-                        entityStoredWithCompressionType == ResponseCompressionType.None
-                            ?
-                                Convert.ToInt32(file.Length)
-                            :
-                                Convert.ToInt32((double)file.Length / 3)))
-                    {
-                        ReadEntityData(entityStoredWithCompressionType, file, memoryStream);
-                        var entityData = memoryStream.ToArray();
-                        var entityDataLength = entityData.LongLength;
-
-                        fileHandlerCacheItem.EntityData = entityData;
-                        fileHandlerCacheItem.ContentLength = entityDataLength;
-                    }
-                }
-
-                //Put fileHandlerCacheItem into cache with 30 min sliding expiration, also if file changes then remove fileHandlerCacheItem from cache
-                HttpRuntime.Cache.Insert(
-                    cacheKey,
-                    fileHandlerCacheItem,
-                    new CacheDependency(file.FullName),
-                    Cache.NoAbsoluteExpiration,
-                    fileExtensionMatch.MemorySlidingExpiration,
-                    CacheItemPriority.BelowNormal,
-                    null);
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Read a files contents into a stream
-        /// </summary>
-        /// <param name="compressionType">The compression type to use.</param>
-        /// <param name="file">The file to read from.</param>
-        /// <param name="stream">The stream to write to.</param>
-        private static void ReadEntityData(ResponseCompressionType compressionType, FileInfo file, Stream stream)
-        {
-            using (var outputStream = (compressionType == ResponseCompressionType.None ? stream : (compressionType == ResponseCompressionType.GZip ? (Stream)new GZipStream(stream, CompressionMode.Compress, true) : (Stream)new DeflateStream(stream, CompressionMode.Compress))))
-            {
-                // We can compress and cache this file
-                using (var fs = RetryableFileOpener.OpenFileStream(file, 5, FileMode.Open, FileAccess.Read, FileShare.Read))
-                {
-                    var bufferSize = Convert.ToInt32(Math.Min(file.Length, BufferSize));
-                    var buffer = new byte[bufferSize];
-
-                    int bytesRead;
-                    while ((bytesRead = fs.Read(buffer, 0, bufferSize)) > 0)
-                    {
-                        outputStream.Write(buffer, 0, bytesRead);
-                    }
-                }
-
-                outputStream.Flush();
-            }
-        }
-
-        /// <summary>
-        /// Determine of requested filke can be served.
-        /// </summary>
-        /// <param name="file">File to serve.</param>
-        /// <returns>True if file can be served; false if it can not be.</returns>
-        internal static bool IsAllowedToServeRequestedFile(FileInfo file)
-        {
-            return !(file.FullName.EndsWith(".asp", StringComparison.InvariantCultureIgnoreCase) ||
-                   file.FullName.EndsWith(".aspx", StringComparison.InvariantCultureIgnoreCase));
-        }
-
-        /// <summary>
-        /// Determine whether the http method is supported. Currently we only support get and head methods.
-        /// </summary>
-        /// <param name="request">An HTTP request.</param>
-        /// <returns>True if http method is supported; false if it is not</returns>
-        internal static bool IsHttpMethodAllowed(HttpRequestBase request)
-        {
-            var httpMethod = HttpRequestHeaderHelper.GetHttpMethod(request);
-            return (httpMethod == HttpMethod.Get || httpMethod == HttpMethod.Head);
-        }
-
-        /// <summary>
-        /// Process the http request to calculate its http response code.
-        /// </summary>
-        /// <param name="request">An HTTP request.</param>
-        /// <param name="lastModified">The last modified date of the entity.</param>
-        /// <param name="etag">The etag of the entity.</param>
-        /// <returns>
-        /// Returns httpStatusCode for Http request.
-        /// </returns>
-        /// <remarks>
-        /// When the browser has a satisfiable cached response, the appropriate header is also set
-        /// so there is no need to continue the processing of the entity.
-        /// </remarks>
-        internal static HttpStatusCode GetResponseHttpStatus(HttpRequestBase request, DateTime lastModified, string etag)
-        {
-            lastModified = lastModified.ToUniversalTime();
-
-            //Always assume we going to send whole entity
-            var responseCode = HttpStatusCode.Ok;
-
-            if (HttpRequestHeaderHelper.IsRangeRequest(request))
-            {
-                //It is a partial request
-                responseCode = HttpStatusCode.PartialContent;
-            }
-
-            bool? ifNoneMatch = null;
-            bool? ifMatch = null;
-
-            if ((((int)responseCode >= 200 && (int)responseCode <= 299 || (int)responseCode == 304)))
-            {
-                //If there no matches then we do not want a cached response
-                ifNoneMatch = HttpRequestHeaderHelper.CheckIfNoneMatch(request, etag, true);
-                if (ifNoneMatch.HasValue)
-                {
-                    if (ifNoneMatch.Value && responseCode == HttpStatusCode.NotModified)
-                    {
-                        responseCode = HttpStatusCode.Ok;
-                    }
-                    else
-                    {
-                        //If the request would, without the If-None-Match header field, result in 
-                        //anything other than a 2xx or 304 status, then the If-None-Match header MUST be ignored.
-                        responseCode = HttpStatusCode.NotModified;
-                    }
-                }
-            }
-
-            if ((((int)responseCode >= 200 && (int)responseCode <= 299 || (int)responseCode == 304)))
-            {
-                ifMatch = HttpRequestHeaderHelper.CheckIfMatch(request, etag, true);
-                if (ifMatch.HasValue && !ifMatch.Value)
-                {
-                    //If none of the entity tags match, or if "*" is given and no current 
-                    //entity exists, the server MUST NOT perform the requested method, and 
-                    //MUST return a 412 (Precondition Failed) response
-
-                    //If the request would, without the If-Match header field, result in 
-                    //anything other than a 2xx or 412 status, then the If-Match header MUST be ignored.
-                    responseCode = HttpStatusCode.PreconditionFailed;
-                }
-            }
-
-            if (
-                !(ifNoneMatch.HasValue && ifNoneMatch.Value) ||
-                !(ifMatch.HasValue && !ifMatch.Value))
-            {
-                //Only use weakly typed etags headers if strong ones are valid
-
-                bool? unlessModifiedSince = null;
-                bool? ifUnmodifiedSince = null;
-                bool? ifModifiedSince = null;
-
-                if ((((int)responseCode >= 200 && (int)responseCode <= 299 || (int)responseCode == 304)))
-                {
-                    unlessModifiedSince = HttpRequestHeaderHelper.CheckUnlessModifiedSince(request, lastModified);
-                    if (unlessModifiedSince.HasValue && !unlessModifiedSince.Value)
-                    {
-                        //If the requested variant has been modified since the specified time, 
-                        //the server MUST NOT perform the requested operation, and MUST return 
-                        //a 412 (Precondition Failed). Otherwise header is ignored.
-
-                        //If the request normally (i.e., without the If-Unmodified-Since header) 
-                        //would result in anything other than a 2xx or 412 status, 
-                        //the If-Unmodified-Since header SHOULD be ignored.
-                        responseCode = HttpStatusCode.PreconditionFailed;
-                    }
-                }
-
-                if ((((int)responseCode >= 200 && (int)responseCode <= 299 || (int)responseCode == 304)))
-                {
-                    ifUnmodifiedSince = HttpRequestHeaderHelper.CheckIfUnmodifiedSince(request, lastModified);
-                    if (ifUnmodifiedSince.HasValue && !ifUnmodifiedSince.Value)
-                    {
-                        //If the requested variant has been modified since the specified time, 
-                        //the server MUST NOT perform the requested operation, and MUST return 
-                        //a 412 (Precondition Failed). Otherwise header is ignored. 
-
-                        //If the request normally (i.e., without the If-Unmodified-Since header) 
-                        //would result in anything other than a 2xx or 412 status, 
-                        //the If-Unmodified-Since header SHOULD be ignored.
-                        responseCode = HttpStatusCode.PreconditionFailed;
-                    }
-                }
-
-                if ((((int)responseCode >= 200 && (int)responseCode <= 299 || (int)responseCode == 304)))
-                {
-                    ifModifiedSince = HttpRequestHeaderHelper.CheckIfModifiedSince(request, lastModified);
-                    if (ifModifiedSince.HasValue)
-                    {
-                        if (ifModifiedSince.Value && responseCode == HttpStatusCode.NotModified)
-                        {
-                            //ifNoneMatch must be ignored if ifModifiedSince does not match so return entire entity
-                            responseCode = HttpStatusCode.Ok;
-                        }
-                        else
-                        {
-                            responseCode = HttpStatusCode.NotModified;
-                        }
-                    }
-                }
-            }
-
-            //If its not modified there is no need to send it
-            if ((((int)responseCode >= 200 && (int)responseCode <= 299)))
-            {
-                var ifRange = HttpRequestHeaderHelper.CheckIfRange(request, etag, lastModified);
-                if (ifRange.HasValue)
-                {
-                    //GET /foo HTTP/1.1
-                    //Range: 500-1000
-                    //If-Match: "abc", "xyz"
-                    //If-Range: "xyz"
-
-                    //This clearly says: if the entity is "abc", send me the whole thing, if
-                    //it's "xyz", send me the second 500 bytes, otherwise, send me a 412.
-
-                    //if the entity is unchanged, send me the part(s) that I am missing; otherwise, send me the entire new entity
-                    if (ifRange.Value)
-                    {
-                        responseCode = HttpStatusCode.PartialContent;
-                    }
-                    else
-                    {
-                        responseCode = HttpStatusCode.Ok;
-                    }
-                }
-            }
-
-            return responseCode;
         }
     }
 }
