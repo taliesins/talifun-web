@@ -199,7 +199,7 @@
     <Compile Include="StaticFile\FileEntitySettingProvider.cs" />
     <Compile Include="StaticFile\IFileEntity.cs" />
     <Compile Include="StaticFile\IHttpRequestResponder.cs" />
-    <Compile Include="StaticFile\StaticFileHelper.cs" />
+    <Compile Include="StaticFile\StaticFileManager.cs" />
     <Compile Include="StaticFile\StaticFileHandler.cs" />
     <Compile Include="Http\RangeItem.cs" />
     <Compile Include="Http\ResponseCompressionType.cs" />

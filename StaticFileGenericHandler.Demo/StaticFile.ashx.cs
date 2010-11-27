@@ -25,7 +25,7 @@ namespace StaticFileGenericHandler.Demo
             var fileInfo = new FileInfo(HttpContext.Current.Server.MapPath("~/Static/test.zip"));
 
             httpContext.Response.AddHeader("Content-Disposition", string.Format("attachment;filename=\"{0}\";", fileInfo.Name));
-            StaticFileHelper.ProcessRequest(new HttpContextWrapper(httpContext), fileInfo);
+            StaticFileManager.Instance.ProcessRequest(new HttpContextWrapper(httpContext), fileInfo);
         }
     }
 }

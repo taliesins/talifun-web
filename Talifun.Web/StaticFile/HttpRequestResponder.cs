@@ -16,13 +16,106 @@ namespace Talifun.Web.StaticFile
             HttpResponseHeaderHelper = httpResponseHeaderHelper;
         }
 
+        public void ServeRequest(HttpRequestBase request, HttpResponseBase response, FileEntity fileEntity)
+        {
+            if (!IsHttpMethodAllowed(request))
+            {
+                //If we are unable to parse url send 405 Method not allowed
+                HttpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatusCode.MethodNotAllowed);
+                return;
+            }
+
+            if (!fileEntity.IsAllowedToServeRequestedEntity)
+            {
+                //If we are unable to parse url send 403 Path Forbidden
+                HttpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatusCode.Forbidden);
+                return;
+            }
+
+            var requestHttpMethod = HttpRequestHeaderHelper.GetHttpMethod(request);
+
+            var compressionType = HttpRequestHeaderHelper.GetCompressionMode(request);
+
+            // If this is a binary file like image, then we won't compress it.
+            if (!fileEntity.IsCompressable)
+            {
+                compressionType = ResponseCompressionType.None;
+            }
+
+            // If it is a partial request we need to get bytes of orginal entity data, we will compress the byte ranges returned
+            var entityStoredWithCompressionType = compressionType;
+            var isRangeRequest = HttpRequestHeaderHelper.IsRangeRequest(request);
+            if (isRangeRequest)
+            {
+                entityStoredWithCompressionType = ResponseCompressionType.None;
+            }
+
+            FileEntityCacheItem fileEntityCacheItem = null;
+
+            if (!fileEntity.TryGetFileHandlerCacheItem(entityStoredWithCompressionType, out fileEntityCacheItem))
+            {
+                //File does not exist
+                if (!fileEntity.DoesEntityExists)
+                {
+                    HttpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatusCode.NotFound);
+                    return;
+                }
+
+                //File too large to send
+                if (fileEntity.IsEntityLargerThanMaxFileSize)
+                {
+                    HttpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatusCode.RequestEntityTooLarge);
+                    return;
+                }
+            }
+
+            if (fileEntityCacheItem.EntityData == null && !fileEntity.DoesEntityExists)
+            {
+                //If we have cached the properties of the file but its to large to serve from memory then we must check that the file exists each time.
+                HttpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatusCode.NotFound);
+                return;
+            }
+
+            //Unable to parse request range header
+            IEnumerable<RangeItem> ranges = null;
+            var requestRange = HttpRequestHeaderHelper.GetRanges(request, fileEntityCacheItem.ContentLength, out ranges);
+            if (requestRange.HasValue && !requestRange.Value)
+            {
+                HttpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatusCode.RequestedRangeNotSatisfiable);
+                return;
+            }
+
+            //Check if cached response is valid and if it is send appropriate response headers
+            var httpStatus = GetResponseHttpStatus(request, fileEntityCacheItem.LastModified,
+                                                         fileEntityCacheItem.Etag);
+
+            HttpResponseHeaderHelper.SendHttpStatusHeaders(response, httpStatus);
+
+            if (httpStatus == HttpStatusCode.NotModified || httpStatus == HttpStatusCode.PreconditionFailed)
+            {
+                return;
+            }
+
+            //Tell the client it supports resumable requests
+            HttpResponseHeaderHelper.SetResponseResumable(response);
+
+            //How the entity should be cached on the client
+            HttpResponseHeaderHelper.SetResponseCachable(response, DateTime.Now, fileEntityCacheItem.LastModified, fileEntityCacheItem.Etag, fileEntity.Expires);
+
+            var entityResponseForEntity = GetEntityResponse(response, ranges);
+            entityResponseForEntity.SendHeaders(response, compressionType, fileEntityCacheItem);
+
+            var transmitEntity = fileEntity.GetTransmitEntityStrategy(fileEntityCacheItem);
+            entityResponseForEntity.SendBody(requestHttpMethod, response, transmitEntity);
+        }
+
         /// <summary>
         /// The entity respose type to use.
         /// </summary>
         /// <param name="response">An HTTP response.</param>
         /// <param name="ranges">The byte ranges to serve.</param>
         /// <returns>Entity respose type to use</returns>
-        public IEntityResponse GetEntityResponse(HttpResponseBase response, IEnumerable<RangeItem> ranges)
+        protected IEntityResponse GetEntityResponse(HttpResponseBase response, IEnumerable<RangeItem> ranges)
         {
             if (response.StatusCode != (int)HttpStatusCode.PartialContent)
             {
@@ -45,7 +138,7 @@ namespace Talifun.Web.StaticFile
         /// </summary>
         /// <param name="request">An HTTP request.</param>
         /// <returns>True if http method is supported; false if it is not</returns>
-        public bool IsHttpMethodAllowed(HttpRequestBase request)
+        protected bool IsHttpMethodAllowed(HttpRequestBase request)
         {
             var httpMethod = HttpRequestHeaderHelper.GetHttpMethod(request);
             return (httpMethod == HttpMethod.Get || httpMethod == HttpMethod.Head);
@@ -64,7 +157,7 @@ namespace Talifun.Web.StaticFile
         /// When the browser has a satisfiable cached response, the appropriate header is also set
         /// so there is no need to continue the processing of the entity.
         /// </remarks>
-        public HttpStatusCode GetResponseHttpStatus(HttpRequestBase request, DateTime lastModified, string etag)
+        protected HttpStatusCode GetResponseHttpStatus(HttpRequestBase request, DateTime lastModified, string etag)
         {
             lastModified = lastModified.ToUniversalTime();
 

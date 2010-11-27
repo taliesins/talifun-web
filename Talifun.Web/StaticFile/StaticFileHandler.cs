@@ -21,7 +21,7 @@ namespace Talifun.Web.StaticFile
                 HttpContext.Current = httpContext;
             }
 
-            StaticFileHelper.ProcessRequest(new HttpContextWrapper(httpContext));
+            StaticFileManager.Instance.ProcessRequest(new HttpContextWrapper(httpContext));
         }
 
         #endregion

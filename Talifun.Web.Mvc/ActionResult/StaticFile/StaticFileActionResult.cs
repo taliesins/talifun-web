@@ -20,7 +20,7 @@ namespace Talifun.Web.Mvc
 
         public override void ExecuteResult(ControllerContext context)
         {
-            StaticFileHelper.ProcessRequest(context.HttpContext, File);
+            StaticFileManager.Instance.ProcessRequest(context.HttpContext, File);
         }
     }
 }
