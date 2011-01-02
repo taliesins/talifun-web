@@ -4,7 +4,6 @@ using System.IO;
 using System.Text;
 using System.Web;
 using System.Web.Caching;
-using System.Web.Hosting;
 using Talifun.Web.Helper;
 using Yahoo.Yui.Compressor;
 
@@ -18,25 +17,30 @@ namespace Talifun.Web.Crusher
         protected readonly IRetryableFileOpener RetryableFileOpener;
         protected readonly IRetryableFileWriter RetryableFileWriter;
         protected readonly ICssPathRewriter CssPathRewriter;
+        protected readonly IPathProvider PathProvider;
         protected static string CssCrusherType = typeof(CssCrusher).ToString();
 
-        public CssCrusher(IRetryableFileOpener retryableFileOpener, IRetryableFileWriter retryableFileWriter, ICssPathRewriter cssPathRewriter)
+        public CssCrusher(IRetryableFileOpener retryableFileOpener, IRetryableFileWriter retryableFileWriter, ICssPathRewriter cssPathRewriter, IPathProvider pathProvider)
         {
             RetryableFileOpener = retryableFileOpener;
             RetryableFileWriter = retryableFileWriter;
             CssPathRewriter = cssPathRewriter;
+            PathProvider = pathProvider;
         }
 
         /// <summary>
         /// Add css files to be crushed.
         /// </summary>
-        /// <param name="outputPath">The path for the crushed css file.</param>
-        /// <param name="files">The css files to be crushed.</param>
-        public virtual void AddFiles(string outputPath, IEnumerable<CssFile> files)
+        /// <param name="outputUri">The virtual path for the crushed css file.</param>
+        /// <param name="cssFiles">The css files to be crushed.</param>
+        /// <param name="appendHashToAssets">Should css assets have a hash appended to them.</param>
+        public virtual void AddFiles(Uri outputUri, IEnumerable<CssFile> cssFiles, bool appendHashToAssets)
         {
-            var crushedContent = ProcessFiles(outputPath, files);
-            RetryableFileWriter.SaveContentsToFile(crushedContent, outputPath);
-            AddFilesToCache(outputPath, files);
+            IEnumerable<FileInfo> cssAssetFilePaths;
+            var crushedContent = ProcessFiles(outputUri, cssFiles, appendHashToAssets, out cssAssetFilePaths);
+            var outputFileInfo = new FileInfo(PathProvider.MapPath(outputUri));
+            RetryableFileWriter.SaveContentsToFile(crushedContent, outputFileInfo);
+            AddFilesToCache(outputUri, cssFiles, cssAssetFilePaths);
         }
 
         /// <summary>
@@ -49,34 +53,87 @@ namespace Talifun.Web.Crusher
             return dotless.Core.Less.Parse(fileContents);
         }
 
+        public virtual Uri GetUriDirectory(Uri uri)
+        {            
+            var path = uri.OriginalString;
+
+            var queryStringPosition = path.IndexOf('?');
+
+            if (queryStringPosition > -1)
+            {
+                path = path.Substring(0, queryStringPosition);
+            }
+
+            var startIndex = path.Length - Path.GetFileName(path).Length;
+
+            path = path.Remove(startIndex);
+
+            return new Uri(path, UriKind.RelativeOrAbsolute);
+        }
+
         /// <summary>
         /// Compress the css files and store them in the specified css file.
         /// </summary>
-        /// <param name="outputPath">The path for the crushed css file.</param>
-        /// <param name="files">The css files to be crushed.</param>
-        public virtual StringBuilder ProcessFiles(string outputPath, IEnumerable<CssFile> files)
+        /// <param name="cssRootUri">The path for the crushed css file.</param>
+        /// <param name="cssFiles">The css files to be crushed.</param>
+        /// <param name="appendHashToAssets"></param>
+        /// <param name="cssAssetFilePaths">The asset file paths in the crushed css file.</param>
+        public virtual StringBuilder ProcessFiles(Uri cssRootUri, IEnumerable<CssFile> cssFiles, bool appendHashToAssets, out IEnumerable<FileInfo> cssAssetFilePaths)
         {
-            outputPath = HostingEnvironment.MapPath(outputPath);
+            var cssRootPathUri = GetUriDirectory(cssRootUri);
+            cssRootPathUri = !cssRootUri.IsAbsoluteUri
+                                       ? new Uri(PathProvider.MapPath(cssRootUri))
+                                       : cssRootPathUri;
+
             var uncompressedContents = new StringBuilder();
             var toBeStockYuiCompressedContents = new StringBuilder();
             var toBeMichaelAshRegexCompressedContents = new StringBuilder();
             var toBeHybridCompressedContents = new StringBuilder();
+            var localCssAssetFilesThatExist = new List<FileInfo>(); 
 
-            foreach (var file in files)
+            foreach (var cssFile in cssFiles)
             {
-                var filePath = HostingEnvironment.MapPath(file.FilePath);
-                var fileInfo = new FileInfo(filePath);
-                var fileContents = RetryableFileOpener.ReadAllText(fileInfo);
-                var fileName = fileInfo.Name.ToLower();
+                var cssFilePath = VirtualPathUtility.ToAbsolute(cssFile.FilePath);
+                var relativeRootUri = GetUriDirectory(new Uri(cssFilePath, UriKind.RelativeOrAbsolute));
+                relativeRootUri = !relativeRootUri.IsAbsoluteUri
+                                      ? new Uri(PathProvider.MapPath(relativeRootUri))
+                                      : relativeRootUri;
+
+                var cssFileInfo = new FileInfo(PathProvider.MapPath(cssFilePath));
+
+                var fileContents = RetryableFileOpener.ReadAllText(cssFileInfo);
+                var fileName = cssFileInfo.Name.ToLower();
 
                 if (fileName.EndsWith(".less") || fileName.EndsWith(".less.css"))
                 {
                     fileContents = ProcessDotLess(fileContents);
                 }
 
-                fileContents = CssPathRewriter.RewriteCssPaths(outputPath, fileInfo.FullName, fileContents);
+                var distinctRelativePaths = CssPathRewriter.FindDistinctRelativePaths(fileContents);
+                fileContents = CssPathRewriter.RewriteCssPathsToBeRelativeToPath(distinctRelativePaths, cssRootPathUri, relativeRootUri, fileContents);
 
-                switch (file.CompressionType)
+                if (appendHashToAssets)
+                {
+                    var distinctLocalPaths = CssPathRewriter.FindDistinctLocalPaths(fileContents);
+                    var distinctLocalPathsThatExist = new List<Uri>();
+
+                    foreach (var distinctLocalPath in distinctLocalPaths)
+                    {
+                        var cssAssetFileInfo = new FileInfo(PathProvider.MapPath(cssRootPathUri, distinctLocalPath));
+
+                        if (!cssAssetFileInfo.Exists)
+                        {
+                            continue;
+                        }
+
+                        distinctLocalPathsThatExist.Add(distinctLocalPath);
+                        localCssAssetFilesThatExist.Add(cssAssetFileInfo);
+                    }
+
+                    fileContents = CssPathRewriter.RewriteCssPathsToAppendHash(distinctLocalPathsThatExist, cssRootPathUri, fileContents);
+                }
+
+                switch (cssFile.CompressionType)
                 {
                     case CssCompressionType.None:
                         uncompressedContents.AppendLine(fileContents);
@@ -108,39 +165,52 @@ namespace Talifun.Web.Crusher
                 uncompressedContents.Append(CssCompressor.Compress(toBeHybridCompressedContents.ToString(), 0, Yahoo.Yui.Compressor.CssCompressionType.Hybrid));
             }
 
+            cssAssetFilePaths = localCssAssetFilesThatExist;
             return uncompressedContents;
         }
-
 
         /// <summary>
         /// Remove all css files from being crushed
         /// </summary>
-        /// <param name="outputPath">The path for the crushed css file.</param>
-        public virtual void RemoveFiles(string outputPath)
+        /// <param name="outputUri">The path for the crushed css file.</param>
+        public virtual void RemoveFiles(Uri outputUri)
         {
-            HttpRuntime.Cache.Remove(GetKey(outputPath));
+            HttpRuntime.Cache.Remove(GetKey(outputUri));
         }
 
         /// <summary>
         /// Add the css files to the cache so that they are monitored for any changes.
         /// </summary>
-        /// <param name="outputPath">The path for the crushed css file.</param>
-        /// <param name="files">The css files to be crushed.</param>
-        public virtual void AddFilesToCache(string outputPath, IEnumerable<CssFile> files)
+        /// <param name="outputUri">The path for the crushed css file.</param>
+        /// <param name="cssFiles">The css files to be crushed.</param>
+        /// <param name="cssAssetFilePaths">The css asset files referenced by the css files.</param>
+        public virtual void AddFilesToCache(Uri outputUri, IEnumerable<CssFile> cssFiles, IEnumerable<FileInfo> cssAssetFilePaths)
         {
             var fileNames = new List<string>
                                 {
-                                    HostingEnvironment.MapPath(outputPath)
+                                    PathProvider.MapPath(outputUri)
                                 };
 
-            foreach (var file in files)
+            foreach (var cssFile in cssFiles)
             {
-                fileNames.Add(HostingEnvironment.MapPath(file.FilePath));
+                fileNames.Add(PathProvider.MapPath(cssFile.FilePath));
             }
 
+            foreach (var cssAssetFilePath in cssAssetFilePaths)
+            {
+                fileNames.Add(cssAssetFilePath.FullName);
+            }
+
+            var cssCacheItem = new CssCacheItem()
+                                   {
+                                       OutputUri = outputUri,
+                                       CssFiles = cssFiles,
+                                       CssAssetFilePaths = cssAssetFilePaths
+                                   };
+
             HttpRuntime.Cache.Insert(
-                GetKey(outputPath),
-                files,
+                GetKey(outputUri),
+                cssCacheItem,
                 new CacheDependency(fileNames.ToArray(), System.DateTime.Now),
                 Cache.NoAbsoluteExpiration,
                 Cache.NoSlidingExpiration,
@@ -158,16 +228,15 @@ namespace Talifun.Web.Crusher
         /// <param name="reason">The reason the file was removed from cache.</param>
         public virtual void FileRemoved(string key, object value, CacheItemRemovedReason reason)
         {
-            var outputPath = GetOutputPathFromKey(key);
-            var files = (List<CssFile>)value;
+            var cssCacheItem = (CssCacheItem)value;
             switch (reason)
             {
                 case CacheItemRemovedReason.DependencyChanged:
-                    AddFiles(outputPath, files);
+                    AddFiles(cssCacheItem.OutputUri, cssCacheItem.CssFiles, cssCacheItem.AppendHashToAssets);
                     break;
                 case CacheItemRemovedReason.Underused:
                 case CacheItemRemovedReason.Expired:
-                    AddFilesToCache(outputPath, files);
+                    AddFilesToCache(cssCacheItem.OutputUri, cssCacheItem.CssFiles, cssCacheItem.CssAssetFilePaths);
                     break;
             }
         }
@@ -175,23 +244,12 @@ namespace Talifun.Web.Crusher
         /// <summary>
         /// Get the cache key to use for caching.
         /// </summary>
-        /// <param name="outputPath">The path for the crushed css file.</param>
+        /// <param name="outputUri">The path for the crushed css file.</param>
         /// <returns>The cache key to use for caching.</returns>
-        public virtual string GetKey(string outputPath)
+        public virtual string GetKey(Uri outputUri)
         {
             var prefix = CssCrusherType + "|";
-            return prefix + outputPath;
-        }
-
-        /// <summary>
-        /// Get the output path from the cache key.
-        /// </summary>
-        /// <param name="key">The cache key.</param>
-        /// <returns>The path for the crushed css file.</returns>
-        public virtual string GetOutputPathFromKey(string key)
-        {
-            var prefix = CssCrusherType + "|";
-            return key.Substring(prefix.Length);
+            return prefix + outputUri;
         }
     }
 }

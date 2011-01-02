@@ -35,7 +35,7 @@ namespace Talifun.Web.StaticFile.Config
         /// <summary>
         /// Gets or sets the name of the configuration element represented by this instance.
         /// </summary>
-        [ConfigurationProperty("name", DefaultValue = null, IsRequired = false, IsKey = true)]
+        [ConfigurationProperty("name", DefaultValue = null, IsRequired = true, IsKey = true)]
         public override string Name
         {
             get { return ((string)base[name]); }

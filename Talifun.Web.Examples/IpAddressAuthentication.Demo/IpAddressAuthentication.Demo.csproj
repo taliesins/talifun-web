@@ -57,9 +57,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="App_Data\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\..\Talifun.Web\Talifun.Web.csproj">
       <Project>{FB8D10A5-40A2-44B0-A30F-1B316B5AFC34}</Project>

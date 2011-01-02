@@ -22,7 +22,7 @@ namespace Talifun.Web.Helper
         /// </summary>
         /// <param name="output">The string to save.</param>
         /// <param name="outputPath">The path for the file to save.</param>
-        public virtual string SaveContentsToFile(string output, string outputPath)
+        public virtual string SaveContentsToFile(string output, FileInfo outputPath)
         {
             using (var outputStream = new MemoryStream())
             {
@@ -38,7 +38,7 @@ namespace Talifun.Web.Helper
         /// </summary>
         /// <param name="output">The StringBuilder to save.</param>
         /// <param name="outputPath">The path for the file to save.</param>
-        public virtual string SaveContentsToFile(StringBuilder output, string outputPath)
+        public virtual string SaveContentsToFile(StringBuilder output, FileInfo outputPath)
         {
             using (var outputStream = new MemoryStream())
             {
@@ -56,11 +56,11 @@ namespace Talifun.Web.Helper
         /// </summary>
         /// <param name="outputStream">The stream to save.</param>
         /// <param name="outputPath">The path for the file to save.</param>
-        public virtual string SaveContentsToFile(Stream outputStream, string outputPath)
+        public virtual string SaveContentsToFile(Stream outputStream, FileInfo outputPath)
         {
             var etag = string.Empty;
             //We might be competing with the web server for the output file, so try to overwrite it at regular intervals
-            using (var outputFile = RetryableFileOpener.OpenFileStream(new FileInfo(outputPath), 5, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+            using (var outputFile = RetryableFileOpener.OpenFileStream(outputPath, 5, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
             {
                 var overwrite = true;
                 if (outputFile.Length > 0)

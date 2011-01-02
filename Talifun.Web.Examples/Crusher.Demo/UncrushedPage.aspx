@@ -5,10 +5,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml" >
 <head runat="server">
     <title></title>
-    <link rel="stylesheet" type="text/css" href="<%=this.ResolveUrl("~/Static/Css/jquery-ui-1.8rc3.custom.css")%>" media="screen" /> 
+    <link rel="stylesheet" type="text/css" href="<%=this.ResolveUrl("~/Static/Css/jquery-ui-1.8.7.css")%>" media="screen" /> 
     <link rel="stylesheet" type="text/css" href="<%=this.ResolveUrl("~/Static/Css/default.css")%>" media="screen" />
-    <script language="javascript" type="text/javascript" src="<%=this.ResolveUrl("~/Static/Js/jquery-1.4.2.min.js")%>"></script>
-    <script language="javascript" type="text/javascript" src="<%=this.ResolveUrl("~/Static/Js/jquery-ui-1.8rc3.custom.min.js")%>"></script>
+    <script language="javascript" type="text/javascript" src="<%=this.ResolveUrl("~/Static/Js/jquery-1.4.4.min.js")%>"></script>
+    <script language="javascript" type="text/javascript" src="<%=this.ResolveUrl("~/Static/Js/jquery-ui-1.8.7.min.js")%>"></script>
     <script language="javascript" type="text/javascript" src="<%=this.ResolveUrl("~/Static/Js/jquery.flash.min.js")%>"></script>
     <script language="javascript" type="text/javascript" src="<%=this.ResolveUrl("~/Static/Js/jquery.validate.min.js")%>"></script>
     <script language="javascript" type="text/javascript" src="<%=this.ResolveUrl("~/Static/Js/additional-validation-methods.min.js")%>"></script>

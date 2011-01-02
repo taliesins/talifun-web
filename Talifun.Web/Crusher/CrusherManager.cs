@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
+using System.Web;
 using Talifun.Web.Crusher.Config;
 using Talifun.Web.Helper;
 
@@ -14,6 +16,7 @@ namespace Talifun.Web.Crusher
     {
         private const int BufferSize = 32768;
         private readonly string _hashQueryStringKeyName = CurrentCrusherConfiguration.Current.QuerystringKeyName;
+        private readonly IPathProvider _pathProvider;
         private readonly CssGroupElementCollection _cssGroups = CurrentCrusherConfiguration.Current.CssGroups;
         private readonly JsGroupElementCollection _jsGroups = CurrentCrusherConfiguration.Current.JsGroups;
         private readonly ICssCrusher _cssCrusher;
@@ -24,10 +27,11 @@ namespace Talifun.Web.Crusher
             var retryableFileOpener = new RetryableFileOpener();
             var hasher = new Hasher(retryableFileOpener);
             var retryableFileWriter = new RetryableFileWriter(BufferSize, retryableFileOpener, hasher); 
-            var cssAssetsFileHasher = new CssAssetsFileHasher(_hashQueryStringKeyName, hasher);
-            var cssPathRewriter = new CssPathRewriter(cssAssetsFileHasher);
-            _cssCrusher = new CssCrusher(retryableFileOpener, retryableFileWriter, cssPathRewriter);
-            _jsCrusher = new JsCrusher(retryableFileOpener, retryableFileWriter);
+            _pathProvider = new PathProvider();
+            var cssAssetsFileHasher = new CssAssetsFileHasher(_hashQueryStringKeyName, hasher, _pathProvider);
+            var cssPathRewriter = new CssPathRewriter(cssAssetsFileHasher, _pathProvider);
+            _cssCrusher = new CssCrusher(retryableFileOpener, retryableFileWriter, cssPathRewriter, _pathProvider);
+            _jsCrusher = new JsCrusher(retryableFileOpener, retryableFileWriter, _pathProvider);
             InitManager();
         }
 
@@ -77,8 +81,7 @@ namespace Talifun.Web.Crusher
             foreach (CssGroupElement group in _cssGroups)
             {
                 var files = new List<CssFile>();
-                var outputPath = group.OutputFilePath;
-
+                
                 foreach (CssFileElement cssFile in group.Files)
                 {
                     var file = new CssFile()
@@ -87,15 +90,16 @@ namespace Talifun.Web.Crusher
                                        FilePath = cssFile.FilePath
                                    };
                     files.Add(file);
-                } 
+                }
 
-                _cssCrusher.AddFiles(outputPath, files);
+                var outputUri = new Uri(VirtualPathUtility.ToAbsolute(group.OutputFilePath), UriKind.Relative);
+
+                _cssCrusher.AddFiles(outputUri, files, group.AppendHashToCssAsset);
             }
 
             foreach (JsGroupElement group in _jsGroups)
             {
                 var files = new List<JsFile>();
-                var outputPath = group.OutputFilePath;
 
                 foreach (JsFileElement cssFile in group.Files)
                 {
@@ -107,7 +111,8 @@ namespace Talifun.Web.Crusher
                     files.Add(file);
                 }
 
-                _jsCrusher.AddFiles(outputPath, files);
+                var outputUri = new Uri(VirtualPathUtility.ToAbsolute(group.OutputFilePath), UriKind.Relative);
+                _jsCrusher.AddFiles(outputUri, files);
             }
         }
 
@@ -115,12 +120,14 @@ namespace Talifun.Web.Crusher
         {
             foreach (CssGroupElement group in _cssGroups)
             {
-                _cssCrusher.RemoveFiles(group.OutputFilePath);
+                var outputUri = new Uri(VirtualPathUtility.ToAbsolute(group.OutputFilePath), UriKind.Relative);
+                _cssCrusher.RemoveFiles(outputUri);
             }
 
             foreach (JsGroupElement group in _jsGroups)
             {
-                _jsCrusher.RemoveFiles(group.OutputFilePath);
+                var outputUri = new Uri(VirtualPathUtility.ToAbsolute(group.OutputFilePath), UriKind.Relative);
+                _jsCrusher.RemoveFiles(outputUri);
             }
 
             if (AppDomain.CurrentDomain != null)

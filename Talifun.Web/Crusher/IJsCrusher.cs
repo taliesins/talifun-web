@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Talifun.Web.Crusher
 {
@@ -7,14 +8,14 @@ namespace Talifun.Web.Crusher
         /// <summary>
         /// Add js files to be crushed
         /// </summary>
-        /// <param name="outputPath">The path for the crushed js file</param>
+        /// <param name="outputUri">The path for the crushed js file</param>
         /// <param name="files">The js files to be crushed</param>
-        void AddFiles(string outputPath, IEnumerable<JsFile> files);
+        void AddFiles(Uri outputUri, IEnumerable<JsFile> files);
 
         /// <summary>
         /// Remove all js files from being crushed
         /// </summary>
         /// <param name="outputPath">The path for the crushed js file</param>
-        void RemoveFiles(string outputPath);
+        void RemoveFiles(Uri outputPath);
     }
 }

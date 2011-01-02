@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text.RegularExpressions;
 
 namespace Talifun.Web.Crusher
@@ -8,74 +7,92 @@ namespace Talifun.Web.Crusher
     public class CssPathRewriter : ICssPathRewriter
     {
         protected readonly ICssAssetsFileHasher CssAssetsFileHasher;
-        public CssPathRewriter(ICssAssetsFileHasher cssAssetsFileHasher)
+        protected readonly IPathProvider PathProvider;
+        public CssPathRewriter(ICssAssetsFileHasher cssAssetsFileHasher, IPathProvider pathProvider)
         {
             CssAssetsFileHasher = cssAssetsFileHasher;
+            PathProvider = pathProvider;
         }
 
-        public virtual string RewriteCssPaths(string outputPath, string sourcePath, string css)
+        public virtual string RewriteCssPathsToBeRelativeToPath(IEnumerable<Uri> relativePaths, Uri cssRootUri, Uri relativeRootUri, string css)
         {
-            var sourceUri = new Uri(Path.GetDirectoryName(sourcePath) + "/", UriKind.Absolute);
-            var outputUri = new Uri(Path.GetDirectoryName(outputPath) + "/", UriKind.Absolute);
+            if (!cssRootUri.IsAbsoluteUri)
+            {
+                cssRootUri = new Uri(PathProvider.MapPath(cssRootUri));
+            }
 
-            var relativePaths = FindDistinctRelativePathsIn(css);
+            if (!relativeRootUri.IsAbsoluteUri)
+            {
+                relativeRootUri = new Uri(PathProvider.MapPath(relativeRootUri));
+            }
 
             foreach (var relativePath in relativePaths)
             {
-                var resolvedSourcePath = new Uri(sourceUri + relativePath);
-                var resolvedOutput = outputUri.MakeRelativeUri(resolvedSourcePath);
+                var absoluteUri = relativePath.IsAbsoluteUri
+                                      ? relativePath
+                                      : new Uri(PathProvider.MapPath(relativeRootUri, relativePath));
 
-                css = css.Replace(relativePath, resolvedOutput.OriginalString);
+                var resolvedOutput = cssRootUri.MakeRelativeUri(absoluteUri);
+
+                if (relativePath.OriginalString == resolvedOutput.OriginalString) continue;
+
+                css = css.Replace(relativePath.OriginalString, resolvedOutput.OriginalString);
             }
 
-            if (CssAssetsFileHasher != null)
+            return css;
+        }
+
+        public virtual IEnumerable<Uri> FindDistinctRelativePaths(string css)
+        {
+            var matches = Regex.Matches(css, @"url\([""']{0,1}(.+?)[""']{0,1}\)", RegexOptions.IgnoreCase);
+            var matchesHash = new HashSet<Uri>();
+            foreach (Match match in matches)
             {
-                var localRelativePathsThatExist = FindDistinctLocalRelativePathsThatExist(css);
+                var path = match.Groups[1].Captures[0].Value;
+                if (path.StartsWith("http", StringComparison.InvariantCultureIgnoreCase) || path.StartsWith("/"))
+                    continue;
 
-                foreach (string localRelativePathThatExist in localRelativePathsThatExist)
+                var uri = new Uri(path, UriKind.RelativeOrAbsolute);
+                if (matchesHash.Add(uri))
                 {
-                    var localRelativePathThatExistWithFileHash = CssAssetsFileHasher.AppendFileHash(outputPath, localRelativePathThatExist);
+                    yield return uri;
+                }
+            }
+        }
 
-                    if (localRelativePathThatExist != localRelativePathThatExistWithFileHash)
-                    {
-                        css = css.Replace(localRelativePathThatExist, localRelativePathThatExistWithFileHash);
-                    }
+        public virtual string RewriteCssPathsToAppendHash(IEnumerable<Uri> localPaths, Uri cssRootUri, string css)
+        {
+            if (!cssRootUri.IsAbsoluteUri)
+            {
+                cssRootUri = new Uri(PathProvider.MapPath(cssRootUri));
+            }
+
+            foreach (var localPath in localPaths)
+            {
+                var localRelativePathThatExistWithFileHash = CssAssetsFileHasher.AppendFileHash(cssRootUri, localPath);
+
+                if (localPath != localRelativePathThatExistWithFileHash)
+                {
+                    css = css.Replace(localPath.OriginalString, localRelativePathThatExistWithFileHash.OriginalString);
                 }
             }
 
             return css;
         }
 
-        public virtual IEnumerable<string> FindDistinctRelativePathsIn(string css)
+        public virtual IEnumerable<Uri> FindDistinctLocalPaths(string css)
         {
             var matches = Regex.Matches(css, @"url\([""']{0,1}(.+?)[""']{0,1}\)", RegexOptions.IgnoreCase);
-            var matchesHash = new HashSet<string>();
+            var matchesHash = new HashSet<Uri>();
             foreach (Match match in matches)
             {
                 var path = match.Groups[1].Captures[0].Value;
-                if (!path.StartsWith("/"))
-                {
-                    if (matchesHash.Add(path))
-                    {
-                        yield return path;
-                    }
-                }
-            }
-        }
+                if (path.StartsWith("http", StringComparison.InvariantCultureIgnoreCase)) continue;
 
-        public virtual IEnumerable<string> FindDistinctLocalRelativePathsThatExist(string css)
-        {
-            var matches = Regex.Matches(css, @"url\([""']{0,1}(.+?)[""']{0,1}\)", RegexOptions.IgnoreCase);
-            var matchesHash = new HashSet<string>();
-            foreach (Match match in matches)
-            {
-                var path = match.Groups[1].Captures[0].Value;
-                if (!path.StartsWith("http", StringComparison.InvariantCultureIgnoreCase))
+                var uri = new Uri(path, UriKind.RelativeOrAbsolute);
+                if (matchesHash.Add(uri))
                 {
-                    if (matchesHash.Add(path))
-                    {
-                        yield return path;
-                    }
+                    yield return uri;
                 }
             }
         }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Web;
-using System.Web.Hosting;
 
 namespace Talifun.Web.Crusher
 {
@@ -9,22 +8,20 @@ namespace Talifun.Web.Crusher
     {
         protected readonly string HashQueryStringKeyName;
         protected readonly IHasher Hasher;
+        protected readonly IPathProvider PathProvider;
 
-        public CssAssetsFileHasher(string hashQueryStringKeyName, IHasher hasher)
+        public CssAssetsFileHasher(string hashQueryStringKeyName, IHasher hasher, IPathProvider pathProvider)
         {
-            HashQueryStringKeyName = hashQueryStringKeyName+"=";
+            HashQueryStringKeyName = hashQueryStringKeyName;
             Hasher = hasher;
+            PathProvider = pathProvider;
         }
 
-        public virtual string AppendFileHash(string cssFilePath, string url)
+        public virtual Uri AppendFileHash(Uri cssRootPath, Uri url)
         {
-            if (url.StartsWith("http", StringComparison.InvariantCultureIgnoreCase))
-            {
-                return url;
-            }
+            if (url.IsAbsoluteUri) return url;
 
-            var assetFilePath = GetAssetFilePath(cssFilePath, url);
-            var fileInfo = new FileInfo(assetFilePath);
+            var fileInfo = new FileInfo(PathProvider.MapPath(cssRootPath, url));
 
             if (!fileInfo.Exists)
             {
@@ -38,49 +35,6 @@ namespace Talifun.Web.Crusher
             return url;
         }
 
-        public virtual string GetAssetFilePath(string cssFilePath, string url)
-        {
-            var queryStringPosition = url.IndexOf('?');
-
-            if (queryStringPosition > -1)
-            {
-                url = url.Substring(0, queryStringPosition);
-            }
-
-            var resolvedUrl = string.Empty;
-
-            var urlUri = new Uri(url, UriKind.RelativeOrAbsolute);
-
-            if (!urlUri.IsAbsoluteUri)
-            {
-                if (!url.StartsWith("/"))
-                {
-                    var resolvedPath = Path.GetDirectoryName(cssFilePath);
-                    var outputUri = new Uri(resolvedPath + "/", UriKind.Absolute);
-
-                    var resolvedSourcePath = new Uri(outputUri, urlUri);
-                    resolvedUrl = resolvedSourcePath.LocalPath;
-                }
-                else
-                {
-                    resolvedUrl = ResolveAppRelativePathToFileSystem(url);
-                }
-
-                return Path.GetFullPath(resolvedUrl);
-            }
-
-            return urlUri.LocalPath;
-        }
-
-        public virtual string ResolveAppRelativePathToFileSystem(string file)
-        {
-            if (HttpContext.Current == null)
-            {
-                file = file.Replace("/", "\\").TrimStart('~').TrimStart('\\');
-                return @"C:\" + file.Replace("/", "\\");
-            }
-            return HostingEnvironment.MapPath(file);
-        }
 
         /// <summary>
         /// Append a query string pair value to a url
@@ -89,17 +43,17 @@ namespace Talifun.Web.Crusher
         /// <param name="key">The key to use.</param>
         /// <param name="value">The value to use.</param>
         /// <returns></returns>
-        public virtual string AppendQueryStringPairValue(string url, string key, string value)
+        public virtual Uri AppendQueryStringPairValue(Uri url, string key, string value)
         {
-            var path = url;
+            var path = url.OriginalString;
             var queryString = string.Empty;
 
-            var queryStringPosition = url.IndexOf('?');
+            var queryStringPosition = url.OriginalString.IndexOf('?');
 
             if (queryStringPosition > -1)
             {
-                path = url.Substring(0, queryStringPosition);
-                queryString = url.Substring(queryStringPosition);
+                path = url.OriginalString.Substring(0, queryStringPosition);
+                queryString = url.OriginalString.Substring(queryStringPosition);
             }
 
             var querystring = HttpUtility.ParseQueryString(queryString);
@@ -112,7 +66,7 @@ namespace Talifun.Web.Crusher
                 querystringwithAppendedValue = "?" + querystringwithAppendedValue;
             }
 
-            return path + querystringwithAppendedValue;
+            return new Uri(path + querystringwithAppendedValue, UriKind.RelativeOrAbsolute);
         }
     }
 }

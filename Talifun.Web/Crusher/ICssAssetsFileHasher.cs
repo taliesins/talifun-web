@@ -1,7 +1,9 @@
-﻿namespace Talifun.Web.Crusher
+﻿using System;
+
+namespace Talifun.Web.Crusher
 {
     public interface ICssAssetsFileHasher
     {
-        string AppendFileHash(string cssFilePath, string url);
+        Uri AppendFileHash(Uri cssRootPath, Uri url);
     }
 }

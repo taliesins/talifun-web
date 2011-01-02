@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Talifun.Web.Crusher
 {
@@ -7,14 +8,15 @@ namespace Talifun.Web.Crusher
         /// <summary>
         /// Add css files to be crushed.
         /// </summary>
-        /// <param name="outputPath">The path for the crushed css file.</param>
-        /// <param name="files">The css files to be crushed.</param>
-        void AddFiles(string outputPath, IEnumerable<CssFile> files);
+        /// <param name="outputUri">The path for the crushed css file.</param>
+        /// <param name="cssFiles">The css files to be crushed.</param>
+        /// <param name="appendHashToAssets">Should css assets have a hash appended to them.</param>
+        void AddFiles(Uri outputUri, IEnumerable<CssFile> cssFiles, bool appendHashToAssets);
 
         /// <summary>
         /// Remove all css files from being crushed
         /// </summary>
-        /// <param name="outputPath">The path for the crushed css file.</param>
-        void RemoveFiles(string outputPath);
+        /// <param name="outputUri">The path for the crushed css file.</param>
+        void RemoveFiles(Uri outputUri);
     }
 }

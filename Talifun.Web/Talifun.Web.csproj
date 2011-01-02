@@ -81,17 +81,22 @@
     <Compile Include="Configuration\CurrentConfigurationManager.cs" />
     <Compile Include="Configuration\NamedConfigurationElement.cs" />
     <Compile Include="Crusher\CssAssetsFileHasher.cs" />
+    <Compile Include="Crusher\CssCacheItem.cs" />
     <Compile Include="Crusher\CssPathRewriter.cs" />
     <Compile Include="Crusher\ICssAssetsFileHasher.cs" />
     <Compile Include="Crusher\ICssCrusher.cs" />
     <Compile Include="Crusher\ICssPathRewriter.cs" />
     <Compile Include="Crusher\IJsCrusher.cs" />
+    <Compile Include="Crusher\IPathProvider.cs" />
+    <Compile Include="Crusher\JsCacheItem.cs" />
+    <Compile Include="Crusher\PathProvider.cs" />
     <Compile Include="CssSprite\Config\CssSpriteGroupElement.cs" />
     <Compile Include="CssSprite\Config\CssSpriteGroupElementCollection.cs" />
     <Compile Include="CssSprite\Config\CssSpriteSection.cs" />
     <Compile Include="CssSprite\Config\CurrentCssSpriteConfiguration.cs" />
     <Compile Include="CssSprite\Config\ImageFileElement.cs" />
     <Compile Include="CssSprite\Config\ImageFileElementCollection.cs" />
+    <Compile Include="CssSprite\CssSpriteCacheItem.cs" />
     <Compile Include="CssSprite\CssSpriteCreator.cs" />
     <Compile Include="CssSprite\CssSpriteManager.cs" />
     <Compile Include="CssSprite\CssSpriteModule.cs" />
@@ -207,6 +212,21 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Crusher\Config\Crusher.xsd" />
+    <None Include="CssSprite\Config\CssSprite.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="IpAddressAuthentication\Config\IpAddressAuthentication.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="LogUrl\Config\LogUrl.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="RegexUrlAuthorization\Config\RegexUrlAuthorization.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="StaticFile\Config\StaticFile.xsd">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

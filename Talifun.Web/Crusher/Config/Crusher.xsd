@@ -27,7 +27,6 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-
 		<xs:attribute name="debug" type="xs:boolean" use="required">
 			<xs:annotation>
 				<xs:documentation>
@@ -37,29 +36,30 @@
 		</xs:attribute>
 	</xs:attributeGroup>
 
+  <xs:complexType name="cssFile">
+    <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="filePath" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          The file path for the generated css file.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="compressionType" type="cssCompressionType" default="Hybrid" >
+      <xs:annotation>
+        <xs:documentation>
+          The compression method to use when adding a css file to the generated css file.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  
 	<xs:complexType name="cssGroup">
 		<xs:all>
 			<xs:element name="files">
 				<xs:complexType>
-					<xs:sequence minOccurs="0" maxOccurs="unbounded">
-						<xs:element name="file">
-							<xs:complexType>
-								<xs:attribute name="name" type="xs:string" use="required" />
-								<xs:attribute name="filePath" type="xs:string" use="required">
-									<xs:annotation>
-										<xs:documentation>
-											The file path for the generated css file.
-										</xs:documentation>
-									</xs:annotation>
-								</xs:attribute>
-								<xs:attribute name="compressionType" type="cssCompressionType" default="Hybrid" >
-									<xs:annotation>
-										<xs:documentation>
-											The compression method to use when adding a css file to the generated css file.
-										</xs:documentation>
-									</xs:annotation>
-								</xs:attribute>
-							</xs:complexType>
+					<xs:sequence >
+						<xs:element name="file" type="cssFile" minOccurs="0" maxOccurs="unbounded">
 						</xs:element>
 					</xs:sequence>
 				</xs:complexType>
@@ -73,7 +73,7 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-    <xs:attribute name="appendHash" type="xs:boolean" default="true">
+    <xs:attribute name="appendHashToCssAsset" type="xs:boolean" default="true">
       <xs:annotation>
         <xs:documentation>
           Should a hash be appended to url of css assets.
@@ -85,29 +85,30 @@
     </xs:attribute>    
 	</xs:complexType>
 
+  <xs:complexType name="jsFile">
+    <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="filePath" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          The file path for the generated js file.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="compressionType" type="jsCompressionType" default="Min" >
+      <xs:annotation>
+        <xs:documentation>
+          The compression method to use when adding a js file to the generated js file.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>    
+  </xs:complexType>
+  
 	<xs:complexType name="jsGroup">
 		<xs:all>
 			<xs:element name="files">
 				<xs:complexType>
-					<xs:sequence minOccurs="0" maxOccurs="unbounded">
-						<xs:element name="file">
-							<xs:complexType>
-								<xs:attribute name="name" type="xs:string" use="required" />
-								<xs:attribute name="filePath" type="xs:string" use="required">
-									<xs:annotation>
-										<xs:documentation>
-											The file path for the generated js file.
-										</xs:documentation>
-									</xs:annotation>
-								</xs:attribute>
-								<xs:attribute name="compressionType" type="jsCompressionType" default="Min" >
-									<xs:annotation>
-										<xs:documentation>
-											The compression method to use when adding a js file to the generated js file.
-										</xs:documentation>
-									</xs:annotation>
-								</xs:attribute>
-							</xs:complexType>
+					<xs:sequence>
+						<xs:element name="file" type="jsFile" minOccurs="0" maxOccurs="unbounded">
 						</xs:element>
 					</xs:sequence>
 				</xs:complexType>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using Talifun.Web.CssSprite.Config;
 
@@ -65,8 +66,9 @@ namespace Talifun.Web.CssSprite
             foreach (CssSpriteGroupElement group in _cssSpriteGroups)
             {
                 var files = new List<ImageFile>();
-                var imageOutputPath = group.ImageOutputFilePath;
-                var cssOutputPath = group.CssOutputFilePath;
+                var imageOutputPath = new FileInfo(group.ImageOutputFilePath);
+                var imageUrl = new Uri(group.ImageUrl);
+                var cssOutputPath = new FileInfo(group.CssOutputFilePath);
 
                 foreach (ImageFileElement imageFile in group.Files)
                 {
@@ -78,7 +80,7 @@ namespace Talifun.Web.CssSprite
                     files.Add(file);
                 }
 
-                _cssSpriteCreator.AddFiles(imageOutputPath, group.ImageUrl, cssOutputPath, files);
+                _cssSpriteCreator.AddFiles(imageOutputPath, imageUrl, cssOutputPath, files);
             }
         }
 
@@ -86,10 +88,11 @@ namespace Talifun.Web.CssSprite
         {
             foreach (CssSpriteGroupElement group in _cssSpriteGroups)
             {
-                var imageOutputPath = group.ImageOutputFilePath;
-                var cssOutputPath = group.CssOutputFilePath;
+                var imageOutputPath = new FileInfo(group.ImageOutputFilePath);
+                var imageUrl = new Uri(group.ImageUrl);
+                var cssOutputPath = new FileInfo(group.CssOutputFilePath);
 
-                _cssSpriteCreator.RemoveFiles(imageOutputPath, group.ImageUrl, cssOutputPath);
+                _cssSpriteCreator.RemoveFiles(imageOutputPath, imageUrl, cssOutputPath);
             }
 
             if (AppDomain.CurrentDomain != null)
