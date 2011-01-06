@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="urn:ipAddressAuthentication"
+    elementFormDefault="qualified"
+    xmlns="urn:ipAddressAuthentication"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>
+  <xs:complexType name="ipAddressMatch">
+    <xs:attribute name="name" type="xs:string" use="required">
+    </xs:attribute>
+    <xs:attribute name="ipAddress" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          The ip address to match.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="netMask" type="xs:string" use="optional">
+      <xs:annotation>
+        <xs:documentation>
+          The netmask to match.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="access" type="xs:boolean" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          Is access allowed for this ip address match.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  
+  <xs:complexType name="urlMatch">
+    <xs:all>
+      <xs:element name="ipAddressMatches">
+        <xs:complexType >
+          <xs:sequence>
+            <xs:element name="ipAddressMatch"  type="ipAddressMatch"  minOccurs="0" maxOccurs="unbounded"></xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+    <xs:attribute name="name" type="xs:string" use="required">
+    </xs:attribute>
+    <xs:attribute name="expression" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          The regular expression to match the url to check.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="defaultAccess" type="xs:boolean" use="optional">
+      <xs:annotation>
+        <xs:documentation>
+          If there are no ip address matches should access be allowed.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  
+  <xs:element name="IpAddressAuthentication">
+    <xs:complexType>
+      <xs:all>
+        <xs:element name="urlMatches">
+          <xs:complexType >
+            <xs:sequence>
+              <xs:element name="urlMatch"  type="urlMatch"  minOccurs="0" maxOccurs="unbounded"></xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="urn:staticFile"
+    elementFormDefault="qualified"
+    xmlns="urn:staticFile"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>  
+  <xs:simpleType name="webServerType" >
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="NotSet" >
+        <xs:annotation>
+          <xs:documentation>
+            Detect web server type.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Unknown">
+        <xs:annotation>
+          <xs:documentation>
+            Unable to detect web server type.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="IIS7">
+        <xs:annotation>
+          <xs:documentation>
+            IIS 7 web server.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="IIS6orIIS7ClassicMode">
+        <xs:annotation>
+          <xs:documentation>
+            IIS 6 or IIS 7 classic mode web server.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Cassini">
+        <xs:annotation>
+          <xs:documentation>
+           Cassini web server.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="etagMethodType" >
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="MD5" >
+        <xs:annotation>
+          <xs:documentation>
+            The MD5 hash of the file's contents.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="LastModified" >
+        <xs:annotation>
+          <xs:documentation>
+            The date time the file was last accessed.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="fileExtensionDefault">
+    <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="serveFromMemory" type="xs:boolean" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          Should content be served from memory.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="maxMemorySize" type="xs:int" use="optional" default="50000">
+      <xs:annotation>
+        <xs:documentation>
+          The maximum size a file can be before it is no longer served from memory.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="compress" type="xs:boolean" use="optional" default="true">
+      <xs:annotation>
+        <xs:documentation>
+          Is the content served compressible.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="memorySlidingExpiration" type="xs:duration" use="optional" default="PT30M">
+      <xs:annotation>
+        <xs:documentation>
+          The amount of time a file should be cached in memory.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="expires" type="xs:duration" use="optional" default="P7D">
+      <xs:annotation>
+        <xs:documentation>
+          The amount of time a browser request is cached for.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="etagMethod" type="etagMethodType" use="optional" default="MD5">
+      <xs:annotation>
+        <xs:documentation>
+          The type of method used to calculate the etag.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:complexType name="fileExtension">
+    <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="serveFromMemory" type="xs:boolean" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          Should content be served from memory.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="maxMemorySize" type="xs:int" use="optional" default="50000">
+      <xs:annotation>
+        <xs:documentation>
+          The maximum size a file can be before it is no longer served from memory.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="compress" type="xs:boolean" use="optional" default="true">
+      <xs:annotation>
+        <xs:documentation>
+          Is the content served compressible.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="memorySlidingExpiration" type="xs:duration" use="optional" default="PT30M">
+      <xs:annotation>
+        <xs:documentation>
+          The amount of time a file should be cached in memory.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="expires" type="xs:duration" use="optional" default="P7D">
+      <xs:annotation>
+        <xs:documentation>
+          The amount of time a browser request is cached for.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="etagMethod" type="etagMethodType" use="optional" default="MD5">
+      <xs:annotation>
+        <xs:documentation>
+          The type of method used to calculate the etag.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  
+  <xs:element name="Crusher">
+    <xs:complexType>
+      <xs:all>
+        <xs:element name="fileExtensionDefault" type="fileExtensionDefault">
+        </xs:element>
+        <xs:element name="fileExtensions">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="fileExtension"  type="fileExtension"  minOccurs="0" maxOccurs="unbounded"></xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:all>
+      <xs:attribute name="webServerType" type="webServerType" default="NotSet">
+        <xs:annotation>
+          <xs:documentation>
+            The name of the query string key that is appended for the hash of the file.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

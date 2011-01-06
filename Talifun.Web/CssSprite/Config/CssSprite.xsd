@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="urn:cssSprite"
+    elementFormDefault="qualified"
+    xmlns="urn:cssSprite"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>
+
+  <xs:complexType name="file">
+    <xs:attribute name="name" type="xs:string" use="required">
+    </xs:attribute>
+    <xs:attribute name="filePath" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          The file path for the generated css file.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:complexType name="cssSpriteGroup">
+    <xs:all>
+      <xs:element name="files">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="file" type="file" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
+    <xs:attribute name="name" type="xs:string" use="required">
+    </xs:attribute>
+    <xs:attribute name="imageOutputFilePath" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          The file path for the output image file
+
+          This is used to generate the composite image file so ensure that it is unique.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="cssOutputFilePath" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          The file path for the output css file
+
+          This is used to generate the css file so ensure that it is unique.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  
+  <xs:element name="CssSprite">
+    <xs:complexType>
+      <xs:all>
+        <xs:element name="cssSpriteGroups">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="cssSpriteGroup" type="cssSpriteGroup" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

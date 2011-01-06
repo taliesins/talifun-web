@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="urn:regexUrlAuthorization"
+    elementFormDefault="qualified"
+    xmlns="urn:regexUrlAuthorization"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>
+  
+  <xs:complexType name="urlMatch">
+    <xs:all>
+      <xs:element name="authorization" vs:help="configuration/system.webServer/security/authorization">
+        <xs:complexType>
+          <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="add" vs:help="configuration/system.webServer/security/authorization/add">
+              <xs:complexType>
+                <xs:attribute name="accessType" use="required" vs:help="configuration/system.webServer/security/authorization/add/accessType">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:NMTOKEN">
+                      <xs:enumeration value="Allow" />
+                      <xs:enumeration value="Deny" />
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:attribute>
+                <xs:attribute name="users" type="xs:string" use="optional" vs:help="configuration/system.webServer/security/authorization/add/users" />
+                <xs:attribute name="roles" type="xs:string" use="optional" vs:help="configuration/system.webServer/security/authorization/add/roles" />
+                <xs:attribute name="verbs" type="xs:string" use="optional" vs:help="configuration/system.webServer/security/authorization/add/verbs" />
+                <xs:anyAttribute namespace="http://schemas.microsoft.com/XML-Document-Transform" processContents="strict"/>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="remove" vs:help="configuration/system.webServer/security/authorization/add">
+              <xs:complexType>
+                <xs:attribute name="users" type="xs:string" use="optional" vs:help="configuration/system.webServer/security/authorization/add/users" />
+                <xs:attribute name="roles" type="xs:string" use="optional" vs:help="configuration/system.webServer/security/authorization/add/roles" />
+                <xs:attribute name="verbs" type="xs:string" use="optional" vs:help="configuration/system.webServer/security/authorization/add/verbs" />
+                <xs:anyAttribute namespace="http://schemas.microsoft.com/XML-Document-Transform" processContents="strict"/>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="clear" vs:help="configuration/system.webServer/security/authorization/add">
+              <xs:complexType>
+                <!--tag is empty-->
+                <xs:anyAttribute namespace="http://schemas.microsoft.com/XML-Document-Transform" processContents="strict"/>
+              </xs:complexType>
+            </xs:element>
+          </xs:choice>
+          <xs:attribute name="bypassLoginPages" type="small_boolean_Type" use="optional" vs:help="configuration/system.webServer/security/authorization/bypassLoginPages" />
+          <xs:anyAttribute namespace="http://schemas.microsoft.com/XML-Document-Transform" processContents="strict"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:all> 
+    <xs:attribute name="name" type="xs:string" use="required">
+    </xs:attribute>
+    <xs:attribute name="expression" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          The regular expression to match the url to check.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:element name="RegexUrlAuthorization">
+    <xs:complexType>
+      <xs:all>
+        <xs:element name="urlMatches">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="urlMatch"  type="urlMatch"  minOccurs="0" maxOccurs="unbounded"></xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
