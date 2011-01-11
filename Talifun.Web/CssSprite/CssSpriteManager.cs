@@ -2,7 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using System.Web;
+using System.Web.Hosting;
+using Talifun.Web.Crusher;
 using Talifun.Web.CssSprite.Config;
+using Talifun.Web.Helper;
 
 namespace Talifun.Web.CssSprite
 {
@@ -12,11 +16,20 @@ namespace Talifun.Web.CssSprite
     /// </summary>
     public sealed class CssSpriteManager : IDisposable
     {
+        private readonly int BufferSize = 32768;
         private readonly CssSpriteGroupElementCollection _cssSpriteGroups = CurrentCssSpriteConfiguration.Current.CssSpriteGroups;
         private readonly ICssSpriteCreator _cssSpriteCreator;
+        private readonly IPathProvider _pathProvider;
+
         private CssSpriteManager()
         {
-            _cssSpriteCreator = new CssSpriteCreator();
+            var retryableFileOpener = new RetryableFileOpener();
+            var hasher = new Hasher(retryableFileOpener);
+            var retryableFileWriter = new RetryableFileWriter(BufferSize, retryableFileOpener, hasher);
+
+            _pathProvider = new PathProvider();
+            _cssSpriteCreator = new CssSpriteCreator(retryableFileOpener, hasher, retryableFileWriter);
+
             InitManager();
         }
 
@@ -66,9 +79,12 @@ namespace Talifun.Web.CssSprite
             foreach (CssSpriteGroupElement group in _cssSpriteGroups)
             {
                 var files = new List<ImageFile>();
-                var imageOutputPath = new FileInfo(group.ImageOutputFilePath);
-                var imageUrl = new Uri(group.ImageUrl);
-                var cssOutputPath = new FileInfo(group.CssOutputFilePath);
+                var imageOutputPath = new FileInfo(_pathProvider.MapPath(group.ImageOutputFilePath));                
+                var imageUrl = string.IsNullOrEmpty(group.ImageUrl)
+                                   ? VirtualPathUtility.ToAbsolute(group.ImageOutputFilePath)
+                                   : group.ImageUrl;
+                var imageUri = new Uri(imageUrl, UriKind.RelativeOrAbsolute);
+                var cssOutputPath = new FileInfo(_pathProvider.MapPath(group.CssOutputFilePath));
 
                 foreach (ImageFileElement imageFile in group.Files)
                 {
@@ -80,7 +96,7 @@ namespace Talifun.Web.CssSprite
                     files.Add(file);
                 }
 
-                _cssSpriteCreator.AddFiles(imageOutputPath, imageUrl, cssOutputPath, files);
+                _cssSpriteCreator.AddFiles(imageOutputPath, imageUri, cssOutputPath, files);
             }
         }
 
@@ -88,11 +104,14 @@ namespace Talifun.Web.CssSprite
         {
             foreach (CssSpriteGroupElement group in _cssSpriteGroups)
             {
-                var imageOutputPath = new FileInfo(group.ImageOutputFilePath);
-                var imageUrl = new Uri(group.ImageUrl);
-                var cssOutputPath = new FileInfo(group.CssOutputFilePath);
+                var imageOutputPath = new FileInfo(_pathProvider.MapPath(group.ImageOutputFilePath));
+                var imageUrl = string.IsNullOrEmpty(group.ImageUrl)
+                                   ? VirtualPathUtility.ToAbsolute(group.ImageOutputFilePath)
+                                   : group.ImageUrl;
+                var imageUri = new Uri(imageUrl, UriKind.RelativeOrAbsolute);
+                var cssOutputPath = new FileInfo(_pathProvider.MapPath(group.CssOutputFilePath));
 
-                _cssSpriteCreator.RemoveFiles(imageOutputPath, imageUrl, cssOutputPath);
+                _cssSpriteCreator.RemoveFiles(imageOutputPath, imageUri, cssOutputPath);
             }
 
             if (AppDomain.CurrentDomain != null)

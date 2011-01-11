@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 using System.Web;
 using Talifun.Web.Crusher.Config;
@@ -16,7 +15,6 @@ namespace Talifun.Web.Crusher
     {
         private const int BufferSize = 32768;
         private readonly string _hashQueryStringKeyName = CurrentCrusherConfiguration.Current.QuerystringKeyName;
-        private readonly IPathProvider _pathProvider;
         private readonly CssGroupElementCollection _cssGroups = CurrentCrusherConfiguration.Current.CssGroups;
         private readonly JsGroupElementCollection _jsGroups = CurrentCrusherConfiguration.Current.JsGroups;
         private readonly ICssCrusher _cssCrusher;
@@ -27,11 +25,13 @@ namespace Talifun.Web.Crusher
             var retryableFileOpener = new RetryableFileOpener();
             var hasher = new Hasher(retryableFileOpener);
             var retryableFileWriter = new RetryableFileWriter(BufferSize, retryableFileOpener, hasher); 
-            _pathProvider = new PathProvider();
-            var cssAssetsFileHasher = new CssAssetsFileHasher(_hashQueryStringKeyName, hasher, _pathProvider);
-            var cssPathRewriter = new CssPathRewriter(cssAssetsFileHasher, _pathProvider);
-            _cssCrusher = new CssCrusher(retryableFileOpener, retryableFileWriter, cssPathRewriter, _pathProvider);
-            _jsCrusher = new JsCrusher(retryableFileOpener, retryableFileWriter, _pathProvider);
+            var pathProvider = new PathProvider();
+            var cssAssetsFileHasher = new CssAssetsFileHasher(_hashQueryStringKeyName, hasher, pathProvider);
+            var cssPathRewriter = new CssPathRewriter(cssAssetsFileHasher, pathProvider);
+
+            _cssCrusher = new CssCrusher(retryableFileOpener, retryableFileWriter, cssPathRewriter, pathProvider);
+            _jsCrusher = new JsCrusher(retryableFileOpener, retryableFileWriter, pathProvider);
+
             InitManager();
         }
 

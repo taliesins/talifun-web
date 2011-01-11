@@ -8,6 +8,7 @@ using System.Text;
 using System.Web;
 using System.Web.Caching;
 using System.Web.Hosting;
+using Talifun.Web.Crusher;
 using Talifun.Web.Helper;
 
 namespace Talifun.Web.CssSprite
@@ -17,7 +18,6 @@ namespace Talifun.Web.CssSprite
     /// </summary>
     public class CssSpriteCreator : ICssSpriteCreator
     {
-        protected readonly int BufferSize = 32768;
         protected readonly int ImagePadding = 2;
 
         protected readonly IRetryableFileOpener RetryableFileOpener;
@@ -26,11 +26,11 @@ namespace Talifun.Web.CssSprite
 
         protected static string CssSpriteCreatorType = typeof(CssSpriteCreator).ToString();
 
-        public CssSpriteCreator()
+        public CssSpriteCreator(IRetryableFileOpener retryableFileOpener, IHasher hasher, IRetryableFileWriter retryableFileWriter)
         {
-            RetryableFileOpener = new RetryableFileOpener();
-            Hasher = new Hasher(RetryableFileOpener);
-            RetryableFileWriter = new RetryableFileWriter(BufferSize, RetryableFileOpener, Hasher);
+            RetryableFileOpener = retryableFileOpener;
+            Hasher = hasher;
+            RetryableFileWriter = retryableFileWriter;
         }
 
         /// <summary>
@@ -44,8 +44,7 @@ namespace Talifun.Web.CssSprite
         {
             var spriteElements = ProcessFiles(files);
             var etag = SaveSpritesImage(spriteElements, imageOutputPath);
-            var cssSpriteImageUrl = new Uri(string.IsNullOrEmpty(spriteImageUrl.OriginalString) ? VirtualPathUtility.ToAbsolute(imageOutputPath.FullName) : spriteImageUrl.OriginalString);
-            var css = GetCssSpriteCss(spriteElements, etag, cssSpriteImageUrl);
+            var css = GetCssSpriteCss(spriteElements, etag, spriteImageUrl);
             RetryableFileWriter.SaveContentsToFile(css, cssOutputPath);
             AddFilesToCache(imageOutputPath, spriteImageUrl, cssOutputPath, files);
         }
