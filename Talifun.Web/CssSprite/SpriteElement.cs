@@ -6,6 +6,7 @@ namespace Talifun.Web.CssSprite
 {
     public class SpriteElement
     {
+        
         /// <summary>
         /// Gets the sprite image from a stream
         /// </summary>
@@ -14,8 +15,10 @@ namespace Talifun.Web.CssSprite
         public SpriteElement(string name, Stream stream)
         {
             Name = name;
-            var image = (Bitmap)Bitmap.FromStream(stream);
-            Image = image;
+            Image = (Bitmap)Bitmap.FromStream(stream);
+            BorderWidth = 2;
+            Rectangle = new Rectangle(Point.Empty, new Size(Image.Width + BorderWidth*2, Image.Height + BorderWidth*2));
+
         }
         
         /// <summary>
@@ -27,6 +30,8 @@ namespace Talifun.Web.CssSprite
         {
             Name = name;
             Image = image;
+            BorderWidth = 2;
+            Rectangle = new Rectangle(Point.Empty, new Size(Image.Width + BorderWidth*2, Image.Height + BorderWidth*2));
         }
 
         /// <summary>
@@ -40,13 +45,13 @@ namespace Talifun.Web.CssSprite
 
             var request = HttpWebRequest.Create(absoluteUrl);
             var stream = request.GetResponse().GetResponseStream();
-            var image = (Bitmap)Bitmap.FromStream(stream);
-
-            Image = image;
+            Image = (Bitmap)Bitmap.FromStream(stream);
+            BorderWidth = 2;
+            Rectangle = new Rectangle(Point.Empty, new Size(Image.Width + BorderWidth*2, Image.Height + BorderWidth*2));
         }
 
-        public int Width { get { return Image.Width; } }
-        public int Height { get { return Image.Height; } }
+        public int BorderWidth { get; private set; }
+        public Rectangle Rectangle { get; set; }
         public Bitmap Image { get; private set; }
         public string Name { get; private set; }
     }

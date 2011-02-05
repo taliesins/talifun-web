@@ -103,6 +103,7 @@
     <Compile Include="CssSprite\ICssSpriteCreator.cs" />
     <Compile Include="CssSprite\ImageFile.cs" />
     <Compile Include="CssSprite\SpriteElement.cs" />
+    <Compile Include="CssSprite\SquarenessComparer.cs" />
     <Compile Include="Helper\IRetryableFileWriter.cs" />
     <Compile Include="Helper\RetryableFileOpener.cs" />
     <Compile Include="Helper\Hasher.cs" />

@@ -8,7 +8,6 @@ using System.Text;
 using System.Web;
 using System.Web.Caching;
 using System.Web.Hosting;
-using Talifun.Web.Crusher;
 using Talifun.Web.Helper;
 
 namespace Talifun.Web.CssSprite
@@ -25,6 +24,8 @@ namespace Talifun.Web.CssSprite
         protected readonly IRetryableFileWriter RetryableFileWriter;
 
         protected static string CssSpriteCreatorType = typeof(CssSpriteCreator).ToString();
+
+        protected readonly IComparer<SpriteElement> SquarenessComparer = new SquarenessComparer();
 
         public CssSpriteCreator(IRetryableFileOpener retryableFileOpener, IHasher hasher, IRetryableFileWriter retryableFileWriter)
         {
@@ -43,6 +44,7 @@ namespace Talifun.Web.CssSprite
         public virtual void AddFiles(FileInfo imageOutputPath, Uri spriteImageUrl, FileInfo cssOutputPath, IEnumerable<ImageFile> files)
         {
             var spriteElements = ProcessFiles(files);
+            spriteElements = CalculatePositions(spriteElements);
             var etag = SaveSpritesImage(spriteElements, imageOutputPath);
             var css = GetCssSpriteCss(spriteElements, etag, spriteImageUrl);
             RetryableFileWriter.SaveContentsToFile(css, cssOutputPath);
@@ -70,6 +72,72 @@ namespace Talifun.Web.CssSprite
 
             return spriteElements;
         }
+
+        public List<SpriteElement> CalculatePositions(List<SpriteElement> spriteElements)
+        {
+            spriteElements.Sort(SquarenessComparer);
+            var maxWidth = spriteElements.Select(x => x.Rectangle.Width).Max(x => x);
+            return PositionByFillOneColumn(spriteElements, maxWidth);
+        }
+
+        /// <summary>
+        /// Fill in by rows in a single column. 
+        /// </summary>
+        /// <param name="binWidth"></param>
+        /// <param name="spriteElements"></param>
+        public List<SpriteElement> PositionByFillOneColumn(List<SpriteElement> spriteElements, int binWidth)
+        {
+            // Make lists of positioned and not positioned rectangles.
+            var notPositioned = new List<SpriteElement>(spriteElements);
+            var positioned = new List<SpriteElement>();
+
+            // Arrange the rectangles.
+            var x = 0;
+            var y = 0;
+            var rowHeight = 0;
+            while (notPositioned.Count > 0)
+            {
+                // Find the next rectangle that will fit on this row.
+                var nextSpritePosition = -1;
+                for (var i = 0; i <= notPositioned.Count - 1; i++)
+                {
+                    if (x + notPositioned[i].Rectangle.Width > binWidth) continue;
+                    nextSpritePosition = i;
+                    break;
+                }
+
+                // If we didn't find a rectangle that fits, start a new row.
+                if (nextSpritePosition < 0)
+                {
+                    y += rowHeight;
+                    x = 0;
+                    rowHeight = 0;
+                    nextSpritePosition = 0;
+                }
+
+                // Position the selected rectangle.
+                var sprite = notPositioned[nextSpritePosition];
+
+                var rectangle = sprite.Rectangle;
+                rectangle.X = x;
+                rectangle.Y = y;
+
+                x += rectangle.Width;
+                if (rowHeight < rectangle.Height)
+                {
+                    rowHeight = rectangle.Height;
+                }
+
+                sprite.Rectangle = rectangle;
+
+                // Move the rectangle into the positioned list.
+                positioned.Add(sprite);
+                notPositioned.RemoveAt(nextSpritePosition);
+            }
+
+            return positioned;
+        }
+
 
         /// <summary>
         /// Save sprites image.
@@ -187,11 +255,10 @@ namespace Talifun.Web.CssSprite
         public virtual string GetCssSpriteCss(IEnumerable<SpriteElement> spriteElements, string etag, Uri cssSpriteImageUrl)
         {
             var cssBuilder = new StringBuilder();
-            var currentY = 0;
+            
             foreach (var element in spriteElements)
             {
-                cssBuilder.AppendFormat(".{0} {{background-image: url('{1}');background-position: 0px -{2}px;width: {3}px;height: {4}px;}}", element.Name, cssSpriteImageUrl + "?" + etag, currentY, element.Width, element.Height);
-                currentY += element.Height + ImagePadding;
+                cssBuilder.AppendFormat(".{0} {{background-image: url('{1}');background-position: -{2}px -{3}px;width: {4}px;height: {5}px;}}", element.Name, cssSpriteImageUrl + "?" + etag, element.Rectangle.X+element.BorderWidth, element.Rectangle.Y+element.BorderWidth, element.Image.Width, element.Image.Height);    
             }
 
             return cssBuilder.ToString();
@@ -204,17 +271,15 @@ namespace Talifun.Web.CssSprite
         /// <returns>Image the represents all the sprites.</returns>
         public virtual Bitmap GetCssSpriteImage(IEnumerable<SpriteElement> spriteElements)
         {
-            var maxWidth = MaxWidth(spriteElements);
-            var maxHeight = TotalHeight(spriteElements);
+            var maxWidth = Width(spriteElements);
+            var maxHeight = Height(spriteElements);
 
             var sprite = new Bitmap(maxWidth, maxHeight);
             var graphic = Graphics.FromImage(sprite);
 
-            var currentY = 0;
             foreach (var element in spriteElements)
             {
-                graphic.DrawImage(element.Image, 0, currentY, element.Width, element.Height);
-                currentY += element.Height + ImagePadding;
+                graphic.DrawImage(element.Image, element.Rectangle.X + element.BorderWidth, element.Rectangle.Y + element.BorderWidth, element.Image.Width, element.Image.Height);
             }
 
             return sprite;
@@ -225,9 +290,9 @@ namespace Talifun.Web.CssSprite
         /// </summary>
         /// <param name="spriteElements">The sprites that make the image up.</param>
         /// <returns>The height if all the sprites added together.</returns>
-        public virtual int TotalHeight(IEnumerable<SpriteElement> spriteElements)
+        public virtual int Height(IEnumerable<SpriteElement> spriteElements)
         {
-            return spriteElements.Sum(x => x.Height + ImagePadding);
+            return spriteElements.Max(y => y.Rectangle.Y + y.Rectangle.Height);
         }
 
         /// <summary>
@@ -235,9 +300,9 @@ namespace Talifun.Web.CssSprite
         /// </summary>
         /// <param name="spriteElements">The sprites that make the image up.</param>
         /// <returns>The width of the widest sprite.</returns>
-        public virtual int MaxWidth(IEnumerable<SpriteElement> spriteElements)
+        public virtual int Width(IEnumerable<SpriteElement> spriteElements)
         {
-            return spriteElements.Max(x => x.Width);
+            return spriteElements.Max(x =>x.Rectangle.X +  x.Rectangle.Width);
         }
     }
 }
