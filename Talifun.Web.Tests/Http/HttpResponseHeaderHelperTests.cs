@@ -2,7 +2,6 @@
 using System.Web;
 using NUnit.Framework;
 using Rhino.Mocks;
-using System.Net;
 
 namespace Talifun.Web.Tests.Http
 {

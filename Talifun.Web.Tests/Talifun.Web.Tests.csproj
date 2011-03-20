@@ -61,8 +61,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssertionExtensions.cs" />
+    <Compile Include="AutoMocker.cs" />
+    <Compile Include="BehaviourTest.cs" />
+    <Compile Include="Helper\MimeTyperTests.cs" />
     <Compile Include="Helper\HasherTests.cs" />
-    <Compile Include="Helper\MimeTyperTest.cs" />
     <Compile Include="Http\HttpResponseHeaderHelperTests.cs" />
     <Compile Include="Http\FullEntityResponseTests.cs" />
     <Compile Include="Http\MultiplePartEntityResponseTests.cs" />
@@ -71,8 +74,10 @@
     <Compile Include="Http\TransmitEntityStrategyForFileTests.cs" />
     <Compile Include="Http\TransmitEntityStrategyForIISTests.cs" />
     <Compile Include="Http\TransmitEntityStrategyForStreamTests.cs" />
+    <Compile Include="MockManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Http\HttpRequestHeaderHelperTests.cs" />
+    <Compile Include="ThenAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Talifun.Web\Talifun.Web.csproj">

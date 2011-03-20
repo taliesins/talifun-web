@@ -1,78 +1,92 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using NUnit.Framework;
 using Rhino.Mocks;
 
 namespace Talifun.Web.Tests.Helper
 {
-    [TestFixture]
-    public class HasherTests
+    public abstract class HasherTests : BehaviourTest<Hasher>
     {
-        [Test]
-        public void CalculateMd5Etag_Stream_HashedString()
+        protected IRetryableFileOpener RetryableFileOpener = MockRepository.GenerateMock<IRetryableFileOpener>();
+
+        protected override Hasher CreateSystemUnderTest()
         {
-            //Arrange
-            var retryableFileOpener = MockRepository.GenerateMock<IRetryableFileOpener>();
-            var text = "This is a test";
-            var md5HashOfText = "zhFORQHS9OLc6j4XtUbzOQ=="; //Hash value of bytes
-            var byteArray = Encoding.ASCII.GetBytes(text);
-            var stream = new MemoryStream(byteArray); 
+            return new Hasher(RetryableFileOpener);
+        }
+    }
 
-            //Act
-            var hasher = new Hasher(retryableFileOpener);
-            var md5Hash = hasher.CalculateMd5Etag(stream);
+    public abstract class WhenCalculatingMd5Hash : HasherTests
+    {
+        protected string TextToHash = "This is a test";
+        protected string Md5HashOfTextToHash = "zhFORQHS9OLc6j4XtUbzOQ=="; //Hash value of bytes
 
-            //Assert
-            Assert.AreEqual(md5HashOfText, md5Hash);
+        protected byte[] ByteArray;
+        protected MemoryStream Stream;
+
+        protected override void Given()
+        {
+            ByteArray = Encoding.ASCII.GetBytes(TextToHash);
+            Stream = new MemoryStream(ByteArray);
         }
 
-        [Test]
-        public void CalculateMd5Etag_PartOfStream_HashedString()
+        protected string Hash;
+
+        [Then]
+        public void HashShouldMatch()
         {
-            //Arrange
-            var retryableFileOpener = MockRepository.GenerateMock<IRetryableFileOpener>();
-            var text = "This is a test";
-            var startPosition = 0;
-            var endPosition = text.Length;
-            var md5HashOfText = "zhFORQHS9OLc6j4XtUbzOQ=="; //Hash value of bytes
-            var byteArray = Encoding.ASCII.GetBytes(text);
-            var stream = new MemoryStream(byteArray);
+            Hash.ShouldEqual(Md5HashOfTextToHash);
+        }
+    }
 
-            //Act
-            var hasher = new Hasher(retryableFileOpener);
-            var md5Hash = hasher.CalculateMd5Etag(stream, startPosition, endPosition);
+    public class WhenCalculatingMd5HashForEntireStream : WhenCalculatingMd5Hash
+    {
+        protected override void When()
+        {
+            Hash = SystemUnderTest.CalculateMd5Etag(Stream);
+        }
+    }
 
-            //Assert
-            Assert.AreEqual(md5HashOfText, md5Hash);
+    public class WhenCalculatingMd5HashForPartOfStream : WhenCalculatingMd5Hash
+    {
+        protected int StartPosition;
+        protected int EndPosition;
+
+        protected override void Given()
+        {
+            StartPosition = 0;
+            EndPosition = TextToHash.Length;
+
+            base.Given();
         }
 
-        [Test]
-        public void CalculateMd5Etag_FileInfo_HashedString()
+        protected override void When()
         {
-            //Arrange
-            var retryableFileOpener = MockRepository.GenerateMock<IRetryableFileOpener>();
-            var text = "This is a test";
-            
-            var md5HashOfText = "zhFORQHS9OLc6j4XtUbzOQ=="; //Hash value of bytes
-            var byteArray = Encoding.ASCII.GetBytes(text);
-            var stream = new MemoryStream(byteArray);
-            var fileName = "test.txt";
-            var fileInfo = new FileInfo(fileName);
+            Hash = SystemUnderTest.CalculateMd5Etag(Stream, StartPosition, EndPosition);
+        }
+    }
 
-            var fileStream = MockRepository.GenerateMock<FileStream>();
+    public class WhenCalculatingMd5HashForFile : WhenCalculatingMd5Hash
+    {
+        protected string FileName = "test.txt";
+        protected FileInfo FileToHash;
+        protected FileStream FileStream;
 
-            retryableFileOpener.Expect(x => x.OpenFileStream(fileInfo, 5, FileMode.Open, FileAccess.Read, FileShare.Read)).Return(fileStream);
-            Func<byte[], int, int, int> read = stream.Read;
-                                                
-            fileStream.Stub(x => x.Read(null, 0, 0)).IgnoreArguments().Do(read);
+        protected override void Given()
+        {
+            base.Given();
 
-            //Act
-            var hasher = new Hasher(retryableFileOpener);
-            var md5Hash = hasher.CalculateMd5Etag(fileInfo);
+            FileToHash = new FileInfo(FileName);
+            FileStream = MockRepository.GenerateMock<FileStream>();
 
-            //Assert
-            Assert.AreEqual(md5HashOfText, md5Hash);
+            RetryableFileOpener.Expect(x => x.OpenFileStream(FileToHash, 5, FileMode.Open, FileAccess.Read, FileShare.Read)).Return(FileStream);
+
+            Func<byte[], int, int, int> read = Stream.Read;
+            FileStream.Stub(x => x.Read(null, 0, 0)).IgnoreArguments().Do(read);
+        }
+
+        protected override void When()
+        {
+            Hash = SystemUnderTest.CalculateMd5Etag(FileToHash);
         }
     }
 }
