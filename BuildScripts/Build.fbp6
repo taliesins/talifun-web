@@ -1,0 +1,612 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VSXML>
+  <Object Class="TFBProject" XMLID="{164B80EE-C8D0-4390-8C7F-F75EC52FD795}">
+    <Property MultiValue="0" name="EncryptedEditPassword" type="string"></Property>
+    <Property MultiValue="0" name="Name" type="string"></Property>
+    <Property MultiValue="0" name="ProjectAuthor" type="string"></Property>
+    <Property MultiValue="0" name="ProjectID" type="string"></Property>
+    <Property MultiValue="0" name="ProjectNotes" type="string"></Property>
+    <Property MultiValue="0" name="SCCAuxPath" type="string"></Property>
+    <Property MultiValue="0" name="SCCProjectName" type="string"></Property>
+    <Property MultiValue="0" name="SCCProviderBinding" type="string"></Property>
+    <Property MultiValue="0" name="SCCUserName" type="string"></Property>
+    <Object Class="TFBActionListCollection" XMLID="{BF53506D-41E3-43F3-980D-2DA0C02E3F63}">
+      <Object Class="TFBActionList" XMLID="{82319604-4299-4468-8578-CFE8A50D1CE7}">
+        <Property name="IsFailure" type="Boolean">False</Property>
+        <Property name="IsMain" type="Boolean">True</Property>
+        <Property MultiValue="0" name="Name" type="string">Main</Property>
+        <Property MultiValue="0" name="UniqueID" type="string">{FA13A7E2-3D78-4901-9D48-3814E08AEBC1}</Property>
+        <Object Class="TFBAction" XMLID="{4EFF2B78-E9A3-4832-A2E9-4DD23751CAA5}">
+          <Property MultiValue="0" name="ActionComment" type="string"></Property>
+          <Property MultiValue="0" name="ActionDescription" type="string">FinalBuilderAction</Property>
+          <Property name="ActionTextColor" type="Cardinal">0</Property>
+          <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+          <Property name="DoNotValidateAction" type="Boolean">False</Property>
+          <Property name="Enabled" type="WordBool">True</Property>
+          <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+          <Property name="HideActionFromLog" type="Boolean">False</Property>
+          <Property name="IgnoreFailure" type="WordBool">False</Property>
+          <Property name="LogActionProperties" type="Boolean">False</Property>
+          <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+          <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+          <Property name="PauseInterval" type="Cardinal">0</Property>
+          <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+          <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+          <Object Class="TGroupAction" XMLID="{8BBA0E59-C11E-4EFC-9FF5-19CCF27AE4CF}">
+            <Property MultiValue="0" name="ActionComment" type="string"></Property>
+            <Property MultiValue="1" name="ActionDescription" type="string">
+              <![CDATA[Create NuGet Package]]>
+            </Property>
+            <Property name="ActionTextColor" type="Cardinal">0</Property>
+            <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+            <Property MultiValue="1" name="Description" type="string">
+              <![CDATA[Create NuGet Package]]>
+            </Property>
+            <Property name="DoNotValidateAction" type="Boolean">False</Property>
+            <Property name="Enabled" type="WordBool">True</Property>
+            <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+            <Property name="HideActionFromLog" type="Boolean">False</Property>
+            <Property name="IgnoreFailure" type="WordBool">False</Property>
+            <Property name="LogActionProperties" type="Boolean">False</Property>
+            <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+            <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+            <Property name="PauseInterval" type="Cardinal">0</Property>
+            <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+            <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+            <Object Class="TGroupAction" XMLID="{89C6C1CB-0481-4C4C-9930-D4EF2747FBF0}">
+              <Property MultiValue="0" name="ActionComment" type="string"></Property>
+              <Property MultiValue="1" name="ActionDescription" type="string">
+                <![CDATA[Setup folders and copy files]]>
+              </Property>
+              <Property name="ActionTextColor" type="Cardinal">0</Property>
+              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+              <Property MultiValue="1" name="Description" type="string">
+                <![CDATA[Setup folders and copy files]]>
+              </Property>
+              <Property name="DoNotValidateAction" type="Boolean">False</Property>
+              <Property name="Enabled" type="WordBool">True</Property>
+              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+              <Property name="HideActionFromLog" type="Boolean">False</Property>
+              <Property name="IgnoreFailure" type="WordBool">False</Property>
+              <Property name="LogActionProperties" type="Boolean">False</Property>
+              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+              <Property name="PauseInterval" type="Cardinal">0</Property>
+              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+              <Object Class="TDeleteDirectoryAction" XMLID="{04486605-831E-4395-BC30-AF474F7248CA}">
+                <Property MultiValue="0" name="ActionComment" type="string"></Property>
+                <Property MultiValue="1" name="ActionDescription" type="string">
+                  <![CDATA[Delete any existing package folder [ %NuGetPackageFolder% ]]]>
+                </Property>
+                <Property name="ActionTextColor" type="Cardinal">0</Property>
+                <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+                <Property name="DeleteHidden" type="WordBool">True</Property>
+                <Property name="DeleteReadOnly" type="WordBool">True</Property>
+                <Property name="DeleteTree" type="WordBool">True</Property>
+                <Property MultiValue="1" name="Description" type="string">
+                  <![CDATA[Delete any existing package folder [ %NuGetPackageFolder% ]]]>
+                </Property>
+                <Property name="DoNotValidateAction" type="Boolean">False</Property>
+                <Property name="Enabled" type="WordBool">True</Property>
+                <Property name="EnableDelay" type="Boolean">False</Property>
+                <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+                <Property MultiValue="0" name="FileOrDirectory" type="WideString">%NuGetPackageFolder%</Property>
+                <Property name="Force" type="Boolean">False</Property>
+                <Property name="HideActionFromLog" type="Boolean">False</Property>
+                <Property name="IgnoreFailure" type="WordBool">False</Property>
+                <Property name="LogActionProperties" type="Boolean">False</Property>
+                <Property name="LogDeletedFiles" type="Boolean">False</Property>
+                <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+                <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+                <Property name="PauseInterval" type="Cardinal">0</Property>
+                <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+                <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+                <Object Class="TFBDelayAction" XMLID="{3E6E063B-9E9C-4827-B61D-A3CCBABD45D8}">
+                  <Property MultiValue="0" name="ActionComment" type="string"></Property>
+                  <Property MultiValue="1" name="ActionDescription" type="string">
+                    <![CDATA[Delay 1 second]]>
+                  </Property>
+                  <Property name="ActionTextColor" type="Cardinal">0</Property>
+                  <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+                  <Property name="Delay" type="Cardinal">1000</Property>
+                  <Property name="DoNotValidateAction" type="Boolean">False</Property>
+                  <Property name="Enabled" type="WordBool">True</Property>
+                  <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+                  <Property name="HideActionFromLog" type="Boolean">False</Property>
+                  <Property name="IgnoreFailure" type="WordBool">False</Property>
+                  <Property name="LogActionProperties" type="Boolean">False</Property>
+                  <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+                  <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+                  <Property name="PauseInterval" type="Cardinal">0</Property>
+                  <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+                  <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+                </Object>
+              </Object>
+              <Object Class="TCreateDirectoryAction" XMLID="{7F6A2F89-F9E5-476D-BE25-6865C1165AA5}">
+                <Property MultiValue="0" name="ActionComment" type="string"></Property>
+                <Property MultiValue="1" name="ActionDescription" type="string">
+                  <![CDATA[Create package folder [ %NuGetPackageFolder% ]]]>
+                </Property>
+                <Property name="ActionTextColor" type="Cardinal">0</Property>
+                <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+                <Property MultiValue="1" name="Description" type="string">
+                  <![CDATA[Create package folder [ %NuGetPackageFolder% ]]]>
+                </Property>
+                <Property name="DoNotValidateAction" type="Boolean">False</Property>
+                <Property name="Enabled" type="WordBool">True</Property>
+                <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+                <Property MultiValue="0" name="FileOrDirectory" type="WideString">%NuGetPackageFolder%</Property>
+                <Property name="Force" type="Boolean">True</Property>
+                <Property name="HideActionFromLog" type="Boolean">False</Property>
+                <Property name="IgnoreFailure" type="WordBool">False</Property>
+                <Property name="LogActionProperties" type="Boolean">False</Property>
+                <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+                <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+                <Property name="PauseInterval" type="Cardinal">0</Property>
+                <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+                <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+              </Object>
+              <Object Class="TCreateDirectoryAction" XMLID="{513F04AF-8F08-4591-98D7-75034BF30453}">
+                <Property MultiValue="0" name="ActionComment" type="string"></Property>
+                <Property MultiValue="1" name="ActionDescription" type="string">
+                  <![CDATA[Create package temp folder [  %NuGetPackageTempFolder% ]]]>
+                </Property>
+                <Property name="ActionTextColor" type="Cardinal">0</Property>
+                <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+                <Property MultiValue="1" name="Description" type="string">
+                  <![CDATA[Create package temp folder [  %NuGetPackageTempFolder% ]]]>
+                </Property>
+                <Property name="DoNotValidateAction" type="Boolean">False</Property>
+                <Property name="Enabled" type="WordBool">True</Property>
+                <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+                <Property MultiValue="0" name="FileOrDirectory" type="WideString">%NuGetPackageTempFolder%</Property>
+                <Property name="Force" type="Boolean">True</Property>
+                <Property name="HideActionFromLog" type="Boolean">False</Property>
+                <Property name="IgnoreFailure" type="WordBool">False</Property>
+                <Property name="LogActionProperties" type="Boolean">False</Property>
+                <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+                <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+                <Property name="PauseInterval" type="Cardinal">0</Property>
+                <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+                <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+              </Object>
+              <Object Class="TCreateDirectoryAction" XMLID="{E4FD9EE7-B6A3-4C7E-BDD0-16F1E4DE1CCC}">
+                <Property MultiValue="0" name="ActionComment" type="string"></Property>
+                <Property MultiValue="1" name="ActionDescription" type="string">
+                  <![CDATA[Create package  lib  folder [  %NuGetPackageTempFolder% ]]]>
+                </Property>
+                <Property name="ActionTextColor" type="Cardinal">0</Property>
+                <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+                <Property MultiValue="1" name="Description" type="string">
+                  <![CDATA[Create package  lib  folder [  %NuGetPackageTempFolder% ]]]>
+                </Property>
+                <Property name="DoNotValidateAction" type="Boolean">False</Property>
+                <Property name="Enabled" type="WordBool">True</Property>
+                <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+                <Property MultiValue="0" name="FileOrDirectory" type="WideString">%NuGetLibFolder%</Property>
+                <Property name="Force" type="Boolean">True</Property>
+                <Property name="HideActionFromLog" type="Boolean">False</Property>
+                <Property name="IgnoreFailure" type="WordBool">False</Property>
+                <Property name="LogActionProperties" type="Boolean">False</Property>
+                <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+                <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+                <Property name="PauseInterval" type="Cardinal">0</Property>
+                <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+                <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+              </Object>
+              <Object Class="TCopyFilesAction" XMLID="{147D4AAC-04D2-4CBA-9525-5B26F5B115DA}">
+                <Property MultiValue="0" name="ActionComment" type="string"></Property>
+                <Property MultiValue="1" name="ActionDescription" type="string">
+                  <![CDATA[Copy the nuspec template file to the package temp folder]]>
+                </Property>
+                <Property name="ActionTextColor" type="Cardinal">0</Property>
+                <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+                <Property name="ClearAttributes" type="WordBool">True</Property>
+                <Property MultiValue="1" name="Description" type="string">
+                  <![CDATA[Copy the nuspec template file to the package temp folder]]>
+                </Property>
+                <Property name="DoNotValidateAction" type="Boolean">False</Property>
+                <Property name="Enabled" type="WordBool">True</Property>
+                <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+                <Property name="FailIfExists" type="WordBool">False</Property>
+                <Property name="FailIfZeroFiles" type="WordBool">True</Property>
+                <Property MultiValue="0" name="FileSpec" type="WideString">%FBPROJECTDIR%\%NuspecTemplateFileName%</Property>
+                <Property name="Force" type="WordBool">False</Property>
+                <Property name="HideActionFromLog" type="Boolean">False</Property>
+                <Property name="IgnoreFailure" type="WordBool">False</Property>
+                <Property name="LogActionProperties" type="Boolean">False</Property>
+                <Property name="LogFilesAffected" type="Boolean">True</Property>
+                <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+                <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+                <Property name="Overwrite" type="Boolean">True</Property>
+                <Property name="OverwriteReadOnly" type="WordBool">False</Property>
+                <Property name="PauseInterval" type="Cardinal">0</Property>
+                <Property name="Recurse" type="WordBool">False</Property>
+                <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+                <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+                <Property MultiValue="0" name="Target" type="WideString">%NuGetPackageTempFolder%\%NuspecTemplateFileName%</Property>
+                <Property name="TargetIsDir" type="WordBool">False</Property>
+              </Object>
+              <Object Class="TCopyFilesAction" XMLID="{A06362EE-9804-4E85-ACD4-D9168BC90E08}">
+                <Property MultiValue="0" name="ActionComment" type="string"></Property>
+                <Property MultiValue="1" name="ActionDescription" type="string">
+                  <![CDATA[Copy the binaries to the package lib folder]]>
+                </Property>
+                <Property name="ActionTextColor" type="Cardinal">0</Property>
+                <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+                <Property name="ClearAttributes" type="WordBool">True</Property>
+                <Property MultiValue="1" name="Description" type="string">
+                  <![CDATA[Copy the binaries to the package lib folder]]>
+                </Property>
+                <Property name="DoNotValidateAction" type="Boolean">False</Property>
+                <Property name="Enabled" type="WordBool">True</Property>
+                <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+                <Property name="FailIfExists" type="WordBool">False</Property>
+                <Property name="FailIfZeroFiles" type="WordBool">True</Property>
+                <Property MultiValue="0" name="FileSpec" type="WideString">%BuildOutputFolder%\*.*</Property>
+                <Property name="Force" type="WordBool">True</Property>
+                <Property name="HideActionFromLog" type="Boolean">False</Property>
+                <Property name="IgnoreFailure" type="WordBool">False</Property>
+                <Property name="LogActionProperties" type="Boolean">False</Property>
+                <Property name="LogFilesAffected" type="Boolean">True</Property>
+                <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+                <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+                <Property name="Overwrite" type="Boolean">True</Property>
+                <Property name="OverwriteReadOnly" type="WordBool">False</Property>
+                <Property name="PauseInterval" type="Cardinal">0</Property>
+                <Property name="Recurse" type="WordBool">False</Property>
+                <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+                <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+                <Property MultiValue="0" name="Target" type="WideString">%NuGetLibFolder%</Property>
+                <Property name="TargetIsDir" type="WordBool">True</Property>
+              </Object>
+            </Object>
+            <Object Class="TGroupAction" XMLID="{20DC61BE-A387-4EFF-8742-E94E95BAF70D}">
+              <Property MultiValue="0" name="ActionComment" type="string"></Property>
+              <Property MultiValue="1" name="ActionDescription" type="string">
+                <![CDATA[Insert Version Number In Nuspec File]]>
+              </Property>
+              <Property name="ActionTextColor" type="Cardinal">0</Property>
+              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+              <Property MultiValue="1" name="Description" type="string">
+                <![CDATA[Insert Version Number In Nuspec File]]>
+              </Property>
+              <Property name="DoNotValidateAction" type="Boolean">False</Property>
+              <Property name="Enabled" type="WordBool">True</Property>
+              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+              <Property name="HideActionFromLog" type="Boolean">False</Property>
+              <Property name="IgnoreFailure" type="WordBool">False</Property>
+              <Property name="LogActionProperties" type="Boolean">False</Property>
+              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+              <Property name="PauseInterval" type="Cardinal">0</Property>
+              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+              <Object Class="TFBExtractFileVerInfoAction" XMLID="{3FABD554-6A98-4BFD-ABC7-2E9E325D354A}">
+                <Property MultiValue="0" name="ActionComment" type="string"></Property>
+                <Property MultiValue="1" name="ActionDescription" type="string">
+                  <![CDATA[Extract Version Info [%PackagedProjectFile%]]]>
+                </Property>
+                <Property name="ActionTextColor" type="Cardinal">0</Property>
+                <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+                <Property name="DoNotValidateAction" type="Boolean">False</Property>
+                <Property name="Enabled" type="WordBool">True</Property>
+                <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+                <Property MultiValue="0" name="FileName" type="string">%PackagedProjectFile%</Property>
+                <Property name="HideActionFromLog" type="Boolean">False</Property>
+                <Property name="IgnoreFailure" type="WordBool">False</Property>
+                <Property name="IgnoreIfNotFound" type="Boolean">True</Property>
+                <Property name="LogActionProperties" type="Boolean">False</Property>
+                <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+                <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+                <Property name="PauseInterval" type="Cardinal">0</Property>
+                <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+                <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+                <Property name="VerInfoList" type="TStrings">
+                  <![CDATA[Assembly Version=MetadataVersion
+]]>
+                </Property>
+              </Object>
+              <Object Class="TFBXMLEditAction" XMLID="{F65DCC73-C2F6-4AA6-96EB-64DC9A478A93}">
+                <Property MultiValue="0" name="ActionComment" type="string"></Property>
+                <Property MultiValue="1" name="ActionDescription" type="string">
+                  <![CDATA[Edit XML File [File: %NuspecTemplateFileName% XPath: /package/metadata/version]]]>
+                </Property>
+                <Property name="ActionTextColor" type="Cardinal">0</Property>
+                <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+                <Property MultiValue="0" name="Attribute" type="string"></Property>
+                <Property MultiValue="0" name="DefaultNamespaceIdentifier" type="string"></Property>
+                <Property name="DoNotValidateAction" type="Boolean">False</Property>
+                <Property name="Enabled" type="WordBool">True</Property>
+                <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+                <Property name="ExpandDocumentNodeNamespace" type="Boolean">False</Property>
+                <Property MultiValue="0" name="ExtraNamespaces" type="string"></Property>
+                <Property name="HideActionFromLog" type="Boolean">False</Property>
+                <Property name="IgnoreFailure" type="WordBool">False</Property>
+                <Property name="LogActionProperties" type="Boolean">False</Property>
+                <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+                <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+                <Property MultiValue="0" name="NewValue" type="string">%MetadataVersion%</Property>
+                <Property name="NewValueIsText" type="Boolean">True</Property>
+                <Property name="ParserVer" type="TParserVer">HighestMSXML</Property>
+                <Property name="PauseInterval" type="Cardinal">0</Property>
+                <Property name="PreserveWhitespace" type="Boolean">False</Property>
+                <Property name="ResolveExternal" type="Boolean">True</Property>
+                <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+                <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+                <Property name="UseCData" type="Boolean">False</Property>
+                <Property name="UseXMLDocObject" type="Boolean">False</Property>
+                <Property name="ValidateOnParse" type="Boolean">True</Property>
+                <Property MultiValue="0" name="XMLDocumentObject" type="string"></Property>
+                <Property MultiValue="0" name="XMLSourceFile" type="string">%NuGetPackageTempFolder%\%NuspecTemplateFileName%</Property>
+                <Property MultiValue="0" name="XPathNode" type="string">/package/metadata/version</Property>
+              </Object>
+            </Object>
+            <Object Class="TRunProgramAction" XMLID="{18127F35-D08A-46B0-B0C2-6F435B593597}">
+              <Property MultiValue="0" name="ActionComment" type="string"></Property>
+              <Property MultiValue="1" name="ActionDescription" type="string">
+                <![CDATA[Excute NuGet.exe]]>
+              </Property>
+              <Property name="ActionTextColor" type="Cardinal">0</Property>
+              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+              <Property name="CaptureOutput" type="Boolean">True</Property>
+              <Property MultiValue="1" name="Description" type="string">
+                <![CDATA[Excute NuGet.exe]]>
+              </Property>
+              <Property name="DoNotValidateAction" type="Boolean">False</Property>
+              <Property name="Enabled" type="WordBool">True</Property>
+              <Property name="EnableLiveCapture" type="Boolean">True</Property>
+              <Property name="EnableReturnCodeCheck" type="Boolean">True</Property>
+              <Property name="EnableTimeout" type="Boolean">False</Property>
+              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+              <Property name="ExpandImpersonationToken" type="Boolean">False</Property>
+              <Property MultiValue="0" name="ExtraCmdLineParamsAtEnd" type="string"></Property>
+              <Property MultiValue="0" name="ExtraCmdLineParamsAtStart" type="string"></Property>
+              <Property name="HideActionFromLog" type="Boolean">False</Property>
+              <Property name="HideWindow" type="Boolean">True</Property>
+              <Property name="IgnoreFailure" type="WordBool">False</Property>
+              <Property MultiValue="0" name="ImpersonateToken" type="string"></Property>
+              <Property name="ImpersonateUser" type="Boolean">False</Property>
+              <Property MultiValue="0" name="ImpersonateUserName" type="string"></Property>
+              <Property MultiValue="0" name="InputFile" type="string"></Property>
+              <Property name="LogActionProperties" type="Boolean">False</Property>
+              <Property name="LogOutput" type="WordBool">True</Property>
+              <Property name="LogProcessParameters" type="Boolean">True</Property>
+              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+              <Property MultiValue="1" name="Params" type="WideString">
+                <![CDATA[pack &quot;%NuGetPackageTempFolder%\%NuspecTemplateFileName%&quot;]]>
+              </Property>
+              <Property name="PauseInterval" type="Cardinal">0</Property>
+              <Property name="ProcessorAffinity" type="Cardinal">0</Property>
+              <Property name="ProcessPriority" type="TFBExecuteThreadPriority">tpNormal</Property>
+              <Property MultiValue="1" name="ProgramName" type="WideString">
+                <![CDATA[%NuGetExe%  ]]>
+              </Property>
+              <Property name="RedirectStdErr" type="Boolean">True</Property>
+              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+              <Property name="ReturnCodeComparator" type="TFBRunReturnCodeComparator">rcEqualTo</Property>
+              <Property name="ReturnCodeToCheck" type="Integer">0</Property>
+              <Property MultiValue="0" name="StartInDir" type="WideString">%NuGetPackageFolder%</Property>
+              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+              <Property name="TerminateOnTimeout" type="Boolean">False</Property>
+              <Property name="TimeoutLength" type="Cardinal">1</Property>
+              <Property name="UseErrorDialogMonitor" type="Boolean">False</Property>
+              <Property name="WaitForCompletion" type="Boolean">True</Property>
+            </Object>
+            <Object Class="TDeleteDirectoryAction" XMLID="{EF7E7E02-AF35-49FE-BA0A-212835EFACBE}">
+              <Property MultiValue="0" name="ActionComment" type="string"></Property>
+              <Property MultiValue="1" name="ActionDescription" type="string">
+                <![CDATA[Delete any existing package temp folder [ %NuGetPackageFolder% ]]]>
+              </Property>
+              <Property name="ActionTextColor" type="Cardinal">0</Property>
+              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+              <Property name="DeleteHidden" type="WordBool">True</Property>
+              <Property name="DeleteReadOnly" type="WordBool">True</Property>
+              <Property name="DeleteTree" type="WordBool">True</Property>
+              <Property MultiValue="1" name="Description" type="string">
+                <![CDATA[Delete any existing package temp folder [ %NuGetPackageFolder% ]]]>
+              </Property>
+              <Property name="DoNotValidateAction" type="Boolean">False</Property>
+              <Property name="Enabled" type="WordBool">True</Property>
+              <Property name="EnableDelay" type="Boolean">False</Property>
+              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+              <Property MultiValue="0" name="FileOrDirectory" type="WideString">%NuGetPackageTempFolder%</Property>
+              <Property name="Force" type="Boolean">False</Property>
+              <Property name="HideActionFromLog" type="Boolean">False</Property>
+              <Property name="IgnoreFailure" type="WordBool">False</Property>
+              <Property name="LogActionProperties" type="Boolean">False</Property>
+              <Property name="LogDeletedFiles" type="Boolean">False</Property>
+              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+              <Property name="PauseInterval" type="Cardinal">0</Property>
+              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+            </Object>
+          </Object>
+          <Object Class="TGroupAction" XMLID="{36594EB1-2703-40B0-9C3C-1560456262F2}">
+            <Property MultiValue="0" name="ActionComment" type="string"></Property>
+            <Property MultiValue="1" name="ActionDescription" type="string">
+              <![CDATA[Deploy the package to drop folder]]>
+            </Property>
+            <Property name="ActionTextColor" type="Cardinal">0</Property>
+            <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+            <Property MultiValue="1" name="Description" type="string">
+              <![CDATA[Deploy the package to drop folder]]>
+            </Property>
+            <Property name="DoNotValidateAction" type="Boolean">False</Property>
+            <Property name="Enabled" type="WordBool">True</Property>
+            <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+            <Property name="HideActionFromLog" type="Boolean">False</Property>
+            <Property name="IgnoreFailure" type="WordBool">False</Property>
+            <Property name="LogActionProperties" type="Boolean">False</Property>
+            <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+            <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+            <Property name="PauseInterval" type="Cardinal">0</Property>
+            <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+            <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+            <Object Class="TCopyFilesAction" XMLID="{805305FD-1EFE-4ECF-A0CE-925E8E048208}">
+              <Property MultiValue="0" name="ActionComment" type="string"></Property>
+              <Property MultiValue="1" name="ActionDescription" type="string">
+                <![CDATA[Copy File(s) [ %NuGetPackageFolder%\*.* -&gt; %DropFolder% ]]]>
+              </Property>
+              <Property name="ActionTextColor" type="Cardinal">0</Property>
+              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+              <Property name="ClearAttributes" type="WordBool">False</Property>
+              <Property name="DoNotValidateAction" type="Boolean">False</Property>
+              <Property name="Enabled" type="WordBool">True</Property>
+              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+              <Property name="FailIfExists" type="WordBool">False</Property>
+              <Property name="FailIfZeroFiles" type="WordBool">True</Property>
+              <Property MultiValue="0" name="FileSpec" type="WideString">%NuGetPackageFolder%\*.*</Property>
+              <Property name="Force" type="WordBool">True</Property>
+              <Property name="HideActionFromLog" type="Boolean">False</Property>
+              <Property name="IgnoreFailure" type="WordBool">False</Property>
+              <Property name="LogActionProperties" type="Boolean">False</Property>
+              <Property name="LogFilesAffected" type="Boolean">True</Property>
+              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+              <Property name="Overwrite" type="Boolean">True</Property>
+              <Property name="OverwriteReadOnly" type="WordBool">False</Property>
+              <Property name="PauseInterval" type="Cardinal">0</Property>
+              <Property name="Recurse" type="WordBool">False</Property>
+              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+              <Property MultiValue="0" name="Target" type="WideString">%DropFolder%</Property>
+              <Property name="TargetIsDir" type="WordBool">True</Property>
+            </Object>
+          </Object>
+        </Object>
+        <Object Class="TFBActionListParametersCollection" XMLID="{6C011FC1-811F-47EC-9C35-415081CB748E}"/>
+      </Object>
+      <Object Class="TFBActionList" XMLID="{14E485C0-8544-49B5-9217-C9A0068AE82D}">
+        <Property name="IsFailure" type="Boolean">True</Property>
+        <Property name="IsMain" type="Boolean">False</Property>
+        <Property MultiValue="0" name="Name" type="string">OnFailure</Property>
+        <Property MultiValue="0" name="UniqueID" type="string">{299B5E04-BBF6-40EA-8B5B-5D21A72BB58A}</Property>
+        <Object Class="TFBAction" XMLID="{2984B392-C4C0-4D28-BF67-9E64DB06AFC0}">
+          <Property MultiValue="0" name="ActionComment" type="string"></Property>
+          <Property MultiValue="0" name="ActionDescription" type="string">FinalBuilderAction</Property>
+          <Property name="ActionTextColor" type="Cardinal">0</Property>
+          <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+          <Property name="DoNotValidateAction" type="Boolean">False</Property>
+          <Property name="Enabled" type="WordBool">True</Property>
+          <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+          <Property name="HideActionFromLog" type="Boolean">False</Property>
+          <Property name="IgnoreFailure" type="WordBool">False</Property>
+          <Property name="LogActionProperties" type="Boolean">False</Property>
+          <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+          <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+          <Property name="PauseInterval" type="Cardinal">0</Property>
+          <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+          <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+        </Object>
+        <Object Class="TFBActionListParametersCollection" XMLID="{861F8249-EDF5-4B5D-9A62-1235B3DE3C57}"/>
+      </Object>
+    </Object>
+    <Object Class="TFBVariablesCollection" XMLID="{05E40D0C-0F38-464F-A6C3-B5010EA21C97}">
+      <Property MultiValue="0" name="Name" type="string">Project</Property>
+      <Object Class="TFBVariable" XMLID="{8956BF7F-E497-4749-8569-A2BA0F36A9E3}">
+        <Property MultiValue="0" name="Comment" type="string"></Property>
+        <Property MultiValue="0" name="DefaultValue" type="string">talifun.web.nuspec</Property>
+        <Property MultiValue="0" name="GroupName" type="string">NuGet</Property>
+        <Property name="IsMacro" type="Boolean">False</Property>
+        <Property name="IsPersistent" type="Boolean">False</Property>
+        <Property name="MakeEnv" type="Boolean">False</Property>
+        <Property MultiValue="0" name="Name" type="string">NuspecTemplateFileName</Property>
+        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
+      </Object>
+      <Object Class="TFBVariable" XMLID="{775E17C0-1F40-4181-8C3B-382791F97542}">
+        <Property MultiValue="0" name="Comment" type="string"></Property>
+        <Property MultiValue="0" name="DefaultValue" type="string">%FBPROJECTDIR%\..\Talifun.Web\bin\Release</Property>
+        <Property MultiValue="0" name="GroupName" type="string"></Property>
+        <Property name="IsMacro" type="Boolean">False</Property>
+        <Property name="IsPersistent" type="Boolean">False</Property>
+        <Property name="MakeEnv" type="Boolean">False</Property>
+        <Property MultiValue="0" name="Name" type="string">BuildOutputFolder</Property>
+        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
+      </Object>
+      <Object Class="TFBVariable" XMLID="{E33DC5E1-C170-4CDD-B68E-75C6F30B810D}">
+        <Property MultiValue="0" name="Comment" type="string"></Property>
+        <Property MultiValue="0" name="DefaultValue" type="string">%FBPROJECTDIR%\nuget.exe</Property>
+        <Property MultiValue="0" name="GroupName" type="string">NuGet</Property>
+        <Property name="IsMacro" type="Boolean">False</Property>
+        <Property name="IsPersistent" type="Boolean">False</Property>
+        <Property name="MakeEnv" type="Boolean">False</Property>
+        <Property MultiValue="0" name="Name" type="string">NuGetExe</Property>
+        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
+      </Object>
+      <Object Class="TFBVariable" XMLID="{A457F3F9-7BDE-4CCD-99C9-D4AD00DBCF8C}">
+        <Property MultiValue="0" name="Comment" type="string"></Property>
+        <Property MultiValue="0" name="DefaultValue" type="string">%FBPROJECTDIR%\..\..\Package</Property>
+        <Property MultiValue="0" name="GroupName" type="string">NuGet</Property>
+        <Property name="IsMacro" type="Boolean">False</Property>
+        <Property name="IsPersistent" type="Boolean">False</Property>
+        <Property name="MakeEnv" type="Boolean">False</Property>
+        <Property MultiValue="0" name="Name" type="string">NuGetPackageFolder</Property>
+        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
+      </Object>
+      <Object Class="TFBVariable" XMLID="{50242893-BE4E-4055-89A6-6C2695F2D8D5}">
+        <Property MultiValue="0" name="Comment" type="string"></Property>
+        <Property MultiValue="0" name="DefaultValue" type="string">%NuGetPackageFolder%\Temp</Property>
+        <Property MultiValue="0" name="GroupName" type="string">NuGet</Property>
+        <Property name="IsMacro" type="Boolean">False</Property>
+        <Property name="IsPersistent" type="Boolean">False</Property>
+        <Property name="MakeEnv" type="Boolean">False</Property>
+        <Property MultiValue="0" name="Name" type="string">NuGetPackageTempFolder</Property>
+        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
+      </Object>
+      <Object Class="TFBVariable" XMLID="{473AF608-4280-4801-9D7E-A81F9A7EEC14}">
+        <Property MultiValue="0" name="Comment" type="string"></Property>
+        <Property MultiValue="0" name="DefaultValue" type="string">%FBPROJECTDIR%\..\..\talifun.web.sln</Property>
+        <Property MultiValue="0" name="GroupName" type="string"></Property>
+        <Property name="IsMacro" type="Boolean">False</Property>
+        <Property name="IsPersistent" type="Boolean">False</Property>
+        <Property name="MakeEnv" type="Boolean">False</Property>
+        <Property MultiValue="0" name="Name" type="string">SolutionFile</Property>
+        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
+      </Object>
+      <Object Class="TFBVariable" XMLID="{889CF290-610D-41EC-A94A-7AB4EA15B3AB}">
+        <Property MultiValue="0" name="Comment" type="string"></Property>
+        <Property MultiValue="0" name="DefaultValue" type="string">%BuildOutputFolder%\talifun.web.dll</Property>
+        <Property MultiValue="0" name="GroupName" type="string"></Property>
+        <Property name="IsMacro" type="Boolean">False</Property>
+        <Property name="IsPersistent" type="Boolean">False</Property>
+        <Property name="MakeEnv" type="Boolean">False</Property>
+        <Property MultiValue="0" name="Name" type="string">PackagedProjectFile</Property>
+        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
+      </Object>
+      <Object Class="TFBVariable" XMLID="{6A025185-7C9B-4FFC-8AA1-FCBEE47E321A}">
+        <Property MultiValue="0" name="Comment" type="string"></Property>
+        <Property MultiValue="0" name="DefaultValue" type="string"></Property>
+        <Property MultiValue="0" name="GroupName" type="string"></Property>
+        <Property name="IsMacro" type="Boolean">False</Property>
+        <Property name="IsPersistent" type="Boolean">False</Property>
+        <Property name="MakeEnv" type="Boolean">False</Property>
+        <Property MultiValue="0" name="Name" type="string">MetadataVersion</Property>
+        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
+      </Object>
+      <Object Class="TFBVariable" XMLID="{CA21DA8A-87D7-42B5-97B9-97CDE7E48321}">
+        <Property MultiValue="0" name="Comment" type="string"></Property>
+        <Property MultiValue="0" name="DefaultValue" type="string">%FBPROJECTDIR%\..\..\DropFolder</Property>
+        <Property MultiValue="0" name="GroupName" type="string"></Property>
+        <Property name="IsMacro" type="Boolean">False</Property>
+        <Property name="IsPersistent" type="Boolean">False</Property>
+        <Property name="MakeEnv" type="Boolean">False</Property>
+        <Property MultiValue="0" name="Name" type="string">DropFolder</Property>
+        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
+      </Object>
+      <Object Class="TFBVariable" XMLID="{BE392C89-FC1E-480C-81B2-BFD99F52B150}">
+        <Property MultiValue="0" name="Comment" type="string"></Property>
+        <Property MultiValue="0" name="DefaultValue" type="string">%NuGetPackageTempFolder%\lib\NET35</Property>
+        <Property MultiValue="0" name="GroupName" type="string">NuGet</Property>
+        <Property name="IsMacro" type="Boolean">False</Property>
+        <Property name="IsPersistent" type="Boolean">False</Property>
+        <Property name="MakeEnv" type="Boolean">False</Property>
+        <Property MultiValue="0" name="Name" type="string">NuGetLibFolder</Property>
+        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
+      </Object>
+    </Object>
+  </Object>
+</VSXML>
