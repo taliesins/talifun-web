@@ -67,9 +67,9 @@
     <Compile Include="Helper\MimeTyperTests.cs" />
     <Compile Include="Helper\HasherTests.cs" />
     <Compile Include="Http\HttpResponseHeaderHelperTests.cs" />
-    <Compile Include="Http\FullEntityResponseTests.cs" />
-    <Compile Include="Http\MultiplePartEntityResponseTests.cs" />
-    <Compile Include="Http\SinglePartEntityResponseTests.cs" />
+    <Compile Include="Http\EntityResponseFullTests.cs" />
+    <Compile Include="Http\EntityResponseMultiPartTests.cs" />
+    <Compile Include="Http\EntityResponseSinglePartTests.cs" />
     <Compile Include="Http\TransmitEntityStrategyForByteArrayTests.cs" />
     <Compile Include="Http\TransmitEntityStrategyForFileTests.cs" />
     <Compile Include="Http\TransmitEntityStrategyForIISTests.cs" />

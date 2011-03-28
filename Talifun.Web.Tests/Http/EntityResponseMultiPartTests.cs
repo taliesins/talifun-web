@@ -8,7 +8,7 @@ using Rhino.Mocks;
 namespace Talifun.Web.Tests.Http
 {
     [TestFixture]
-    public class MultiPartEntityResponseTests
+    public class EntityResponseMultiPartTests
     {
         #region SendHeaders
         [Test]
@@ -41,17 +41,17 @@ namespace Talifun.Web.Tests.Http
 
             var rangeItems = new[] { firstRangeItem, secondRangeItem };
 
-            var firstHeader = "\r\n--" + MultiPartEntityResponse.MultipartBoundary + "\r\n"
-                + MultiPartEntityResponse.HttpHeaderContentType + ": " + entityType + "\r\n"
-                + MultiPartEntityResponse.HttpHeaderContentRange + ": " + MultiPartEntityResponse.Bytes + " " + firstStartRange + "-" + firstEndRange + "/" + entityLength + "\r\n"
+            var firstHeader = "\r\n--" + EntityResponseMultiPart.MultipartBoundary + "\r\n"
+                + EntityResponseMultiPart.HttpHeaderContentType + ": " + entityType + "\r\n"
+                + EntityResponseMultiPart.HttpHeaderContentRange + ": " + EntityResponseMultiPart.Bytes + " " + firstStartRange + "-" + firstEndRange + "/" + entityLength + "\r\n"
                 + "\r\n";
 
-            var secondHeader = "\r\n--" + MultiPartEntityResponse.MultipartBoundary + "\r\n"
-                + MultiPartEntityResponse.HttpHeaderContentType + ": " + entityType + "\r\n"
-                + MultiPartEntityResponse.HttpHeaderContentRange + ": " + MultiPartEntityResponse.Bytes + " " + secondStartRange + "-" + secondEndRange + "/" + entityLength + "\r\n"
+            var secondHeader = "\r\n--" + EntityResponseMultiPart.MultipartBoundary + "\r\n"
+                + EntityResponseMultiPart.HttpHeaderContentType + ": " + entityType + "\r\n"
+                + EntityResponseMultiPart.HttpHeaderContentRange + ": " + EntityResponseMultiPart.Bytes + " " + secondStartRange + "-" + secondEndRange + "/" + entityLength + "\r\n"
                 + "\r\n";
 
-            var footer = "\r\n--" + MultiPartEntityResponse.MultipartBoundary + "--\r\n";
+            var footer = "\r\n--" + EntityResponseMultiPart.MultipartBoundary + "--\r\n";
 
             var contentLength = firstHeader.Length + firstEndRange - firstStartRange + 1
                 + secondHeader.Length + secondEndRange - secondStartRange + 1
@@ -62,11 +62,11 @@ namespace Talifun.Web.Tests.Http
             entity.Stub(x => x.CompressionType).Return(entityCompressionType);
 
             httpResponseHeaderHelper.Expect(x => x.SetContentEncoding(httpResponse, responseCompressionType));
-            httpResponseHeaderHelper.Expect(x => x.AppendHeader(httpResponse, MultiPartEntityResponse.HttpHeaderContentLength, contentLength.ToString()));
-            httpResponse.Expect(x => x.ContentType = MultiPartEntityResponse.MultipartContenttype);
+            httpResponseHeaderHelper.Expect(x => x.AppendHeader(httpResponse, EntityResponseMultiPart.HttpHeaderContentLength, contentLength.ToString()));
+            httpResponse.Expect(x => x.ContentType = EntityResponseMultiPart.MultipartContenttype);
 
             //Act
-            var multiPartEntityResponse = new MultiPartEntityResponse(httpResponseHeaderHelper, rangeItems);
+            var multiPartEntityResponse = new EntityResponseMultiPart(httpResponseHeaderHelper, rangeItems);
             multiPartEntityResponse.SendHeaders(httpResponse, responseCompressionType, entity);
 
             //Assert
@@ -108,10 +108,10 @@ namespace Talifun.Web.Tests.Http
             httpResponse.Filter = new MemoryStream();
 
             httpResponseHeaderHelper.Expect(x => x.SetContentEncoding(httpResponse, responseCompressionType));
-            httpResponse.Expect(x => x.ContentType = MultiPartEntityResponse.MultipartContenttype);
+            httpResponse.Expect(x => x.ContentType = EntityResponseMultiPart.MultipartContenttype);
 
             //Act
-            var multiPartEntityResponse = new MultiPartEntityResponse(httpResponseHeaderHelper, rangeItems);
+            var multiPartEntityResponse = new EntityResponseMultiPart(httpResponseHeaderHelper, rangeItems);
             multiPartEntityResponse.SendHeaders(httpResponse, responseCompressionType, entity);
 
             //Assert
@@ -155,10 +155,10 @@ namespace Talifun.Web.Tests.Http
             httpResponse.Filter = new MemoryStream();
 
             httpResponseHeaderHelper.Expect(x => x.SetContentEncoding(httpResponse, responseCompressionType));
-            httpResponse.Expect(x => x.ContentType = MultiPartEntityResponse.MultipartContenttype);
+            httpResponse.Expect(x => x.ContentType = EntityResponseMultiPart.MultipartContenttype);
 
             //Act
-            var multiPartEntityResponse = new MultiPartEntityResponse(httpResponseHeaderHelper, rangeItems);
+            var multiPartEntityResponse = new EntityResponseMultiPart(httpResponseHeaderHelper, rangeItems);
             multiPartEntityResponse.SendHeaders(httpResponse, responseCompressionType, entity);
 
             //Assert
@@ -199,7 +199,7 @@ namespace Talifun.Web.Tests.Http
             entity.Stub(x => x.CompressionType).Return(entityCompressionType);
 
             //Act
-            var multiPartEntityResponse = new MultiPartEntityResponse(httpResponseHeaderHelper, rangeItems);
+            var multiPartEntityResponse = new EntityResponseMultiPart(httpResponseHeaderHelper, rangeItems);
             var ex = Assert.Throws<Exception>(() => multiPartEntityResponse.SendHeaders(httpResponse, responseCompressionType, entity));
         }
 
@@ -234,7 +234,7 @@ namespace Talifun.Web.Tests.Http
             entity.Stub(x => x.CompressionType).Return(entityCompressionType);
 
             //Act
-            var multiPartEntityResponse = new MultiPartEntityResponse(httpResponseHeaderHelper, rangeItems);
+            var multiPartEntityResponse = new EntityResponseMultiPart(httpResponseHeaderHelper, rangeItems);
             var ex = Assert.Throws<Exception>(() => multiPartEntityResponse.SendHeaders(httpResponse, responseCompressionType, entity));
         }
 
@@ -269,7 +269,7 @@ namespace Talifun.Web.Tests.Http
             entity.Stub(x => x.CompressionType).Return(entityCompressionType);
 
             //Act
-            var multiPartEntityResponse = new MultiPartEntityResponse(httpResponseHeaderHelper, rangeItems);
+            var multiPartEntityResponse = new EntityResponseMultiPart(httpResponseHeaderHelper, rangeItems);
             var ex = Assert.Throws<Exception>(() => multiPartEntityResponse.SendHeaders(httpResponse, responseCompressionType, entity));
         }
 
@@ -304,7 +304,7 @@ namespace Talifun.Web.Tests.Http
             entity.Stub(x => x.CompressionType).Return(entityCompressionType);
 
             //Act
-            var multiPartEntityResponse = new MultiPartEntityResponse(httpResponseHeaderHelper, rangeItems);
+            var multiPartEntityResponse = new EntityResponseMultiPart(httpResponseHeaderHelper, rangeItems);
             var ex = Assert.Throws<Exception>(() => multiPartEntityResponse.SendHeaders(httpResponse, responseCompressionType, entity));
         }
 
@@ -345,17 +345,17 @@ namespace Talifun.Web.Tests.Http
 
             var rangeItems = new[] { firstRangeItem, secondRangeItem };
 
-            var firstHeader = "\r\n--" + MultiPartEntityResponse.MultipartBoundary + "\r\n"
-                + MultiPartEntityResponse.HttpHeaderContentType + ": " + contentType + "\r\n"
-                + MultiPartEntityResponse.HttpHeaderContentRange + ": " + MultiPartEntityResponse.Bytes + " " + firstStartRange + "-" + firstEndRange + "/" + contentLength + "\r\n"
+            var firstHeader = "\r\n--" + EntityResponseMultiPart.MultipartBoundary + "\r\n"
+                + EntityResponseMultiPart.HttpHeaderContentType + ": " + contentType + "\r\n"
+                + EntityResponseMultiPart.HttpHeaderContentRange + ": " + EntityResponseMultiPart.Bytes + " " + firstStartRange + "-" + firstEndRange + "/" + contentLength + "\r\n"
                 + "\r\n";
 
-            var secondHeader = "\r\n--" + MultiPartEntityResponse.MultipartBoundary + "\r\n"
-                + MultiPartEntityResponse.HttpHeaderContentType + ": " + contentType + "\r\n"
-                + MultiPartEntityResponse.HttpHeaderContentRange + ": " + MultiPartEntityResponse.Bytes + " " + secondStartRange + "-" + secondEndRange + "/" + contentLength + "\r\n"
+            var secondHeader = "\r\n--" + EntityResponseMultiPart.MultipartBoundary + "\r\n"
+                + EntityResponseMultiPart.HttpHeaderContentType + ": " + contentType + "\r\n"
+                + EntityResponseMultiPart.HttpHeaderContentRange + ": " + EntityResponseMultiPart.Bytes + " " + secondStartRange + "-" + secondEndRange + "/" + contentLength + "\r\n"
                 + "\r\n";
 
-            var footer = "\r\n--" + MultiPartEntityResponse.MultipartBoundary + "--\r\n";
+            var footer = "\r\n--" + EntityResponseMultiPart.MultipartBoundary + "--\r\n";
 
             transmitEntityStrategy.Stub(x => x.Entity).Return(entity);
             entity.Stub(x => x.ContentType).Return(contentType);
@@ -363,7 +363,7 @@ namespace Talifun.Web.Tests.Http
             httpResponse.Stub(x => x.Output).Return(output);
 
             //Act
-            var multiPartEntityResponse = new MultiPartEntityResponse(httpResponseHeaderHelper, rangeItems);
+            var multiPartEntityResponse = new EntityResponseMultiPart(httpResponseHeaderHelper, rangeItems);
             multiPartEntityResponse.SendBody(requestHttpMethod, httpResponse, transmitEntityStrategy);
 
             //Assert
@@ -410,17 +410,17 @@ namespace Talifun.Web.Tests.Http
 
             var rangeItems = new[] { firstRangeItem, secondRangeItem };
 
-            var firstHeader = "\r\n--" + MultiPartEntityResponse.MultipartBoundary + "\r\n"
-                + MultiPartEntityResponse.HttpHeaderContentType + ": " + contentType + "\r\n"
-                + MultiPartEntityResponse.HttpHeaderContentRange + ": " + MultiPartEntityResponse.Bytes + " " + firstStartRange + "-" + firstEndRange + "/" + contentLength + "\r\n"
+            var firstHeader = "\r\n--" + EntityResponseMultiPart.MultipartBoundary + "\r\n"
+                + EntityResponseMultiPart.HttpHeaderContentType + ": " + contentType + "\r\n"
+                + EntityResponseMultiPart.HttpHeaderContentRange + ": " + EntityResponseMultiPart.Bytes + " " + firstStartRange + "-" + firstEndRange + "/" + contentLength + "\r\n"
                 + "\r\n";
 
-            var secondHeader = "\r\n--" + MultiPartEntityResponse.MultipartBoundary + "\r\n"
-                + MultiPartEntityResponse.HttpHeaderContentType + ": " + contentType + "\r\n"
-                + MultiPartEntityResponse.HttpHeaderContentRange + ": " + MultiPartEntityResponse.Bytes + " " + secondStartRange + "-" + secondEndRange + "/" + contentLength + "\r\n"
+            var secondHeader = "\r\n--" + EntityResponseMultiPart.MultipartBoundary + "\r\n"
+                + EntityResponseMultiPart.HttpHeaderContentType + ": " + contentType + "\r\n"
+                + EntityResponseMultiPart.HttpHeaderContentRange + ": " + EntityResponseMultiPart.Bytes + " " + secondStartRange + "-" + secondEndRange + "/" + contentLength + "\r\n"
                 + "\r\n";
 
-            var footer = "\r\n--" + MultiPartEntityResponse.MultipartBoundary + "--\r\n";
+            var footer = "\r\n--" + EntityResponseMultiPart.MultipartBoundary + "--\r\n";
 
             transmitEntityStrategy.Stub(x => x.Entity).Return(entity);
             entity.Stub(x => x.ContentType).Return(contentType);
@@ -428,7 +428,7 @@ namespace Talifun.Web.Tests.Http
             httpResponse.Stub(x => x.Output).Return(output);
 
             //Act
-            var multiPartEntityResponse = new MultiPartEntityResponse(httpResponseHeaderHelper, rangeItems);
+            var multiPartEntityResponse = new EntityResponseMultiPart(httpResponseHeaderHelper, rangeItems);
             multiPartEntityResponse.SendBody(requestHttpMethod, httpResponse, transmitEntityStrategy);
 
             //Assert
@@ -471,7 +471,7 @@ namespace Talifun.Web.Tests.Http
             var rangeItems = new[] { firstRangeItem, secondRangeItem };
 
             //Act
-            var multiPartEntityResponse = new MultiPartEntityResponse(httpResponseHeaderHelper, rangeItems);
+            var multiPartEntityResponse = new EntityResponseMultiPart(httpResponseHeaderHelper, rangeItems);
             var ex = Assert.Throws<Exception>(() => multiPartEntityResponse.SendBody(requestHttpMethod, httpResponse, transmitEntityStrategy));
         }
 

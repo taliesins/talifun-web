@@ -65,6 +65,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Talifun.Web\IpAddressAuthentication\Config\Talifun.Web.IpAddressAuthentication.xsd">
+      <Link>Talifun.Web.IpAddressAuthentication.xsd</Link>
+      <SubType>Designer</SubType>
+    </None>
     <None Include="test.pdf" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

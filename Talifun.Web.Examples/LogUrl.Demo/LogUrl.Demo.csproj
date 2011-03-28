@@ -76,6 +76,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Talifun.Web\LogUrl\Config\Talifun.Web.LogUrl.xsd">
+      <Link>Talifun.Web.LogUrl.xsd</Link>
+      <SubType>Designer</SubType>
+    </None>
     <None Include="test.pdf" />
   </ItemGroup>
   <ItemGroup />

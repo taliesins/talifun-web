@@ -6,7 +6,7 @@ using System.Web;
 
 namespace Talifun.Web
 {
-    public class MultiPartEntityResponse : IEntityResponse
+    public class EntityResponseMultiPart : IEntityResponse
     {
         public const string MultipartBoundary = "<q1w2e3r4t5y6u7i8o9p0>";
         public const string MultipartContenttype = "multipart/byteranges; boundary=" + MultipartBoundary;
@@ -19,7 +19,7 @@ namespace Talifun.Web
         protected readonly IHttpResponseHeaderHelper HttpResponseHeaderHelper;
         protected readonly IEnumerable<RangeItem> Ranges;
 
-        public MultiPartEntityResponse(IHttpResponseHeaderHelper httpResponseHeaderHelper, IEnumerable<RangeItem> ranges)
+        public EntityResponseMultiPart(IHttpResponseHeaderHelper httpResponseHeaderHelper, IEnumerable<RangeItem> ranges)
         { 
             this.HttpResponseHeaderHelper = httpResponseHeaderHelper;
             this.Ranges = ranges;

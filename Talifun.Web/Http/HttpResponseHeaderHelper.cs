@@ -114,13 +114,54 @@ namespace Talifun.Web
         }
 
         /// <summary>
-        /// 
+        /// Set the response content type.
         /// </summary>
         /// <param name="response">An HTTP response.</param>
         /// <param name="contentType">The content type of the entity.</param>
         public void SetContentType(HttpResponseBase response, string contentType)
         {
             response.ContentType = contentType;
+        }
+
+        /// <summary>
+        /// Set the headers required to temporary redirect this request to the new specified location.
+        /// </summary>
+        /// <param name="response">An HTTP response.</param>
+        /// <param name="location">The location to redirect the current request to.</param>
+        /// <remarks>
+        /// Further requests should be made to the current request url.
+        /// </remarks>
+        public void SetTemporaryRedirect(HttpResponseBase response, Uri location)
+        {
+            SendHttpStatusHeaders(response, HttpStatusCode.TemporaryRedirect);
+            AppendHeader(response, HttpResponseHeader.Location, location.ToString());
+        }
+
+        /// <summary>
+        /// Set the headers required to permanently redirect this request to the new specified location.
+        /// </summary>
+        /// <param name="response">An HTTP response.</param>
+        /// <param name="location">The location to redirect the current request to.</param>
+        /// <remarks>
+        /// Further request should be made to the new specified location.
+        /// </remarks>
+        public void SetMovedPermanently(HttpResponseBase response, Uri location)
+        {
+            SendHttpStatusHeaders(response, HttpStatusCode.MovedPermanently);
+            AppendHeader(response, HttpResponseHeader.Location, location.ToString());
+        }
+
+        /// <summary>
+        /// Set the headers required to permanently redirect this request to the new specified location.
+        /// </summary>
+        /// <param name="response">An HTTP response.</param>
+        /// <param name="location">The location to set the conical content location to.</param>
+        /// <remarks>
+        /// Most browsers will ignore this header.
+        /// </remarks>
+        public void SetContentLocation(HttpResponseBase response, Uri location)
+        {
+            AppendHeader(response, HttpResponseHeader.ContentLocation, location.ToString());
         }
     }
 }

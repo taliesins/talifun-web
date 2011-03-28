@@ -4,7 +4,7 @@ using System.Web;
 
 namespace Talifun.Web
 {
-    public class SinglePartEntityResponse : IEntityResponse
+    public class EntityResponseSinglePart : IEntityResponse
     {
         public const string HttpHeaderContentLength = "Content-Length";
         public const string HttpHeaderContentRange = "Content-Range";
@@ -13,7 +13,7 @@ namespace Talifun.Web
         protected readonly RangeItem Range;
         protected readonly IHttpResponseHeaderHelper HttpResponseHeaderHelper;
 
-        public SinglePartEntityResponse(IHttpResponseHeaderHelper httpResponseHeaderHelper, RangeItem range)
+        public EntityResponseSinglePart(IHttpResponseHeaderHelper httpResponseHeaderHelper, RangeItem range)
         {
             this.HttpResponseHeaderHelper = httpResponseHeaderHelper;
             this.Range = range;

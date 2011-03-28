@@ -15,6 +15,24 @@ namespace Talifun.Web
         protected HeaderValueQValueComparer HeaderValueQValueComparer = new HeaderValueQValueComparer();
 
         /// <summary>
+        /// Does the request have the querystring parameter specified.
+        /// </summary>
+        /// <returns>If the querstring parameter exists return true; else return false.</returns>
+        public bool HasQuerystringParameter(HttpRequestBase request, string queryStringName)
+        {
+            return request.QueryString.AllKeys.Contains(queryStringName);
+        }
+        
+        /// <summary>
+        /// Get the value of a quersytring parameter.
+        /// </summary>
+        /// <returns>If the querstring exists returned the header value; else return an empty string.</returns>
+        public string GetQuerystringParameterValue(HttpRequestBase request, string queryStringName)
+        {
+            return request.QueryString[queryStringName];
+        }
+
+        /// <summary>
         /// Get the value for an http header. 
         /// </summary>
         /// <param name="request">The http request.</param>

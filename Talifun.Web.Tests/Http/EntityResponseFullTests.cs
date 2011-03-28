@@ -6,17 +6,17 @@ using Rhino.Mocks;
 
 namespace Talifun.Web.Tests.Http
 {
-    public abstract class FullEntityResponseTests : BehaviourTest<FullEntityResponse>
+    public abstract class EntityResponseFullTests : BehaviourTest<EntityResponseFull>
     {
         protected IHttpResponseHeaderHelper HttpResponseHeaderHelper = MockRepository.GenerateMock<IHttpResponseHeaderHelper>();
 
-        protected override FullEntityResponse CreateSystemUnderTest()
+        protected override EntityResponseFull CreateSystemUnderTest()
         {
-            return new FullEntityResponse(HttpResponseHeaderHelper);
+            return new EntityResponseFull(HttpResponseHeaderHelper);
         }
     }
 
-    public abstract class WhenSendingHeaders : FullEntityResponseTests
+    public abstract class WhenSendingHeaders : EntityResponseFullTests
     {
         protected HttpResponseBase HttpResponse = MockRepository.GenerateMock<HttpResponseBase>();
         protected IEntity Entity = MockRepository.GenerateMock<IEntity>();
@@ -43,7 +43,7 @@ namespace Talifun.Web.Tests.Http
                               });
 
             HttpResponseHeaderHelper
-                .Stub(x => x.AppendHeader(HttpResponse, FullEntityResponse.HttpHeaderContentLength, EntityContentLength.ToString()))
+                .Stub(x => x.AppendHeader(HttpResponse, EntityResponseFull.HttpHeaderContentLength, EntityContentLength.ToString()))
                 .Callback((HttpResponseBase httpResponse, string httpResponseHeader, string headerValue)=>
                               {
                                   ContentLengthSet = headerValue;
@@ -305,7 +305,7 @@ namespace Talifun.Web.Tests.Http
         }
     }
 
-    public abstract class WhenSendingBody : FullEntityResponseTests
+    public abstract class WhenSendingBody : EntityResponseFullTests
     {
         protected HttpMethod RequestHttpMethod;
         protected HttpResponseBase HttpResponse = MockRepository.GenerateMock<HttpResponseBase>();

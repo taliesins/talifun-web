@@ -126,14 +126,19 @@
     <Compile Include="Http\IByteRangeResponse.cs" />
     <Compile Include="Http\IEntity.cs" />
     <Compile Include="Http\IEntityResponse.cs" />
-    <Compile Include="Http\MultiPartEntityResponse.cs" />
-    <Compile Include="Http\FullEntityResponse.cs" />
+    <Compile Include="Http\IUrlEtagHandler.cs" />
+    <Compile Include="Http\EntityResponseMultiPart.cs" />
+    <Compile Include="Http\EntityResponseFull.cs" />
     <Compile Include="Http\ITransmitEntityStrategy.cs" />
-    <Compile Include="Http\SinglePartEntityResponse.cs" />
+    <Compile Include="Http\EntityResponseSinglePart.cs" />
     <Compile Include="Http\TransmitEntityStrategyForByteArray.cs" />
     <Compile Include="Http\TransmitEntityStrategyForFile.cs" />
     <Compile Include="Http\TransmitEntityStrategyForIIS.cs" />
     <Compile Include="Http\TransmitEntityStrategyForStream.cs" />
+    <Compile Include="Http\UriBuilderExtensions.cs" />
+    <Compile Include="Http\UrlEtagHandlerContentLocation.cs" />
+    <Compile Include="Http\UrlEtagHandlerMovedPermanently.cs" />
+    <Compile Include="Http\UrlEtagHandlerTemporaryRedirect.cs" />
     <Compile Include="IpAddressAuthentication\Config\CurrentIpAddressAuthenticationConfiguration.cs" />
     <Compile Include="IpAddressAuthentication\Config\IpAddressAuthenticationSection.cs" />
     <Compile Include="IpAddressAuthentication\Config\UrlMatchElement.cs" />
@@ -209,23 +214,26 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Http\WebServerType.cs" />
     <Compile Include="StaticFile\HttpRequestResponder.cs" />
+    <Compile Include="StaticFile\UrlEtagHandlingMethodType.cs" />
     <Compile Include="StaticFile\WebServerDetector.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Crusher\Config\Crusher.xsd" />
-    <None Include="CssSprite\Config\CssSprite.xsd">
+    <None Include="Crusher\Config\Talifun.Web.Crusher.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="IpAddressAuthentication\Config\IpAddressAuthentication.xsd">
+    <None Include="CssSprite\Config\Talifun.Web.CssSprite.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="LogUrl\Config\LogUrl.xsd">
+    <None Include="IpAddressAuthentication\Config\Talifun.Web.IpAddressAuthentication.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="RegexUrlAuthorization\Config\RegexUrlAuthorization.xsd">
+    <None Include="LogUrl\Config\Talifun.Web.LogUrl.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="StaticFile\Config\StaticFile.xsd">
+    <None Include="RegexUrlAuthorization\Config\Talifun.Web.RegexUrlAuthorization.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="StaticFile\Config\Talifun.Web.StaticFile.xsd">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>

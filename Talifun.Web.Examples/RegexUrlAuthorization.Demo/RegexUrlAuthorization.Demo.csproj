@@ -74,6 +74,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Talifun.Web\RegexUrlAuthorization\Config\Talifun.Web.RegexUrlAuthorization.xsd">
+      <Link>Talifun.Web.RegexUrlAuthorization.xsd</Link>
+      <SubType>Designer</SubType>
+    </None>
     <None Include="test.pdf" />
   </ItemGroup>
   <ItemGroup />

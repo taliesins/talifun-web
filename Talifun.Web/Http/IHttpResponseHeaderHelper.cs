@@ -1,5 +1,4 @@
 using System;
-using System.Net;
 using System.Web;
 
 namespace Talifun.Web
@@ -57,5 +56,42 @@ namespace Talifun.Web
         /// <param name="etag">The etag of the entity.</param>
         /// <param name="maxAge">The time the entity should live before browser will recheck the freshness of the entity.</param>
         void SetResponseCachable(HttpResponseBase response, DateTime now, DateTime lastModified, string etag, TimeSpan maxAge);
+
+        /// <summary>
+        /// Set the response content type.
+        /// </summary>
+        /// <param name="response">An HTTP response.</param>
+        /// <param name="contentType">The content type of the entity.</param>
+        void SetContentType(HttpResponseBase response, string contentType);
+
+        /// <summary>
+        /// Set the headers required to temporary redirect this request to the new specified location.
+        /// </summary>
+        /// <param name="response">An HTTP response.</param>
+        /// <param name="location">The location to redirect the current request to.</param>
+        /// <remarks>
+        /// Further requests should be made to the current request url.
+        /// </remarks>
+        void SetTemporaryRedirect(HttpResponseBase response, Uri location);
+
+        /// <summary>
+        /// Set the headers required to permanently redirect this request to the new specified location.
+        /// </summary>
+        /// <param name="response">An HTTP response.</param>
+        /// <param name="location">The location to redirect the current request to.</param>
+        /// <remarks>
+        /// Further request should be made to the new specified location.
+        /// </remarks>
+        void SetMovedPermanently(HttpResponseBase response, Uri location);
+
+        /// <summary>
+        /// Set the headers required to permanently redirect this request to the new specified location.
+        /// </summary>
+        /// <param name="response">An HTTP response.</param>
+        /// <param name="location">The location to set the conical content location to.</param>
+        /// <remarks>
+        /// Most browsers will ignore this header.
+        /// </remarks>
+        void SetContentLocation(HttpResponseBase response, Uri location);
     }
 }

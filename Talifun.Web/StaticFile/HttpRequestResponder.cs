@@ -67,9 +67,8 @@ namespace Talifun.Web.StaticFile
                     HttpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatusCode.RequestEntityTooLarge);
                     return;
                 }
-            }
-
-            if (fileEntityCacheItem.EntityData == null && !fileEntity.DoesEntityExists)
+            } 
+            else if (fileEntityCacheItem.EntityData == null && !fileEntity.DoesEntityExists)
             {
                 //If we have cached the properties of the file but its to large to serve from memory then we must check that the file exists each time.
                 HttpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatusCode.NotFound);
@@ -85,9 +84,19 @@ namespace Talifun.Web.StaticFile
                 return;
             }
 
+            //Check querystring etag
+            var urlEtagHandler = GetUrlEtagHandler(request, response, fileEntity.UrlEtagHandlingMethod, fileEntity.UrlEtagQuerystringName, fileEntityCacheItem.Etag);
+            if (urlEtagHandler != null)
+            {
+                var shouldStopResponse = urlEtagHandler.UpdateEtag(response, request.Url, fileEntityCacheItem.Etag);
+                if (shouldStopResponse)
+                {
+                    return;
+                }
+            }
+
             //Check if cached response is valid and if it is send appropriate response headers
-            var httpStatus = GetResponseHttpStatus(request, fileEntityCacheItem.LastModified,
-                                                         fileEntityCacheItem.Etag);
+            var httpStatus = GetResponseHttpStatus(request, fileEntityCacheItem.LastModified, fileEntityCacheItem.Etag);
 
             HttpResponseHeaderHelper.SendHttpStatusHeaders(response, httpStatus);
 
@@ -110,6 +119,43 @@ namespace Talifun.Web.StaticFile
         }
 
         /// <summary>
+        /// The url etag handler to use.
+        /// </summary>
+        /// <param name="request">An HTTP request.</param>
+        /// <param name="response">An HTTP response.</param>
+        /// <param name="urlEtagHandlingMethod">The url etag handler method to use.</param>
+        /// <param name="urlEtagQuerystringName">The querystring parameter name that contains the url etag.</param>
+        /// <param name="etag">The etag the url etag should match.</param>
+        /// <returns></returns>
+        protected IUrlEtagHandler GetUrlEtagHandler(HttpRequestBase request, HttpResponseBase response, UrlEtagHandlingMethodType urlEtagHandlingMethod, string urlEtagQuerystringName, string etag)
+        {
+            if (urlEtagHandlingMethod == UrlEtagHandlingMethodType.None || !HttpRequestHeaderHelper.HasQuerystringParameter(request, urlEtagQuerystringName))
+            {
+                return null;
+            }
+
+            var urlEtag = HttpRequestHeaderHelper.GetQuerystringParameterValue(request, urlEtagQuerystringName);
+            if (urlEtag == etag)
+            {
+                return null;
+            }
+            var newLocation = new UriBuilder(request.Url);
+            newLocation.EditQueryArgument(urlEtagQuerystringName, etag);
+
+            switch (urlEtagHandlingMethod)
+            {
+                case UrlEtagHandlingMethodType.ContentLocation:
+                    return new UrlEtagHandlerContentLocation(HttpResponseHeaderHelper, urlEtagQuerystringName);
+                case UrlEtagHandlingMethodType.MovedPermanently:
+                    return new UrlEtagHandlerMovedPermanently(HttpResponseHeaderHelper, urlEtagQuerystringName);
+                case UrlEtagHandlingMethodType.TemporaryRedirect:
+                    return new UrlEtagHandlerTemporaryRedirect(HttpResponseHeaderHelper, urlEtagQuerystringName);
+                default:
+                    return null;
+            }
+        }
+
+        /// <summary>
         /// The entity respose type to use.
         /// </summary>
         /// <param name="response">An HTTP response.</param>
@@ -120,17 +166,17 @@ namespace Talifun.Web.StaticFile
             if (response.StatusCode != (int)HttpStatusCode.PartialContent)
             {
                 //Send a full response
-                return new FullEntityResponse(HttpResponseHeaderHelper);
+                return new EntityResponseFull(HttpResponseHeaderHelper);
             }
 
             if (ranges.Count() == 1)
             {
                 //Single byte range request, send a partial response
-                return new SinglePartEntityResponse(HttpResponseHeaderHelper, ranges.First());
+                return new EntityResponseSinglePart(HttpResponseHeaderHelper, ranges.First());
             }
 
             //Multi byte range request, send a partial response
-            return new MultiPartEntityResponse(HttpResponseHeaderHelper, ranges);
+            return new EntityResponseMultiPart(HttpResponseHeaderHelper, ranges);
         }
 
         /// <summary>

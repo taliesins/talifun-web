@@ -76,6 +76,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Talifun.Web\StaticFile\Config\Talifun.Web.StaticFile.xsd">
+      <Link>Talifun.Web.StaticFile.xsd</Link>
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Static\test.zip" />
   </ItemGroup>
   <ItemGroup />

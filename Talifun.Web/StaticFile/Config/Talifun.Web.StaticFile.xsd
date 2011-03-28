@@ -63,6 +63,39 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <xs:simpleType name="urlEtagHandlingMethodType" >
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" >
+        <xs:annotation>
+          <xs:documentation>
+            Do not process url etag.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="ContentLocation" >
+        <xs:annotation>
+          <xs:documentation>
+            If url etag does not match etag then respond with the new content and specify the new url with the updated etag in the content location header.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="MovedPermanently" >
+        <xs:annotation>
+          <xs:documentation>
+            If url etag does not match etag then redirect the current request to the new url with the updated etag.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="TemporaryRedirect" >
+        <xs:annotation>
+          <xs:documentation>
+            If url etag does not match etag then redirect the current request to the new url with the updated etag.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
   <xs:complexType name="fileExtensionDefault">
     <xs:attribute name="name" type="xs:string" use="required" />
     <xs:attribute name="serveFromMemory" type="xs:boolean" use="required">
@@ -107,10 +140,31 @@
         </xs:documentation>
       </xs:annotation>
     </xs:attribute>
+    <xs:attribute name="urlEtagQuerystringName" type="xs:string" use="optional" default="etag" >
+      <xs:annotation>
+        <xs:documentation>
+          The query string parameter name used to find url etag.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="urlEtagHandlingMethodType" type="urlEtagHandlingMethodType" use="optional" default="ContentLocation">
+      <xs:annotation>
+        <xs:documentation>
+          How to handle a non matched url etag.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
   </xs:complexType>
 
   <xs:complexType name="fileExtension">
     <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="extension" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          A comma seperated list of all file extensions this configuration element should match.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
     <xs:attribute name="serveFromMemory" type="xs:boolean" use="required">
       <xs:annotation>
         <xs:documentation>
@@ -155,7 +209,7 @@
     </xs:attribute>
   </xs:complexType>
   
-  <xs:element name="Crusher">
+  <xs:element name="StaticFile">
     <xs:complexType>
       <xs:all>
         <xs:element name="fileExtensionDefault" type="fileExtensionDefault">

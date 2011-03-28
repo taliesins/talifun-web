@@ -52,7 +52,9 @@ namespace Talifun.Web.StaticFile
                         ServeFromMemory = fileExtension.ServeFromMemory,
                         EtagMethod = fileExtension.EtagMethod,
                         Expires = fileExtension.Expires,
-                        MemorySlidingExpiration = fileExtension.MemorySlidingExpiration
+                        MemorySlidingExpiration = fileExtension.MemorySlidingExpiration,
+                        UrlEtagQuerystringName = fileExtension.UrlEtagQuerystringName,
+                        UrlEtagHandlingMethod = fileExtension.UrlEtagHandlingMethod,
                     };
 
                     fileExtensionMatches.Add(key, fileExtensionElement);

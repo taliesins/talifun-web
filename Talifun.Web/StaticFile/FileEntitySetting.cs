@@ -11,5 +11,7 @@ namespace Talifun.Web.StaticFile
         public TimeSpan MemorySlidingExpiration { get; set; }
         public TimeSpan Expires { get; set; }
         public EtagMethodType EtagMethod { get; set; }
+        public string UrlEtagQuerystringName { get; set; }
+        public UrlEtagHandlingMethodType UrlEtagHandlingMethod { get; set; }
     }
 }

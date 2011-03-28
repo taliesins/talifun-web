@@ -219,5 +219,21 @@ namespace Talifun.Web.StaticFile
                 return FileEntitySetting.Expires;
             }
         }
+
+        public string UrlEtagQuerystringName
+        {
+            get
+            {
+                return FileEntitySetting.UrlEtagQuerystringName;
+            }
+        }
+
+        public UrlEtagHandlingMethodType UrlEtagHandlingMethod
+        {
+            get
+            {
+                return FileEntitySetting.UrlEtagHandlingMethod;
+            }
+        }
     }
 }

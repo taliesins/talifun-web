@@ -8,7 +8,7 @@ using Rhino.Mocks;
 namespace Talifun.Web.Tests.Http
 {
     [TestFixture]
-    public class SinglePartEntityResponseTests
+    public class EntityResponseSinglePartTests
     {
         #region SendHeaders
         [Test]
@@ -35,11 +35,11 @@ namespace Talifun.Web.Tests.Http
             entity.Stub(x => x.CompressionType).Return(entityCompressionType);
 
             httpResponseHeaderHelper.Expect(x => x.SetContentEncoding(httpResponse, responseCompressionType));
-            httpResponseHeaderHelper.Expect(x => x.AppendHeader(httpResponse, SinglePartEntityResponse.HttpHeaderContentLength, contentLength.ToString()));
+            httpResponseHeaderHelper.Expect(x => x.AppendHeader(httpResponse, EntityResponseSinglePart.HttpHeaderContentLength, contentLength.ToString()));
             httpResponse.Expect(x => x.ContentType = entity.ContentType);
 
             //Act
-            var singlePartEntityResponse = new SinglePartEntityResponse(httpResponseHeaderHelper, rangeItem);
+            var singlePartEntityResponse = new EntityResponseSinglePart(httpResponseHeaderHelper, rangeItem);
             singlePartEntityResponse.SendHeaders(httpResponse, responseCompressionType, entity);
 
             //Assert
@@ -71,7 +71,7 @@ namespace Talifun.Web.Tests.Http
             httpResponse.Expect(x => x.ContentType = entity.ContentType);
 
             //Act
-            var singlePartEntityResponse = new SinglePartEntityResponse(httpResponseHeaderHelper, rangeItem);
+            var singlePartEntityResponse = new EntityResponseSinglePart(httpResponseHeaderHelper, rangeItem);
             singlePartEntityResponse.SendHeaders(httpResponse, responseCompressionType, entity);
 
             //Assert
@@ -105,7 +105,7 @@ namespace Talifun.Web.Tests.Http
             httpResponse.Expect(x => x.ContentType = entity.ContentType);
 
             //Act
-            var singlePartEntityResponse = new SinglePartEntityResponse(httpResponseHeaderHelper, rangeItem);
+            var singlePartEntityResponse = new EntityResponseSinglePart(httpResponseHeaderHelper, rangeItem);
             singlePartEntityResponse.SendHeaders(httpResponse, responseCompressionType, entity);
 
             //Assert
@@ -137,7 +137,7 @@ namespace Talifun.Web.Tests.Http
             entity.Stub(x => x.CompressionType).Return(entityCompressionType);
 
             //Act
-            var singlePartEntityResponse = new SinglePartEntityResponse(httpResponseHeaderHelper, rangeItem);
+            var singlePartEntityResponse = new EntityResponseSinglePart(httpResponseHeaderHelper, rangeItem);
             var ex = Assert.Throws<Exception>(() => singlePartEntityResponse.SendHeaders(httpResponse, responseCompressionType, entity));
         }
 
@@ -163,7 +163,7 @@ namespace Talifun.Web.Tests.Http
             entity.Stub(x => x.CompressionType).Return(entityCompressionType);
 
             //Act
-            var singlePartEntityResponse = new SinglePartEntityResponse(httpResponseHeaderHelper, rangeItem);
+            var singlePartEntityResponse = new EntityResponseSinglePart(httpResponseHeaderHelper, rangeItem);
             var ex = Assert.Throws<Exception>(() => singlePartEntityResponse.SendHeaders(httpResponse, responseCompressionType, entity));
         }
 
@@ -189,7 +189,7 @@ namespace Talifun.Web.Tests.Http
             entity.Stub(x => x.CompressionType).Return(entityCompressionType);
 
             //Act
-            var singlePartEntityResponse = new SinglePartEntityResponse(httpResponseHeaderHelper, rangeItem);
+            var singlePartEntityResponse = new EntityResponseSinglePart(httpResponseHeaderHelper, rangeItem);
             var ex = Assert.Throws<Exception>(() => singlePartEntityResponse.SendHeaders(httpResponse, responseCompressionType, entity));
         }
 
@@ -215,7 +215,7 @@ namespace Talifun.Web.Tests.Http
             entity.Stub(x => x.CompressionType).Return(entityCompressionType);
 
             //Act
-            var singlePartEntityResponse = new SinglePartEntityResponse(httpResponseHeaderHelper, rangeItem);
+            var singlePartEntityResponse = new EntityResponseSinglePart(httpResponseHeaderHelper, rangeItem);
             var ex = Assert.Throws<Exception>(() => singlePartEntityResponse.SendHeaders(httpResponse, responseCompressionType, entity));
         }
 
@@ -241,7 +241,7 @@ namespace Talifun.Web.Tests.Http
             var bytesToRead = endRange - startRange + 1;
 
             //Act
-            var singleByteRangeResponse = new SinglePartEntityResponse(httpResponseHeaderHelper, rangeItem);
+            var singleByteRangeResponse = new EntityResponseSinglePart(httpResponseHeaderHelper, rangeItem);
             singleByteRangeResponse.SendBody(requestHttpMethod, httpResponse, transmitEntityStrategy);
 
             //Assert
@@ -268,7 +268,7 @@ namespace Talifun.Web.Tests.Http
             var bytesToRead = endRange - startRange + 1;
 
             //Act
-            var singleByteRangeResponse = new SinglePartEntityResponse(httpResponseHeaderHelper, rangeItem);
+            var singleByteRangeResponse = new EntityResponseSinglePart(httpResponseHeaderHelper, rangeItem);
             singleByteRangeResponse.SendBody(requestHttpMethod, httpResponse, transmitEntityStrategy);
 
             //Assert
@@ -295,7 +295,7 @@ namespace Talifun.Web.Tests.Http
             var bytesToRead = endRange - startRange + 1;
 
             //Act
-            var singleByteRangeResponse = new SinglePartEntityResponse(httpResponseHeaderHelper, rangeItem);
+            var singleByteRangeResponse = new EntityResponseSinglePart(httpResponseHeaderHelper, rangeItem);
             var ex = Assert.Throws<Exception>(() => singleByteRangeResponse.SendBody(requestHttpMethod, httpResponse, transmitEntityStrategy));
         }
 

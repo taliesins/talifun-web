@@ -1,12 +1,23 @@
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Web;
 
 namespace Talifun.Web
 {
     public interface IHttpRequestHeaderHelper
     {
+        /// <summary>
+        /// Does the request have the querystring parameter specified.
+        /// </summary>
+        /// <returns>If the querstring parameter exists return true; else return false.</returns>
+        bool HasQuerystringParameter(HttpRequestBase request, string queryStringName);
+
+        /// <summary>
+        /// Get the value of a quersytring parameter.
+        /// </summary>
+        /// <returns>If the querstring exists returned the header value; else return an empty string.</returns>
+        string GetQuerystringParameterValue(HttpRequestBase request, string queryStringName);
+        
         /// <summary>
         /// Get the value for an http header. 
         /// </summary>

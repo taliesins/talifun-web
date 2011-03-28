@@ -15,7 +15,8 @@ namespace Talifun.Web.StaticFile.Config
         private static readonly ConfigurationProperty memorySlidingExpiration = new ConfigurationProperty("memorySlidingExpiration", typeof(TimeSpan), new TimeSpan(0, 30, 0), ConfigurationPropertyOptions.None);
         private static readonly ConfigurationProperty expires = new ConfigurationProperty("expires", typeof(TimeSpan), new TimeSpan(7, 0, 0, 0), ConfigurationPropertyOptions.None);
         private static readonly ConfigurationProperty etagMethod = new ConfigurationProperty("etagMethod", typeof(EtagMethodType), EtagMethodType.MD5, ConfigurationPropertyOptions.None);
-
+        private static readonly ConfigurationProperty urlEtagQuerystringName = new ConfigurationProperty("urlEtagQuerystringName", typeof(string), "etag", ConfigurationPropertyOptions.None);
+        private static readonly ConfigurationProperty urlEtagHandlingMethod = new ConfigurationProperty("urlEtagHandlingMethod", typeof(UrlEtagHandlingMethodType), UrlEtagHandlingMethodType.ContentLocation, ConfigurationPropertyOptions.None);
 
         /// <summary>
         /// Initializes the <see cref="FileExtensionElement"/> class.
@@ -30,6 +31,8 @@ namespace Talifun.Web.StaticFile.Config
             properties.Add(memorySlidingExpiration);
             properties.Add(expires);
             properties.Add(etagMethod);
+            properties.Add(urlEtagQuerystringName);
+            properties.Add(urlEtagHandlingMethod);
         }
 
         /// <summary>
@@ -126,6 +129,26 @@ namespace Talifun.Web.StaticFile.Config
         {
             get { return ((EtagMethodType)base[etagMethod]); }
             set { base[etagMethod] = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the query string parameter name used to find url etag.
+        /// </summary>
+        [ConfigurationProperty("urlEtagQuerystringName", IsRequired = false)]
+        public string UrlEtagQuerystringName
+        {
+            get { return ((string)base[urlEtagQuerystringName]); }
+            set { base[urlEtagQuerystringName] = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets how to handle a non matched url etag.
+        /// </summary>
+        [ConfigurationProperty("urlEtagHandlingMethod", IsRequired = false)]
+        public UrlEtagHandlingMethodType UrlEtagHandlingMethod
+        {
+            get { return ((UrlEtagHandlingMethodType)base[urlEtagHandlingMethod]); }
+            set { base[urlEtagHandlingMethod] = value; }
         }
 
         /// <summary>

@@ -4,13 +4,13 @@ using System.Web;
 
 namespace Talifun.Web
 {
-    public class FullEntityResponse : IEntityResponse
+    public class EntityResponseFull : IEntityResponse
     {
         public const string HttpHeaderContentLength = "Content-Length";
 
         protected readonly IHttpResponseHeaderHelper HttpResponseHeaderHelper;
 
-        public FullEntityResponse(IHttpResponseHeaderHelper httpResponseHeaderHelper)
+        public EntityResponseFull(IHttpResponseHeaderHelper httpResponseHeaderHelper)
         { 
             this.HttpResponseHeaderHelper = httpResponseHeaderHelper;
         }
