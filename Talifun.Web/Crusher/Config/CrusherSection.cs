@@ -9,6 +9,7 @@ namespace Talifun.Web.Crusher.Config
     public sealed class CrusherSection : ConfigurationSection
     {
         private static ConfigurationPropertyCollection properties = new ConfigurationPropertyCollection();
+        private static readonly ConfigurationProperty xmlns = new ConfigurationProperty("xmlns", typeof(string), "", ConfigurationPropertyOptions.None);
         private static readonly ConfigurationProperty cssGroups = new ConfigurationProperty("cssGroups", typeof(CssGroupElementCollection), null, ConfigurationPropertyOptions.IsRequired);
         private static readonly ConfigurationProperty jsGroups = new ConfigurationProperty("jsGroups", typeof(JsGroupElementCollection), null, ConfigurationPropertyOptions.IsRequired);
         private static readonly ConfigurationProperty querystringKeyName = new ConfigurationProperty("querystringKeyName", typeof(string), "etag", ConfigurationPropertyOptions.None);
@@ -20,6 +21,7 @@ namespace Talifun.Web.Crusher.Config
         [SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
         static CrusherSection()
         {
+            properties.Add(xmlns);
             properties.Add(cssGroups);
             properties.Add(jsGroups);
             properties.Add(querystringKeyName);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Caching;
@@ -36,118 +37,52 @@ namespace Talifun.Web.Crusher
         /// <param name="appendHashToAssets">Should css assets have a hash appended to them.</param>
         public virtual void AddFiles(Uri outputUri, IEnumerable<CssFile> cssFiles, bool appendHashToAssets)
         {
-            IEnumerable<FileInfo> cssAssetFilePaths;
-            var crushedContent = ProcessFiles(outputUri, cssFiles, appendHashToAssets, out cssAssetFilePaths);
             var outputFileInfo = new FileInfo(PathProvider.MapPath(outputUri));
-            RetryableFileWriter.SaveContentsToFile(crushedContent, outputFileInfo);
-            AddFilesToCache(outputUri, cssFiles, cssAssetFilePaths);
+            var crushedContent = ProcessFiles(outputFileInfo, outputUri, cssFiles, appendHashToAssets);
+            
+            RetryableFileWriter.SaveContentsToFile(crushedContent.Output, outputFileInfo);
+            AddFilesToCache(outputUri, cssFiles, crushedContent.CssAssetFilePaths);
         }
 
-        /// <summary>
-        /// Compiles dot less css file contents.
-        /// </summary>
-        /// <param name="fileContents">Uncompiled css file contents.</param>
-        /// <returns>Compiled css file contents.</returns>
-        public virtual string ProcessDotLess(string fileContents)
-        {
-            return dotless.Core.Less.Parse(fileContents);
-        }
-
-        public virtual Uri GetUriDirectory(Uri uri)
-        {            
-            var path = uri.OriginalString;
-
-            var queryStringPosition = path.IndexOf('?');
-
-            if (queryStringPosition > -1)
-            {
-                path = path.Substring(0, queryStringPosition);
-            }
-
-            var startIndex = path.Length - Path.GetFileName(path).Length;
-
-            path = path.Remove(startIndex);
-
-            return new Uri(path, UriKind.RelativeOrAbsolute);
-        }
 
         /// <summary>
         /// Compress the css files and store them in the specified css file.
         /// </summary>
+        /// <param name="outputFileInfo">The virtual path for the crushed js file.</param>
         /// <param name="cssRootUri">The path for the crushed css file.</param>
         /// <param name="cssFiles">The css files to be crushed.</param>
         /// <param name="appendHashToAssets"></param>
-        /// <param name="cssAssetFilePaths">The asset file paths in the crushed css file.</param>
-        public virtual StringBuilder ProcessFiles(Uri cssRootUri, IEnumerable<CssFile> cssFiles, bool appendHashToAssets, out IEnumerable<FileInfo> cssAssetFilePaths)
+        public virtual CssCrushedOutput ProcessFiles(FileInfo outputFileInfo, Uri cssRootUri, IEnumerable<CssFile> cssFiles, bool appendHashToAssets)
         {
-            var cssRootPathUri = GetUriDirectory(cssRootUri);
-            cssRootPathUri = !cssRootUri.IsAbsoluteUri
-                                       ? new Uri(PathProvider.MapPath(cssRootUri))
-                                       : cssRootPathUri;
-
             var uncompressedContents = new StringBuilder();
             var toBeStockYuiCompressedContents = new StringBuilder();
             var toBeMichaelAshRegexCompressedContents = new StringBuilder();
             var toBeHybridCompressedContents = new StringBuilder();
-            var localCssAssetFilesThatExist = new List<FileInfo>(); 
+            var localCssAssetFilesThatExist = new List<FileInfo>();
+            
+            var filesToProcess = cssFiles
+                .Select(cssFile => new CssFileProcessor(RetryableFileOpener, PathProvider, CssPathRewriter, cssFile, cssRootUri, appendHashToAssets));
 
-            foreach (var cssFile in cssFiles)
+            foreach (var fileToProcess in filesToProcess)
             {
-                var cssFilePath = VirtualPathUtility.ToAbsolute(cssFile.FilePath);
-                var relativeRootUri = GetUriDirectory(new Uri(cssFilePath, UriKind.RelativeOrAbsolute));
-                relativeRootUri = !relativeRootUri.IsAbsoluteUri
-                                      ? new Uri(PathProvider.MapPath(relativeRootUri))
-                                      : relativeRootUri;
-
-                var cssFileInfo = new FileInfo(PathProvider.MapPath(cssFilePath));
-
-                var fileContents = RetryableFileOpener.ReadAllText(cssFileInfo);
-                var fileName = cssFileInfo.Name.ToLower();
-
-                if (fileName.EndsWith(".less") || fileName.EndsWith(".less.css"))
-                {
-                    fileContents = ProcessDotLess(fileContents);
-                }
-
-                var distinctRelativePaths = CssPathRewriter.FindDistinctRelativePaths(fileContents);
-                fileContents = CssPathRewriter.RewriteCssPathsToBeRelativeToPath(distinctRelativePaths, cssRootPathUri, relativeRootUri, fileContents);
-
-                if (appendHashToAssets)
-                {
-                    var distinctLocalPaths = CssPathRewriter.FindDistinctLocalPaths(fileContents);
-                    var distinctLocalPathsThatExist = new List<Uri>();
-
-                    foreach (var distinctLocalPath in distinctLocalPaths)
-                    {
-                        var cssAssetFileInfo = new FileInfo(PathProvider.MapPath(cssRootPathUri, distinctLocalPath));
-
-                        if (!cssAssetFileInfo.Exists)
-                        {
-                            continue;
-                        }
-
-                        distinctLocalPathsThatExist.Add(distinctLocalPath);
-                        localCssAssetFilesThatExist.Add(cssAssetFileInfo);
-                    }
-
-                    fileContents = CssPathRewriter.RewriteCssPathsToAppendHash(distinctLocalPathsThatExist, cssRootPathUri, fileContents);
-                }
-
-                switch (cssFile.CompressionType)
+                switch (fileToProcess.CompressionType)
                 {
                     case CssCompressionType.None:
-                        uncompressedContents.AppendLine(fileContents);
+                        uncompressedContents.AppendLine(fileToProcess.GetContents());
                         break;
                     case CssCompressionType.StockYuiCompressor:
-                        toBeStockYuiCompressedContents.AppendLine(fileContents);
+                        toBeStockYuiCompressedContents.AppendLine(fileToProcess.GetContents());
                         break;
                     case CssCompressionType.MichaelAshRegexEnhancements:
-                        toBeMichaelAshRegexCompressedContents.AppendLine(fileContents);
+                        toBeMichaelAshRegexCompressedContents.AppendLine(fileToProcess.GetContents());
                         break;
                     case CssCompressionType.Hybrid:
-                        toBeHybridCompressedContents.AppendLine(fileContents);
+                        toBeHybridCompressedContents.AppendLine(fileToProcess.GetContents());
                         break;
                 }
+
+                var cssAssets = fileToProcess.GetLocalCssAssetFilesThatExist();
+                localCssAssetFilesThatExist.AddRange(cssAssets);
             }
 
             if (toBeStockYuiCompressedContents.Length > 0)
@@ -165,8 +100,13 @@ namespace Talifun.Web.Crusher
                 uncompressedContents.Append(CssCompressor.Compress(toBeHybridCompressedContents.ToString(), 0, Yahoo.Yui.Compressor.CssCompressionType.Hybrid));
             }
 
-            cssAssetFilePaths = localCssAssetFilesThatExist;
-            return uncompressedContents;
+            var crushedOutput = new CssCrushedOutput
+                                    {
+                                        Output = uncompressedContents,
+                                        CssAssetFilePaths = localCssAssetFilesThatExist
+                                    };
+
+            return crushedOutput;
         }
 
         /// <summary>
@@ -190,16 +130,8 @@ namespace Talifun.Web.Crusher
                                 {
                                     PathProvider.MapPath(outputUri)
                                 };
-
-            foreach (var cssFile in cssFiles)
-            {
-                fileNames.Add(PathProvider.MapPath(cssFile.FilePath));
-            }
-
-            foreach (var cssAssetFilePath in cssAssetFilePaths)
-            {
-                fileNames.Add(cssAssetFilePath.FullName);
-            }
+            fileNames.AddRange(cssFiles.Select(cssFile => PathProvider.MapPath(cssFile.FilePath)));
+            fileNames.AddRange(cssAssetFilePaths.Select(cssAssetFilePath => cssAssetFilePath.FullName));
 
             var cssCacheItem = new CssCacheItem()
                                    {

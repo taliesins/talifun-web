@@ -1,12 +1,12 @@
 ﻿using System.Configuration;
 using System.Diagnostics.CodeAnalysis;
-using Talifun.Web.Crusher.Config;
 
 namespace Talifun.Web.CssSprite.Config
 {
     public sealed class CssSpriteSection : ConfigurationSection
     {
         private static ConfigurationPropertyCollection properties = new ConfigurationPropertyCollection();
+        private static readonly ConfigurationProperty xmlns = new ConfigurationProperty("xmlns", typeof(string), "", ConfigurationPropertyOptions.None);
         private static readonly ConfigurationProperty cssSpriteGroups = new ConfigurationProperty("cssSpriteGroups", typeof(CssSpriteGroupElementCollection), null, ConfigurationPropertyOptions.IsRequired);
 
         /// <summary>
@@ -16,6 +16,7 @@ namespace Talifun.Web.CssSprite.Config
         [SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
         static CssSpriteSection()
         {
+            properties.Add(xmlns);
             properties.Add(cssSpriteGroups);
         }
 

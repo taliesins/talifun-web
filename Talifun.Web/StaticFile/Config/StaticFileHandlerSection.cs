@@ -7,6 +7,7 @@ namespace Talifun.Web.StaticFile.Config
     public sealed class StaticFileHandlerSection : ConfigurationSection
     {
         private static ConfigurationPropertyCollection properties = new ConfigurationPropertyCollection();
+        private static readonly ConfigurationProperty xmlns = new ConfigurationProperty("xmlns", typeof(string), "", ConfigurationPropertyOptions.None);
         private static readonly ConfigurationProperty webServerType = new ConfigurationProperty("webServerType", typeof(WebServerType), WebServerType.NotSet, ConfigurationPropertyOptions.None);
         private static readonly ConfigurationProperty fileExtensionDefault = new ConfigurationProperty("fileExtensionDefault", typeof(FileExtensionDefaultElement), null, ConfigurationPropertyOptions.IsRequired);
         private static readonly ConfigurationProperty fileExtensions = new ConfigurationProperty("fileExtensions", typeof(FileExtensionElementCollection), null, ConfigurationPropertyOptions.IsRequired | ConfigurationPropertyOptions.IsDefaultCollection);
@@ -18,6 +19,7 @@ namespace Talifun.Web.StaticFile.Config
         [SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
         static StaticFileHandlerSection()
         {
+            properties.Add(xmlns);
             properties.Add(webServerType);
             properties.Add(fileExtensionDefault);
             properties.Add(fileExtensions);

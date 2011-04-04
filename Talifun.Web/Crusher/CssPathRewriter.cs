@@ -46,6 +46,7 @@ namespace Talifun.Web.Crusher
         {
             var matches = Regex.Matches(css, @"url\([""']{0,1}(.+?)[""']{0,1}\)", RegexOptions.IgnoreCase);
             var matchesHash = new HashSet<Uri>();
+            
             foreach (Match match in matches)
             {
                 var path = match.Groups[1].Captures[0].Value;
@@ -53,11 +54,10 @@ namespace Talifun.Web.Crusher
                     continue;
 
                 var uri = new Uri(path, UriKind.RelativeOrAbsolute);
-                if (matchesHash.Add(uri))
-                {
-                    yield return uri;
-                }
+                matchesHash.Add(uri);
             }
+
+            return matchesHash;
         }
 
         public virtual string RewriteCssPathsToAppendHash(IEnumerable<Uri> localPaths, Uri cssRootUri, string css)
@@ -90,11 +90,10 @@ namespace Talifun.Web.Crusher
                 if (path.StartsWith("http", StringComparison.InvariantCultureIgnoreCase)) continue;
 
                 var uri = new Uri(path, UriKind.RelativeOrAbsolute);
-                if (matchesHash.Add(uri))
-                {
-                    yield return uri;
-                }
+                matchesHash.Add(uri);
             }
+
+            return matchesHash;
         }
     }
 }

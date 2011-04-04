@@ -6,6 +6,7 @@ namespace Talifun.Web.RegexUrlAuthorization.Config
     public sealed class RegexUrlAuthorizationSection : ConfigurationSection
     {
         private static ConfigurationPropertyCollection properties = new ConfigurationPropertyCollection();
+        private static readonly ConfigurationProperty xmlns = new ConfigurationProperty("xmlns", typeof(string), "", ConfigurationPropertyOptions.None);
         private static readonly ConfigurationProperty urlMatches = new ConfigurationProperty("urlMatches", typeof(UrlMatchElementCollection), null, ConfigurationPropertyOptions.IsRequired | ConfigurationPropertyOptions.IsDefaultCollection);
 
         /// <summary>
@@ -15,6 +16,7 @@ namespace Talifun.Web.RegexUrlAuthorization.Config
         [SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
         static RegexUrlAuthorizationSection()
         {
+            properties.Add(xmlns);
             properties.Add(urlMatches);
         }
 

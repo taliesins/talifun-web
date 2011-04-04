@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Caching;
@@ -27,41 +28,39 @@ namespace Talifun.Web.Crusher
         }
 
         /// <summary>
-        /// Add js files to be crushed
+        /// Add js files to be crushed.
         /// </summary>
-        /// <param name="outputUri">The virtual path for the crushed js file</param>
-        /// <param name="files">The js files to be crushed</param>
+        /// <param name="outputUri">The virtual path for the crushed js file.</param>
+        /// <param name="files">The js files to be crushed.</param>
         /// 
         public virtual void AddFiles(Uri outputUri, IEnumerable<JsFile> files)
         {
-            var crushedContent = ProcessFiles(files);
             var outputFileInfo = new FileInfo(PathProvider.MapPath(outputUri));
-            RetryableFileWriter.SaveContentsToFile(crushedContent, outputFileInfo);
+            var crushedContent = ProcessFiles(outputFileInfo, files);
+            
+            RetryableFileWriter.SaveContentsToFile(crushedContent.Output, outputFileInfo);
             AddFilesToCache(outputUri, files);
         }
 
         /// <summary>
         /// Compress the js files and store them in the specified js file.
         /// </summary>
+        /// <param name="outputFileInfo">The output path for the crushed js file.</param>
         /// <param name="files">The js files to be crushed.</param>
-        public virtual StringBuilder ProcessFiles(IEnumerable<JsFile> files)
+        public virtual JsCrushedOutput ProcessFiles(FileInfo outputFileInfo, IEnumerable<JsFile> files)
         {
             var uncompressedContents = new StringBuilder();
             var toBeCompressedContents = new StringBuilder();
-
-            foreach (var file in files)
+            var filesToProcess = files.Select(jsFile => new JsFileProcessor(RetryableFileOpener, PathProvider, jsFile));
+            foreach (var fileToProcess in filesToProcess)
             {
-                var filePath = PathProvider.MapPath(file.FilePath);
-                var fileInfo = new FileInfo(filePath);
-                var fileContents = RetryableFileOpener.ReadAllText(fileInfo);
-
-                switch (file.CompressionType)
+                switch (fileToProcess.CompressionType)
                 {
                     case JsCompressionType.None:
-                        uncompressedContents.AppendLine(fileContents);
+                        uncompressedContents.AppendLine(fileToProcess.GetContents());
                         break;
                     case JsCompressionType.Min:
-                        toBeCompressedContents.AppendLine(fileContents);
+                        toBeCompressedContents.AppendLine(fileToProcess.GetContents());
                         break;
                 }
             }
@@ -71,7 +70,9 @@ namespace Talifun.Web.Crusher
                 uncompressedContents.Append(JavaScriptCompressor.Compress(toBeCompressedContents.ToString()));
             }
 
-            return uncompressedContents;
+            var crushedOutput = new JsCrushedOutput {Output = uncompressedContents};
+
+            return crushedOutput;
         }
 
         /// <summary>
@@ -95,10 +96,7 @@ namespace Talifun.Web.Crusher
                                      PathProvider.MapPath(outputUri)
                                 };
 
-            foreach (var file in jsFiles)
-            {
-                fileNames.Add(PathProvider.MapPath(file.FilePath));
-            }
+            fileNames.AddRange(jsFiles.Select(file => PathProvider.MapPath(file.FilePath)));
 
             var jsCacheItem = new JsCacheItem()
                                   {

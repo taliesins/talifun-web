@@ -6,6 +6,7 @@ namespace Talifun.Web.IpAddressAuthentication.Config
     public sealed class IpAddressAuthenticationSection : ConfigurationSection
     {
         private static ConfigurationPropertyCollection properties = new ConfigurationPropertyCollection();
+        private static readonly ConfigurationProperty xmlns = new ConfigurationProperty("xmlns", typeof(string), "", ConfigurationPropertyOptions.None);
         private static readonly ConfigurationProperty urlMatches = new ConfigurationProperty("urlMatches", typeof(UrlMatchElementCollection), null, ConfigurationPropertyOptions.IsRequired | ConfigurationPropertyOptions.IsDefaultCollection);
 
         /// <summary>
@@ -15,6 +16,7 @@ namespace Talifun.Web.IpAddressAuthentication.Config
         [SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
         static IpAddressAuthenticationSection()
         {
+            properties.Add(xmlns);
             properties.Add(urlMatches);
         }
 
