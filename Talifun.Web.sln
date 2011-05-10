@@ -8,6 +8,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talifun.Web.UrlRewriter", "Talifun.Web.UrlRewriter\Talifun.Web.UrlRewriter.csproj", "{43D2AC34-0EEA-4A82-B907-80D4CBDD63A1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Talifun.Web Examples", "Talifun.Web Examples", "{E40C6C03-83CA-4590-84EF-90FCB8253463}"
+	ProjectSection(SolutionItems) = preProject
+		Talifun.Web.Examples\Crusher.Demo\UncrushedPage.aspx = Talifun.Web.Examples\Crusher.Demo\UncrushedPage.aspx
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compress.Demo", "Talifun.Web.Examples\Compress.Demo\Compress.Demo.csproj", "{F4AB8CB0-90E3-46D6-93E1-8C796F388E68}"
 EndProject
@@ -36,6 +39,14 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UrlRewriter.Demo", "Talifun.Web.UrlRewriter.Examples\UrlRewriter.Demo\UrlRewriter.Demo.csproj", "{EB258590-626C-4F1D-ABEE-E863551BB5EC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talifun.Web.Tests", "Talifun.Web.Tests\Talifun.Web.Tests.csproj", "{7C661FBC-E6BE-4C1B-9002-E17CEA4531F9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildScripts", "BuildScripts", "{D4333DAD-75D9-49FF-8239-A0E92E041FCB}"
+	ProjectSection(SolutionItems) = preProject
+		BuildScripts\Build.fbp6 = BuildScripts\Build.fbp6
+		BuildScripts\NuGet.exe = BuildScripts\NuGet.exe
+		BuildScripts\talifun.web.nuspec = BuildScripts\talifun.web.nuspec
+		BuildScripts\Upload.ps1 = BuildScripts\Upload.ps1
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,0 +1,14 @@
+﻿<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>talifun.web</id>
+    <version></version>
+    <authors>Talifun</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A suite of Http Modules and Http Handlers to easily implemented best practices and increase performance of asp.net webforms and asp.net mvc websites</description>
+    <summary>A suite of Http Modules and Http Handlers to easily implemented best practices and increase performance of asp.net webforms and asp.net mvc websites</summary>
+    <language>en-GB</language>
+  </metadata>
+</package>
+
+
