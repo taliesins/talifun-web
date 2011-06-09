@@ -15,6 +15,6 @@
 	<tags>talifun http module</tags>
   </metadata>
   <files>
-    <file src="..\Talifun.Web\bin\Release\Talifun.Web.dll" target="lib" />
+    <file src="..\Talifun.Web\bin\Release\Talifun.Web.dll" target="lib\net40\Talifun.Web.dll" />
   </files>
 </package>

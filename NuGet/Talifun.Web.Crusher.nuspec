@@ -15,7 +15,7 @@
 	<tags>talifun http module js css minify crush combine compress</tags>
   </metadata>
   <files>
-	<file src="..\Talifun.Web\bin\Release\Talifun.Web.dll" target="lib" />
+	<file src="..\Talifun.Web\bin\Release\Talifun.Web.dll" target="lib\net40\Talifun.Web.dll" />
 	<file src="Transforms\Talifun.Web.Crusher.web.config.transform" target="content\web.config.transform" />
   </files>
 </package>
