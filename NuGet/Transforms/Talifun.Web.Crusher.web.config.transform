@@ -1,0 +1,41 @@
+<configuration>
+        <configSections>
+                <section name="Crusher" type="Talifun.Web.Crusher.Config.CrusherSection, Talifun.Web" requirePermission="false" allowDefinition="MachineToApplication"/>
+        </configSections>
+        <Crusher querystringKeyName="etag">
+                <!-- outputFilePath is the identifier for the cssGroup, so make sure its unique for each cssGroup  -->
+                <cssGroups>
+                        <!-- Css group to demo the crushing -->
+						<!--
+                        <cssGroup name="SiteCss" debug="false" appendHash="true" outputFilePath="~/Static/Css/site.css">
+                                <files>
+                                        <file name="JQueryUI" filePath="~/Static/Css/jquery-ui-1.7.1.css" compressionType="Hybrid" />
+                                        <file name="Default" filePath="~/Static/Css/default.css" compressionType="Hybrid" />
+                                </files>
+                        </cssGroup>
+						-->
+                </cssGroups>
+                <!-- outputFilePath is the identifier for the jsGroup, so make sure its unique for each jsGroup  -->
+                <jsGroups>
+                        <!-- Js group to demo the crushing  -->
+						<!--
+                        <jsGroup name="SiteJs" debug="false" outputFilePath="~/Static/Js/site.js">
+                                <files>
+                                        <file name="JQuery" filePath="~/Static/Js/jquery-1.3.2.min.js" compressionType="Min"/>
+                                        <file name="JQueryUI" filePath="~/Static/Js/jquery-ui-1.7.1.min.js" compressionType="Min"/>
+                                </files>
+                        </jsGroup>
+						-->
+                </jsGroups>
+        </Crusher>      
+        <system.web>
+                <pages>
+                        <controls>
+                                <add tagPrefix="talifun" namespace="Talifun.Web.Crusher" assembly="Talifun.Web"/>
+                        </controls>
+                </pages>        
+                <httpModules>
+                        <add name="CrusherModule" type="Talifun.Web.Crusher.CrusherModule, Talifun.Web"/>
+                </httpModules>
+        </system.web>           
+</configuration>
