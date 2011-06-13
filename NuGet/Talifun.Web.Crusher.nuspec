@@ -5,6 +5,7 @@
     <version>2.0</version>
     <authors>Taliesin Sisson</authors>
     <owners>Talifun Ltd</owners>
+	<title>Talifun.Web.Crusher</title>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
     <projectUrl>http://code.google.com/p/talifun-web/wiki/CrusherModule</projectUrl>
     <iconUrl>http://code.google.com/p/talifun-web/logo</iconUrl>
@@ -13,9 +14,11 @@
 	<summary>A module that makes it easily to implemented best practices and increase performance of asp.net webforms and asp.net mvc websites.</summary>
     <language>en-GB</language>
 	<tags>talifun http module js css minify crush combine compress</tags>
+    <dependencies>
+      <dependency id="Talifun.Web" version="2.0" />
+    </dependencies>	
   </metadata>
   <files>
-	<file src="..\Talifun.Web\bin\Release\Talifun.Web.dll" target="lib\net40\Talifun.Web.dll" />
 	<file src="Transforms\Talifun.Web.Crusher.web.config.transform" target="content\web.config.transform" />
   </files>
 </package>

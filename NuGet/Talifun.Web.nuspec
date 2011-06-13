@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
-    <id>Talifun.Web.Crusher</id>
+    <id>Talifun.Web</id>
     <version>2.0</version>
+    <title>Talifun.Web</title>
     <authors>Taliesin Sisson</authors>
     <owners>Talifun Ltd</owners>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
@@ -10,11 +11,12 @@
     <iconUrl>http://code.google.com/p/talifun-web/logo</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A suite of Http Modules and Http Handlers to easily implemented best practices and increase performance of asp.net webforms and asp.net mvc websites.</description>
-	<summary>A suite of Http Modules and Http Handlers to easily implemented best practices and increase performance of asp.net webforms and asp.net mvc websites.</summary>
+    <summary>A suite of Http Modules and Http Handlers to easily implemented best practices and increase performance of asp.net webforms and asp.net mvc websites.</summary>
     <language>en-GB</language>
-	<tags>talifun http module</tags>
+    <tags>talifun http module</tags>
+    <dependencies>
+      <dependency id="dotless" version="1.1.0" />
+      <dependency id="YUICompressor.NET" version="1.5.0.0" />
+    </dependencies>
   </metadata>
-  <files>
-    <file src="..\Talifun.Web\bin\Release\Talifun.Web.dll" target="lib\net40\Talifun.Web.dll" />
-  </files>
 </package>
