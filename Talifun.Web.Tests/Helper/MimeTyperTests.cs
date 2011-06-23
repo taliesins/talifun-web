@@ -1,10 +1,14 @@
-﻿namespace Talifun.Web.Tests.Helper
+﻿using Rhino.Mocks;
+
+namespace Talifun.Web.Tests.Helper
 {
     public abstract class MimeTyperTests : BehaviourTest<MimeTyper>
     {
+        protected ICacheManager CacheManager = MockRepository.GenerateMock<ICacheManager>();
+
         protected override MimeTyper CreateSystemUnderTest()
         {
-            return new MimeTyper();
+            return new MimeTyper(CacheManager);
         }
     }
 

@@ -5,7 +5,6 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
 using System.Web.Caching;
 using System.Web.Hosting;
 using Talifun.Web.Helper;
@@ -19,6 +18,7 @@ namespace Talifun.Web.CssSprite
     {
         protected readonly int ImagePadding = 2;
 
+        protected readonly ICacheManager CacheManager;
         protected readonly IRetryableFileOpener RetryableFileOpener;
         protected readonly IHasher Hasher;
         protected readonly IRetryableFileWriter RetryableFileWriter;
@@ -27,8 +27,9 @@ namespace Talifun.Web.CssSprite
 
         protected readonly IComparer<SpriteElement> SquarenessComparer = new SquarenessComparer();
 
-        public CssSpriteCreator(IRetryableFileOpener retryableFileOpener, IHasher hasher, IRetryableFileWriter retryableFileWriter)
+        public CssSpriteCreator(ICacheManager cacheManager, IRetryableFileOpener retryableFileOpener, IHasher hasher, IRetryableFileWriter retryableFileWriter)
         {
+            CacheManager = cacheManager;
             RetryableFileOpener = retryableFileOpener;
             Hasher = hasher;
             RetryableFileWriter = retryableFileWriter;
@@ -187,7 +188,7 @@ namespace Talifun.Web.CssSprite
                 SpriteImageUrl = spriteImageUrl
             };
 
-            HttpRuntime.Cache.Insert(
+            CacheManager.Insert(
                 GetKey(imageOutputPath, spriteImageUrl, cssOutputPath),
                 cssSpriteCacheItem,
                 new CacheDependency(fileNames.ToArray(), System.DateTime.Now),
@@ -229,7 +230,7 @@ namespace Talifun.Web.CssSprite
         /// <param name="cssOutputPath">Sprite css output path.</param>
         public virtual void RemoveFiles(FileInfo imageOutputPath, Uri spriteImageUrl, FileInfo cssOutputPath)
         {
-            HttpRuntime.Cache.Remove(GetKey(imageOutputPath, spriteImageUrl, cssOutputPath));
+            CacheManager.Remove<CssSpriteCacheItem>(GetKey(imageOutputPath, spriteImageUrl, cssOutputPath));
         }
 
         /// <summary>

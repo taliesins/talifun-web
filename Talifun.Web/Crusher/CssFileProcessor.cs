@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
-using System.Web;
 
 namespace Talifun.Web.Crusher
 {
@@ -111,6 +110,11 @@ namespace Talifun.Web.Crusher
             if (_localCssAssetFilesThatExist == null)
             {
                 GetContents();
+
+                if (_localCssAssetFilesThatExist == null)
+                {
+                    _localCssAssetFilesThatExist = new List<FileInfo>();
+                }
             }
 
             return _localCssAssetFilesThatExist;
@@ -182,7 +186,7 @@ namespace Talifun.Web.Crusher
 
         protected Uri GetRelativeRootUri(string filePath)
         {
-            var cssFilePath = VirtualPathUtility.ToAbsolute(filePath);
+            var cssFilePath = PathProvider.ToAbsolute(filePath);
 
             var relativeRootUri = GetUriDirectory(new Uri(cssFilePath, UriKind.RelativeOrAbsolute));
             relativeRootUri = !relativeRootUri.IsAbsoluteUri

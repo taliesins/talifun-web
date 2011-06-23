@@ -14,23 +14,31 @@ namespace Talifun.Web.Crusher
     public sealed class CrusherManager : IDisposable
     {
         private const int BufferSize = 32768;
-        private readonly string _hashQueryStringKeyName = CurrentCrusherConfiguration.Current.QuerystringKeyName;
-        private readonly CssGroupElementCollection _cssGroups = CurrentCrusherConfiguration.Current.CssGroups;
-        private readonly JsGroupElementCollection _jsGroups = CurrentCrusherConfiguration.Current.JsGroups;
+        private readonly string _hashQueryStringKeyName;
+        private readonly CssGroupElementCollection _cssGroups;
+        private readonly JsGroupElementCollection _jsGroups;
+        private readonly ICacheManager _cacheManager;
+        private readonly IPathProvider _pathProvider;
         private readonly ICssCrusher _cssCrusher;
         private readonly IJsCrusher _jsCrusher;
 
         private CrusherManager()
         {
+            var crusherConfiguration = CurrentCrusherConfiguration.Current;
+            _hashQueryStringKeyName = crusherConfiguration.QuerystringKeyName;
+            _cssGroups = crusherConfiguration.CssGroups;
+            _jsGroups = crusherConfiguration.JsGroups;
+
             var retryableFileOpener = new RetryableFileOpener();
             var hasher = new Hasher(retryableFileOpener);
-            var retryableFileWriter = new RetryableFileWriter(BufferSize, retryableFileOpener, hasher); 
-            var pathProvider = new PathProvider();
-            var cssAssetsFileHasher = new CssAssetsFileHasher(_hashQueryStringKeyName, hasher, pathProvider);
-            var cssPathRewriter = new CssPathRewriter(cssAssetsFileHasher, pathProvider);
+            var retryableFileWriter = new RetryableFileWriter(BufferSize, retryableFileOpener, hasher);
+            _pathProvider = new PathProvider();
+            var cssAssetsFileHasher = new CssAssetsFileHasher(_hashQueryStringKeyName, hasher, _pathProvider);
+            var cssPathRewriter = new CssPathRewriter(cssAssetsFileHasher, _pathProvider);
 
-            _cssCrusher = new CssCrusher(retryableFileOpener, retryableFileWriter, cssPathRewriter, pathProvider);
-            _jsCrusher = new JsCrusher(retryableFileOpener, retryableFileWriter, pathProvider);
+            _cacheManager = new HttpCacheManager();
+            _cssCrusher = new CssCrusher(_cacheManager, _pathProvider, retryableFileOpener, retryableFileWriter, cssPathRewriter);
+            _jsCrusher = new JsCrusher(_cacheManager, _pathProvider, retryableFileOpener, retryableFileWriter);
 
             InitManager();
         }
@@ -39,7 +47,7 @@ namespace Talifun.Web.Crusher
         {
             get
             {
-                return Nested.instance;
+                return Nested.Instance;
             }
         }
 
@@ -51,7 +59,7 @@ namespace Talifun.Web.Crusher
             {
             }
 
-            internal static readonly CrusherManager instance = new CrusherManager();
+            internal static readonly CrusherManager Instance = new CrusherManager();
         }
 
         /// <summary>
@@ -92,7 +100,7 @@ namespace Talifun.Web.Crusher
                     files.Add(file);
                 }
 
-                var outputUri = new Uri(VirtualPathUtility.ToAbsolute(group.OutputFilePath), UriKind.Relative);
+                var outputUri = new Uri(_pathProvider.ToAbsolute(group.OutputFilePath), UriKind.Relative);
 
                 _cssCrusher.AddFiles(outputUri, files, group.AppendHashToCssAsset);
             }
@@ -111,7 +119,7 @@ namespace Talifun.Web.Crusher
                     files.Add(file);
                 }
 
-                var outputUri = new Uri(VirtualPathUtility.ToAbsolute(group.OutputFilePath), UriKind.Relative);
+                var outputUri = new Uri(_pathProvider.ToAbsolute(group.OutputFilePath), UriKind.Relative);
                 _jsCrusher.AddFiles(outputUri, files);
             }
         }
@@ -120,13 +128,13 @@ namespace Talifun.Web.Crusher
         {
             foreach (CssGroupElement group in _cssGroups)
             {
-                var outputUri = new Uri(VirtualPathUtility.ToAbsolute(group.OutputFilePath), UriKind.Relative);
+                var outputUri = new Uri(_pathProvider.ToAbsolute(group.OutputFilePath), UriKind.Relative);
                 _cssCrusher.RemoveFiles(outputUri);
             }
 
             foreach (JsGroupElement group in _jsGroups)
             {
-                var outputUri = new Uri(VirtualPathUtility.ToAbsolute(group.OutputFilePath), UriKind.Relative);
+                var outputUri = new Uri(_pathProvider.ToAbsolute(group.OutputFilePath), UriKind.Relative);
                 _jsCrusher.RemoveFiles(outputUri);
             }
 

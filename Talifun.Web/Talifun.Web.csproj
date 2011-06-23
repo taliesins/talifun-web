@@ -76,6 +76,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cache\HttpCacheManager.cs" />
     <Compile Include="Compress\CompressionModuleHelper.cs" />
     <Compile Include="Configuration\CurrentConfigurationElementCollection.cs" />
     <Compile Include="Configuration\CurrentConfigurationManager.cs" />
@@ -125,6 +126,7 @@
     <Compile Include="Http\HttpResponseHeader.cs" />
     <Compile Include="Http\HttpResponseHeaderHelper.cs" />
     <Compile Include="Http\HttpStatusCode.cs" />
+    <Compile Include="Cache\ICacheManager.cs" />
     <Compile Include="Http\IHttpRequestHeaderHelper.cs" />
     <Compile Include="Http\IHttpResponseHeaderHelper.cs" />
     <Compile Include="Http\IByteRangeResponse.cs" />

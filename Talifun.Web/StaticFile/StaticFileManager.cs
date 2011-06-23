@@ -9,6 +9,7 @@ namespace Talifun.Web.StaticFile
         private const long MaxFileSizeToServe = int.MaxValue;
         private const uint ErrorTheRemoteHostClosedTheConnection = 0x80072746; //WSAECONNRESET (10054)
 
+        private readonly ICacheManager _cacheManager;
         private readonly IRetryableFileOpener _retryableFileOpener;
         private readonly IMimeTyper _mimeTyper;
         private readonly IHasher _hasher;
@@ -20,8 +21,9 @@ namespace Talifun.Web.StaticFile
 
         private StaticFileManager()
         {
+            _cacheManager = new HttpCacheManager();
             _retryableFileOpener = new RetryableFileOpener();
-            _mimeTyper = new MimeTyper();
+            _mimeTyper = new MimeTyper(_cacheManager);
             _hasher = new Hasher(_retryableFileOpener);
             _httpRequestHeaderHelper = new HttpRequestHeaderHelper();
             _fileEntitySettingProvider = new FileEntitySettingProvider();
@@ -83,7 +85,7 @@ namespace Talifun.Web.StaticFile
 
             var fileSettingEntity = _fileEntitySettingProvider.GetSetting(file);
 
-            var fileEntity = new FileEntity(_retryableFileOpener, _mimeTyper, _hasher, MaxFileSizeToServe, BufferSize, file, fileSettingEntity);
+            var fileEntity = new FileEntity(_cacheManager, _retryableFileOpener, _mimeTyper, _hasher, MaxFileSizeToServe, BufferSize, file, fileSettingEntity);
 
             if (_webServerType == WebServerType.NotSet || _httpResponseHeaderHelper == null || _httpRequestResponder == null)
             {

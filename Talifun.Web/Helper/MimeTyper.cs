@@ -1,13 +1,18 @@
 ﻿using System;
-using System.Web;
 using System.Web.Caching;
 
 namespace Talifun.Web
 {
     public class MimeTyper : IMimeTyper
     {
+        protected readonly ICacheManager CacheManger;
         protected TimeSpan MimeTypeSlidingExpiration = new TimeSpan(24, 0, 0);
         protected static string MimeTyperType = typeof(MimeTyper).ToString();
+
+        public MimeTyper(ICacheManager cacheManger)
+        {
+            CacheManger = cacheManger;
+        }
 
         /// <summary>
         /// Get the mime type for a file based on its extension
@@ -19,10 +24,10 @@ namespace Talifun.Web
             extension = extension.ToLowerInvariant();
 
             var cacheKey = GetKey(extension);
-            var cachedValue = HttpRuntime.Cache.Get(cacheKey);
+            var cachedValue = CacheManger.Get<string>(cacheKey);
             if (cachedValue != null)
             {
-                return (string)cachedValue;
+                return cachedValue;
             }
 
             var mime = "application/octetstream";
@@ -33,7 +38,7 @@ namespace Talifun.Web
                 mime = rk.GetValue("Content Type").ToString();
             }
 
-            HttpRuntime.Cache.Insert(
+            CacheManger.Insert(
                 cacheKey,
                 mime,
                 null,

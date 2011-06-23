@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
 using System.Web.Caching;
 using Talifun.Web.Helper;
 using Yahoo.Yui.Compressor;
@@ -15,18 +14,20 @@ namespace Talifun.Web.Crusher
     /// </summary>
     public class CssCrusher : ICssCrusher
     {
+        protected readonly ICacheManager CacheManager;
+        protected readonly IPathProvider PathProvider;
         protected readonly IRetryableFileOpener RetryableFileOpener;
         protected readonly IRetryableFileWriter RetryableFileWriter;
         protected readonly ICssPathRewriter CssPathRewriter;
-        protected readonly IPathProvider PathProvider;
         protected static string CssCrusherType = typeof(CssCrusher).ToString();
 
-        public CssCrusher(IRetryableFileOpener retryableFileOpener, IRetryableFileWriter retryableFileWriter, ICssPathRewriter cssPathRewriter, IPathProvider pathProvider)
+        public CssCrusher(ICacheManager cacheManager, IPathProvider pathProvider, IRetryableFileOpener retryableFileOpener, IRetryableFileWriter retryableFileWriter, ICssPathRewriter cssPathRewriter)
         {
+            CacheManager = cacheManager;
+            PathProvider = pathProvider;
             RetryableFileOpener = retryableFileOpener;
             RetryableFileWriter = retryableFileWriter;
             CssPathRewriter = cssPathRewriter;
-            PathProvider = pathProvider;
         }
 
         /// <summary>
@@ -115,7 +116,7 @@ namespace Talifun.Web.Crusher
         /// <param name="outputUri">The path for the crushed css file.</param>
         public virtual void RemoveFiles(Uri outputUri)
         {
-            HttpRuntime.Cache.Remove(GetKey(outputUri));
+            CacheManager.Remove<CssCacheItem>(GetKey(outputUri));
         }
 
         /// <summary>
@@ -140,7 +141,7 @@ namespace Talifun.Web.Crusher
                                        CssAssetFilePaths = cssAssetFilePaths
                                    };
 
-            HttpRuntime.Cache.Insert(
+            CacheManager.Insert(
                 GetKey(outputUri),
                 cssCacheItem,
                 new CacheDependency(fileNames.ToArray(), System.DateTime.Now),

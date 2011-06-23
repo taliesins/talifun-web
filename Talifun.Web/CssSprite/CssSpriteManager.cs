@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Web;
-using System.Web.Hosting;
 using Talifun.Web.Crusher;
 using Talifun.Web.CssSprite.Config;
 using Talifun.Web.Helper;
@@ -18,6 +17,7 @@ namespace Talifun.Web.CssSprite
     {
         private readonly int BufferSize = 32768;
         private readonly CssSpriteGroupElementCollection _cssSpriteGroups = CurrentCssSpriteConfiguration.Current.CssSpriteGroups;
+        private readonly ICacheManager _cacheManager;
         private readonly ICssSpriteCreator _cssSpriteCreator;
         private readonly IPathProvider _pathProvider;
 
@@ -27,8 +27,9 @@ namespace Talifun.Web.CssSprite
             var hasher = new Hasher(retryableFileOpener);
             var retryableFileWriter = new RetryableFileWriter(BufferSize, retryableFileOpener, hasher);
 
+            _cacheManager = new HttpCacheManager();
+            _cssSpriteCreator = new CssSpriteCreator(_cacheManager, retryableFileOpener, hasher, retryableFileWriter);
             _pathProvider = new PathProvider();
-            _cssSpriteCreator = new CssSpriteCreator(retryableFileOpener, hasher, retryableFileWriter);
 
             InitManager();
         }

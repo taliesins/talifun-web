@@ -7,12 +7,26 @@ namespace Talifun.Web.Crusher
 {
     public class PathProvider : IPathProvider
     {
-        public string MapPath(Uri url)
+        protected string ApplicationPath;
+        protected string PhysicalApplicationPath;
+
+        public PathProvider() : this("/", Environment.CurrentDirectory)
+        {
+            
+        }
+
+        public PathProvider(string applicationPath, string physicalApplicationPath)
+        {
+            ApplicationPath = applicationPath;
+            PhysicalApplicationPath = physicalApplicationPath;
+        }
+
+        public virtual string MapPath(Uri url)
         {
             return MapPath(url.OriginalString);
         }
 
-        public string MapPath(string url)
+        public virtual string MapPath(string url)
         {
             var queryStringPosition = url.IndexOf('?');
 
@@ -24,8 +38,9 @@ namespace Talifun.Web.Crusher
             if (HttpContext.Current == null)
             {
                 url = url.Replace("/", "\\").TrimStart('~').TrimStart('\\');
-                return @"C:\" + url.Replace("/", "\\");
+                return Path.Combine(PhysicalApplicationPath, url.Replace("/", "\\"));
             }
+
             return HostingEnvironment.MapPath(url);
         }
 
@@ -62,6 +77,27 @@ namespace Talifun.Web.Crusher
             }
 
             return urlUri.LocalPath;
+        }
+
+        public virtual string ToAbsolute(string virtualPath)
+        {
+            try
+            {
+                return VirtualPathUtility.ToAbsolute(virtualPath);
+            }
+            catch (Exception)
+            {
+                if (HttpContext.Current == null)
+                {
+                    return ToAbsolute(virtualPath, ApplicationPath);
+                }
+                throw;
+            }
+        }
+
+        public virtual string ToAbsolute(string virtualPath, string applicationPath)
+        {
+            return VirtualPathUtility.ToAbsolute(virtualPath, applicationPath);
         }
     }
 }

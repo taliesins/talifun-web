@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using System.Web;
 using System.Web.Caching;
 using System.Web.Hosting;
 using System.Web.UI;
@@ -15,6 +14,7 @@ namespace Talifun.Web.Crusher
     /// </summary>
     public class CssControl : WebControl
     {
+        protected readonly ICacheManager CacheManager;
         protected readonly string QuerystringKeyName;
         protected readonly CssGroupElementCollection CssGroups;
         protected readonly IRetryableFileOpener RetryableFileOpener;
@@ -23,6 +23,7 @@ namespace Talifun.Web.Crusher
 
         public CssControl()
         {
+            CacheManager = new HttpCacheManager();
             QuerystringKeyName = CurrentCrusherConfiguration.Current.QuerystringKeyName;
             CssGroups = CurrentCrusherConfiguration.Current.CssGroups;
             RetryableFileOpener = new RetryableFileOpener();
@@ -60,10 +61,10 @@ namespace Talifun.Web.Crusher
 
             var cacheKey = GetKey(outputFilePath);
 
-            var cachedValue = HttpRuntime.Cache.Get(cacheKey);
+            var cachedValue = CacheManager.Get<string>(cacheKey);
             if (cachedValue != null)
             {
-                scriptLinks = (string)cachedValue;
+                scriptLinks = cachedValue;
             }
             else
             {
@@ -112,12 +113,14 @@ namespace Talifun.Web.Crusher
             var cacheKey = GetKey(outputFilePath);
             var filePath = this.MapPathSecure(outputFilePath);
 
-            HttpRuntime.Cache.Insert(
+            CacheManager.Insert(
                 cacheKey,
                 scriptLinks,
                 new CacheDependency(filePath, DateTime.Now),
                 Cache.NoAbsoluteExpiration,
-                Cache.NoSlidingExpiration);
+                Cache.NoSlidingExpiration,
+                CacheItemPriority.Normal,
+                null);
         }
 
         /// <summary>

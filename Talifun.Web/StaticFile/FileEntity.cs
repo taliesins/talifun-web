@@ -10,6 +10,7 @@ namespace Talifun.Web.StaticFile
     {
         protected static string FileInfoEntityType = typeof(FileEntity).ToString();
 
+        protected readonly ICacheManager CacheManager;
         protected readonly IRetryableFileOpener RetryableFileOpener;
         protected readonly IMimeTyper MimeTyper;
         protected readonly IHasher Hasher;
@@ -19,8 +20,9 @@ namespace Talifun.Web.StaticFile
         protected readonly FileInfo FileInfo;
         protected readonly FileEntitySetting FileEntitySetting;
 
-        public FileEntity(IRetryableFileOpener retryableFileOpener, IMimeTyper mimeTyper, IHasher hasher, long maxFileSizeToServe, int bufferSize, FileInfo fileInfo, FileEntitySetting fileEntitySetting)
+        public FileEntity(ICacheManager cacheManager, IRetryableFileOpener retryableFileOpener, IMimeTyper mimeTyper, IHasher hasher, long maxFileSizeToServe, int bufferSize, FileInfo fileInfo, FileEntitySetting fileEntitySetting)
         {
+            CacheManager = cacheManager;
             RetryableFileOpener = retryableFileOpener;
             MimeTyper = mimeTyper;
             Hasher = hasher;
@@ -75,10 +77,10 @@ namespace Talifun.Web.StaticFile
             // If the response bytes are already cached, then deliver the bytes directly from cache
             var cacheKey = FileInfoEntityType + ":" + entityStoredWithCompressionType + ":" + FileInfo.FullName;
 
-            var cachedValue = HttpRuntime.Cache.Get(cacheKey);
+            var cachedValue = CacheManager.Get<FileEntityCacheItem>(cacheKey);
             if (cachedValue != null)
             {
-                fileEntityCacheItem = (FileEntityCacheItem)cachedValue;
+                fileEntityCacheItem = cachedValue;
             }
             else
             {
@@ -149,7 +151,7 @@ namespace Talifun.Web.StaticFile
                 }
 
                 //Put fileHandlerCacheItem into cache with 30 min sliding expiration, also if file changes then remove fileHandlerCacheItem from cache
-                HttpRuntime.Cache.Insert(
+                CacheManager.Insert(
                     cacheKey,
                     fileEntityCacheItem,
                     new CacheDependency(FileInfo.FullName),

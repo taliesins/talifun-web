@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
 using System.Web.Caching;
 using Talifun.Web.Helper;
 using Yahoo.Yui.Compressor;
@@ -15,16 +14,19 @@ namespace Talifun.Web.Crusher
     /// </summary>
     public class JsCrusher : IJsCrusher
     {
+        protected readonly ICacheManager CacheManager;
+        protected readonly IPathProvider PathProvider;
         protected readonly IRetryableFileOpener RetryableFileOpener;
         protected readonly IRetryableFileWriter RetryableFileWriter;
-        protected readonly IPathProvider PathProvider;
+        
         protected static string JsCrusherType = typeof(JsCrusher).ToString();
 
-        public JsCrusher(IRetryableFileOpener retryableFileOpener, IRetryableFileWriter retryableFileWriter, IPathProvider pathProvider)
+        public JsCrusher(ICacheManager cacheManager, IPathProvider pathProvider, IRetryableFileOpener retryableFileOpener, IRetryableFileWriter retryableFileWriter)
         {
+            CacheManager = cacheManager;
+            PathProvider = pathProvider;
             RetryableFileOpener = retryableFileOpener;
             RetryableFileWriter = retryableFileWriter;
-            PathProvider = pathProvider;
         }
 
         /// <summary>
@@ -81,7 +83,7 @@ namespace Talifun.Web.Crusher
         /// <param name="outputUri">The path for the crushed js file</param>
         public virtual void RemoveFiles(Uri outputUri)
         {
-            HttpRuntime.Cache.Remove(GetKey(outputUri));
+            CacheManager.Remove<JsCacheItem>(GetKey(outputUri));
         }
 
         /// <summary>
@@ -104,7 +106,7 @@ namespace Talifun.Web.Crusher
                                       JsFiles = jsFiles
                                   };
 
-            HttpRuntime.Cache.Insert(
+            CacheManager.Insert(
                 GetKey(outputUri),
                 jsCacheItem,
                 new CacheDependency(fileNames.ToArray(), System.DateTime.Now),
