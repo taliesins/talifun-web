@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web.Caching;
-using System.Web.Hosting;
+using Talifun.Web.Crusher;
 using Talifun.Web.Helper;
 
 namespace Talifun.Web.CssSprite
@@ -16,22 +16,20 @@ namespace Talifun.Web.CssSprite
     /// </summary>
     public class CssSpriteCreator : ICssSpriteCreator
     {
-        protected readonly int ImagePadding = 2;
-
         protected readonly ICacheManager CacheManager;
         protected readonly IRetryableFileOpener RetryableFileOpener;
-        protected readonly IHasher Hasher;
+		protected readonly IPathProvider PathProvider;   
         protected readonly IRetryableFileWriter RetryableFileWriter;
 
         protected static string CssSpriteCreatorType = typeof(CssSpriteCreator).ToString();
 
         protected readonly IComparer<SpriteElement> SquarenessComparer = new SquarenessComparer();
 
-        public CssSpriteCreator(ICacheManager cacheManager, IRetryableFileOpener retryableFileOpener, IHasher hasher, IRetryableFileWriter retryableFileWriter)
+        public CssSpriteCreator(ICacheManager cacheManager, IRetryableFileOpener retryableFileOpener, IPathProvider pathProvider, IRetryableFileWriter retryableFileWriter)
         {
             CacheManager = cacheManager;
             RetryableFileOpener = retryableFileOpener;
-            Hasher = hasher;
+			PathProvider = pathProvider;
             RetryableFileWriter = retryableFileWriter;
         }
 
@@ -62,7 +60,7 @@ namespace Talifun.Web.CssSprite
             var spriteElements = new List<SpriteElement>();
             foreach (var file in files)
             {
-                var filePath = HostingEnvironment.MapPath(file.FilePath);
+				var filePath = PathProvider.MapPath(file.FilePath);
                 var fileInfo = new FileInfo(filePath);
                 using (var reader = RetryableFileOpener.OpenFileStream(fileInfo, 5, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
@@ -177,7 +175,7 @@ namespace Talifun.Web.CssSprite
 
             foreach (var file in files)
             {
-                fileNames.Add(HostingEnvironment.MapPath(file.FilePath));
+				fileNames.Add(PathProvider.MapPath(file.FilePath));
             }
 
             var cssSpriteCacheItem = new CssSpriteCacheItem()
@@ -303,7 +301,7 @@ namespace Talifun.Web.CssSprite
         /// <returns>The width of the widest sprite.</returns>
         public virtual int Width(IEnumerable<SpriteElement> spriteElements)
         {
-            return spriteElements.Max(x =>x.Rectangle.X +  x.Rectangle.Width);
+            return spriteElements.Max(x =>x.Rectangle.X + x.Rectangle.Width);
         }
     }
 }

@@ -17,6 +17,7 @@
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation />
     <TargetFrameworkProfile />
+    <UseIISExpress>false</UseIISExpress>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -75,7 +76,22 @@
     <Content Include="Static\Image\good\08.png" />
     <Content Include="Static\Image\good\09.png" />
     <Content Include="Static\Image\good\10.png" />
-    <Content Include="Web.config" />
+    <Content Include="Static\Image\Headings\antivirus.png" />
+    <Content Include="Static\Image\Headings\audio_converter.png" />
+    <Content Include="Static\Image\Headings\command_line_tool.png" />
+    <Content Include="Static\Image\Headings\crusher_module.png" />
+    <Content Include="Static\Image\Headings\css_sprite_module.png" />
+    <Content Include="Static\Image\Headings\image_converter.png" />
+    <Content Include="Static\Image\Headings\log_url_module.png" />
+    <Content Include="Static\Image\Headings\page_compression_module.png" />
+    <Content Include="Static\Image\Headings\regex_url_authorization_module.png" />
+    <Content Include="Static\Image\Headings\static_file_handler.png" />
+    <Content Include="Static\Image\Headings\video_converter.png" />
+    <Content Include="Static\Image\Headings\video_thumbnailer.png" />
+    <Content Include="Static\Image\Headings\web_resource_compression_module.png" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />

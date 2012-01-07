@@ -28,9 +28,9 @@ namespace Talifun.Web.CssSprite
             var retryableFileWriter = new RetryableFileWriter(BufferSize, retryableFileOpener, hasher);
 
             _cacheManager = new HttpCacheManager();
-            _cssSpriteCreator = new CssSpriteCreator(_cacheManager, retryableFileOpener, hasher, retryableFileWriter);
-            _pathProvider = new PathProvider();
-
+			_pathProvider = new PathProvider();
+			_cssSpriteCreator = new CssSpriteCreator(_cacheManager, retryableFileOpener, _pathProvider, retryableFileWriter);
+            
             InitManager();
         }
 
