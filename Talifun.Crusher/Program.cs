@@ -14,6 +14,9 @@ namespace Talifun.Crusher
 {
     class Program
     {
+		private const int SuccessExitCode = 0;
+    	private const int ErrorExitCode = 1;
+    	private const int DisplayHelpScreenExitCode = 2;
         private const int BufferSize = 32768;
 
         private const string HeaderMessage = "Talifun.Crusher:";
@@ -21,7 +24,7 @@ namespace Talifun.Crusher
         private const string UsageMessage = "Usage: Talifun.Crusher -c=../../../Talifun.Web.Examples/Crusher.Demo/web.config";
         private const string HelpMessage = "Help: Talifun.Crusher -?";
 
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             var showHelp = false;
             var configPath = string.Empty;
@@ -68,13 +71,13 @@ namespace Talifun.Crusher
                 Console.WriteLine(e.Message);
                 Console.WriteLine(UsageMessage);
                 Console.WriteLine(HelpMessage);
-                return;
+				return DisplayHelpScreenExitCode;
             }
 
             if (showHelp)
             {
                 DisplayHelp(options);
-                return;
+				return DisplayHelpScreenExitCode;
             }
 
             if (string.IsNullOrEmpty(configPath))
@@ -82,7 +85,7 @@ namespace Talifun.Crusher
                 Console.WriteLine(HeaderMessage);
                 Console.WriteLine(UsageMessage);
                 Console.WriteLine(HelpMessage);
-                return;
+				return DisplayHelpScreenExitCode;
             }
 
             var crusherConfiguration = GetCrusherSection(configPath, crusherSectionName);
@@ -94,60 +97,70 @@ namespace Talifun.Crusher
 				Console.WriteLine("\"{0}\" section name not found in {1} ", crusherSectionName, configPath);
 				Console.WriteLine("\"{0}\" section name not found in {1} ", cssSpriteSectionName, configPath);
                 Console.WriteLine(HelpMessage);
-                return;
+				return DisplayHelpScreenExitCode;
             }
 
-			Console.WriteLine();
-			Console.WriteLine("Settings used:");
-			Console.WriteLine("configPath = " + configPath);
-			Console.WriteLine("crusherSectionName = " + crusherSectionName);
-			Console.WriteLine("cssSpriteSectionName = " + cssSpriteSectionName);
-			Console.WriteLine("applicationPath = " + applicationPath);
-
-			var physicalApplicationPath = new FileInfo(configPath).DirectoryName;
-			var retryableFileOpener = new RetryableFileOpener();
-			var hasher = new Hasher(retryableFileOpener);
-			var retryableFileWriter = new RetryableFileWriter(BufferSize, retryableFileOpener, hasher);
-			var pathProvider = new PathProvider(applicationPath, physicalApplicationPath);
-			var cacheManager = new HttpCacheManager();
-
-			if (crusherConfiguration == null)
-			{
+        	try
+        	{
 				Console.WriteLine();
-				Console.WriteLine("Skipping css/js crushed content creation. \"{0}\" section name not found in \"{1}\"", crusherSectionName, configPath);
+				Console.WriteLine("Settings used:");
+				Console.WriteLine("configPath = " + configPath);
+				Console.WriteLine("crusherSectionName = " + crusherSectionName);
+				Console.WriteLine("cssSpriteSectionName = " + cssSpriteSectionName);
+				Console.WriteLine("applicationPath = " + applicationPath);
+
+				var physicalApplicationPath = new FileInfo(configPath).DirectoryName;
+				var retryableFileOpener = new RetryableFileOpener();
+				var hasher = new Hasher(retryableFileOpener);
+				var retryableFileWriter = new RetryableFileWriter(BufferSize, retryableFileOpener, hasher);
+				var pathProvider = new PathProvider(applicationPath, physicalApplicationPath);
+				var cacheManager = new HttpCacheManager();
+
+				if (crusherConfiguration == null)
+				{
+					Console.WriteLine();
+					Console.WriteLine("Skipping css/js crushed content creation. \"{0}\" section name not found in \"{1}\"", crusherSectionName, configPath);
+				}
+				else
+				{
+					var hashQueryStringKeyName = crusherConfiguration.QuerystringKeyName;
+					var cssAssetsFileHasher = new CssAssetsFileHasher(hashQueryStringKeyName, hasher, pathProvider);
+					var cssPathRewriter = new CssPathRewriter(cssAssetsFileHasher, pathProvider);
+					var cssCrusher = new CssCrusher(cacheManager, pathProvider, retryableFileOpener, retryableFileWriter, cssPathRewriter);
+					var jsCrusher = new JsCrusher(cacheManager, pathProvider, retryableFileOpener, retryableFileWriter);
+
+					var cssGroups = crusherConfiguration.CssGroups;
+					var jsGroups = crusherConfiguration.JsGroups;
+					CreateCrushedFiles(pathProvider, cssGroups, jsGroups, cssCrusher, jsCrusher);
+
+					Console.WriteLine();
+					Console.WriteLine(_cssOutput);
+					Console.WriteLine();
+					Console.WriteLine(_jsOutput);
+				}
+
+				if (cssSpriteConfiguration == null)
+				{
+					Console.WriteLine();
+					Console.WriteLine("Skipping css sprite creation. \"{0}\" section name not found in \"{1}\"", cssSpriteSectionName, configPath);
+				}
+				else
+				{
+					var cssSpriteGroups = cssSpriteConfiguration.CssSpriteGroups;
+					var cssSpriteCreator = new CssSpriteCreator(cacheManager, retryableFileOpener, pathProvider, retryableFileWriter);
+					CreateCssSpriteFiles(pathProvider, cssSpriteGroups, cssSpriteCreator);
+
+					Console.WriteLine();
+					Console.WriteLine(_cssSpriteOutput);
+				}
 			}
-			else
+			catch (Exception exception)
 			{
-				var hashQueryStringKeyName = crusherConfiguration.QuerystringKeyName;
-				var cssAssetsFileHasher = new CssAssetsFileHasher(hashQueryStringKeyName, hasher, pathProvider);
-				var cssPathRewriter = new CssPathRewriter(cssAssetsFileHasher, pathProvider);
-				var cssCrusher = new CssCrusher(cacheManager, pathProvider, retryableFileOpener, retryableFileWriter, cssPathRewriter);
-				var jsCrusher = new JsCrusher(cacheManager, pathProvider, retryableFileOpener, retryableFileWriter);
-
-				var cssGroups = crusherConfiguration.CssGroups;
-				var jsGroups = crusherConfiguration.JsGroups;
-				CreateCrushedFiles(pathProvider, cssGroups, jsGroups, cssCrusher, jsCrusher);
-
-				Console.WriteLine();
-				Console.WriteLine(_cssOutput);
-				Console.WriteLine();
-				Console.WriteLine(_jsOutput);
+				Console.Write(exception);
+				return ErrorExitCode;
 			}
 
-			if (cssSpriteConfiguration == null)
-			{
-				Console.WriteLine();
-				Console.WriteLine("Skipping css sprite creation. \"{0}\" section name not found in \"{1}\"", cssSpriteSectionName, configPath);
-			}
-			else
-			{
-				var cssSpriteGroups = cssSpriteConfiguration.CssSpriteGroups;
-				var cssSpriteCreator = new CssSpriteCreator(cacheManager, retryableFileOpener, pathProvider, retryableFileWriter);
-				CreateCssSpriteFiles(pathProvider, cssSpriteGroups, cssSpriteCreator);
-
-				Console.WriteLine();
-				Console.WriteLine(_cssSpriteOutput);
-			}
+			return SuccessExitCode;
         }
 
         private static void DisplayHelp(OptionSet options)
