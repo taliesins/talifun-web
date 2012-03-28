@@ -24,7 +24,9 @@ namespace Talifun.Web.Compress
         ]
         internal static string DecryptString(string input)
         {
+// ReSharper disable ConditionIsAlwaysTrueOrFalse
             if (!ReflectionAlloweded)
+// ReSharper restore ConditionIsAlwaysTrueOrFalse
             {
                 return EmptyMembershipProvider.Instance.DecryptString(input);
             }
