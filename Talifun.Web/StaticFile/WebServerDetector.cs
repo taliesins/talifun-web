@@ -64,7 +64,14 @@ namespace Talifun.Web.StaticFile
                             break;
                         case "Microsoft.VisualStudio.WebHost.Request":
                         case "Cassini.Request":
-                            WebServerType = WebServerType.Cassini;
+                            if (workerType.Assembly.GetName().Version.Major > 9)
+                            {
+                                WebServerType = WebServerType.IIS7;
+                            }
+                            else
+                            {
+                                WebServerType = WebServerType.Cassini;
+                            }
                             break;
                         case "System.Web.Hosting.IIS7WorkerRequest":
                             WebServerType = WebServerType.IIS7;
