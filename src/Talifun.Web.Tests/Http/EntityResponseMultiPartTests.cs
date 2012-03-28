@@ -19,20 +19,20 @@ namespace Talifun.Web.Tests.Http
             var httpResponseHeaderHelper = MockRepository.GenerateMock<IHttpResponseHeaderHelper>();
             var entity = MockRepository.GenerateMock<IEntity>();
             var responseCompressionType = ResponseCompressionType.None;
-            var entityLength = 1000l;
+            var entityLength = 1000L;
             var entityType = "image/gif";
             var entityCompressionType = ResponseCompressionType.None;
             
-            var firstStartRange = 0l;
-            var firstEndRange = 499l;
+            var firstStartRange = 0L;
+            var firstEndRange = 499L;
             var firstRangeItem = new RangeItem
             {
                 StartRange = firstStartRange,
                 EndRange = firstEndRange
             };
 
-            var secondStartRange = 500l;
-            var secondEndRange = 999l;
+            var secondStartRange = 500L;
+            var secondEndRange = 999L;
             var secondRangeItem = new RangeItem
             {
                 StartRange = secondStartRange,
@@ -84,16 +84,16 @@ namespace Talifun.Web.Tests.Http
             var responseCompressionType = ResponseCompressionType.GZip;
             var entityCompressionType = ResponseCompressionType.None;
 
-            var firstStartRange = 0l;
-            var firstEndRange = 499l;
+            var firstStartRange = 0L;
+            var firstEndRange = 499L;
             var firstRangeItem = new RangeItem
             {
                 StartRange = firstStartRange,
                 EndRange = firstEndRange
             };
 
-            var secondStartRange = 500l;
-            var secondEndRange = 999l;
+            var secondStartRange = 500L;
+            var secondEndRange = 999L;
             var secondRangeItem = new RangeItem
             {
                 StartRange = secondStartRange,
@@ -131,16 +131,16 @@ namespace Talifun.Web.Tests.Http
             var responseCompressionType = ResponseCompressionType.Deflate;
             var entityCompressionType = ResponseCompressionType.None;
 
-            var firstStartRange = 0l;
-            var firstEndRange = 499l;
+            var firstStartRange = 0L;
+            var firstEndRange = 499L;
             var firstRangeItem = new RangeItem
             {
                 StartRange = firstStartRange,
                 EndRange = firstEndRange
             };
 
-            var secondStartRange = 500l;
-            var secondEndRange = 999l;
+            var secondStartRange = 500L;
+            var secondEndRange = 999L;
             var secondRangeItem = new RangeItem
             {
                 StartRange = secondStartRange,
@@ -178,16 +178,16 @@ namespace Talifun.Web.Tests.Http
             var responseCompressionType = ResponseCompressionType.None;
             var entityCompressionType = ResponseCompressionType.GZip;
 
-            var firstStartRange = 0l;
-            var firstEndRange = 499l;
+            var firstStartRange = 0L;
+            var firstEndRange = 499L;
             var firstRangeItem = new RangeItem
             {
                 StartRange = firstStartRange,
                 EndRange = firstEndRange
             };
 
-            var secondStartRange = 500l;
-            var secondEndRange = 999l;
+            var secondStartRange = 500L;
+            var secondEndRange = 999L;
             var secondRangeItem = new RangeItem
             {
                 StartRange = secondStartRange,
@@ -213,16 +213,16 @@ namespace Talifun.Web.Tests.Http
             var responseCompressionType = ResponseCompressionType.Deflate;
             var entityCompressionType = ResponseCompressionType.GZip;
 
-            var firstStartRange = 0l;
-            var firstEndRange = 499l;
+            var firstStartRange = 0L;
+            var firstEndRange = 499L;
             var firstRangeItem = new RangeItem
             {
                 StartRange = firstStartRange,
                 EndRange = firstEndRange
             };
 
-            var secondStartRange = 500l;
-            var secondEndRange = 999l;
+            var secondStartRange = 500L;
+            var secondEndRange = 999L;
             var secondRangeItem = new RangeItem
             {
                 StartRange = secondStartRange,
@@ -248,16 +248,16 @@ namespace Talifun.Web.Tests.Http
             var responseCompressionType = ResponseCompressionType.None;
             var entityCompressionType = ResponseCompressionType.Deflate;
 
-            var firstStartRange = 0l;
-            var firstEndRange = 499l;
+            var firstStartRange = 0L;
+            var firstEndRange = 499L;
             var firstRangeItem = new RangeItem
             {
                 StartRange = firstStartRange,
                 EndRange = firstEndRange
             };
 
-            var secondStartRange = 500l;
-            var secondEndRange = 999l;
+            var secondStartRange = 500L;
+            var secondEndRange = 999L;
             var secondRangeItem = new RangeItem
             {
                 StartRange = secondStartRange,
@@ -283,16 +283,16 @@ namespace Talifun.Web.Tests.Http
             var responseCompressionType = ResponseCompressionType.GZip;
             var entityCompressionType = ResponseCompressionType.Deflate;
 
-            var firstStartRange = 0l;
-            var firstEndRange = 499l;
+            var firstStartRange = 0L;
+            var firstEndRange = 499L;
             var firstRangeItem = new RangeItem
             {
                 StartRange = firstStartRange,
                 EndRange = firstEndRange
             };
 
-            var secondStartRange = 500l;
-            var secondEndRange = 999l;
+            var secondStartRange = 500L;
+            var secondEndRange = 999L;
             var secondRangeItem = new RangeItem
             {
                 StartRange = secondStartRange,
@@ -323,10 +323,10 @@ namespace Talifun.Web.Tests.Http
             var requestHttpMethod = HttpMethod.Get;
 
             var contentType = "image/gif";
-            var contentLength = 1000l;
+            var contentLength = 1000L;
 
-            var firstStartRange = 0l;
-            var firstEndRange = 499l;
+            var firstStartRange = 0L;
+            var firstEndRange = 499L;
             var firstBytesToRead = firstEndRange - firstStartRange + 1;
             var firstRangeItem = new RangeItem
             {
@@ -334,8 +334,8 @@ namespace Talifun.Web.Tests.Http
                 EndRange = firstEndRange
             };
 
-            var secondStartRange = 500l;
-            var secondEndRange = 999l;
+            var secondStartRange = 500L;
+            var secondEndRange = 999L;
             var secondBytesToRead = secondEndRange - secondStartRange + 1;
             var secondRangeItem = new RangeItem
             {
@@ -388,10 +388,10 @@ namespace Talifun.Web.Tests.Http
             var requestHttpMethod = HttpMethod.Head;
 
             var contentType = "image/gif";
-            var contentLength = 1000l;
+            var contentLength = 1000L;
 
-            var firstStartRange = 0l;
-            var firstEndRange = 499l;
+            var firstStartRange = 0L;
+            var firstEndRange = 499L;
             var firstBytesToRead = firstEndRange - firstStartRange + 1;
             var firstRangeItem = new RangeItem
             {
@@ -399,8 +399,8 @@ namespace Talifun.Web.Tests.Http
                 EndRange = firstEndRange
             };
 
-            var secondStartRange = 500l;
-            var secondEndRange = 999l;
+            var secondStartRange = 500L;
+            var secondEndRange = 999L;
             var secondBytesToRead = secondEndRange - secondStartRange + 1;
             var secondRangeItem = new RangeItem
             {
@@ -450,8 +450,8 @@ namespace Talifun.Web.Tests.Http
             var transmitEntityStrategy = MockRepository.GenerateMock<ITransmitEntityStrategy>();
             var requestHttpMethod = HttpMethod.Options;
 
-            var firstStartRange = 0l;
-            var firstEndRange = 499l;
+            var firstStartRange = 0L;
+            var firstEndRange = 499L;
 
             var firstRangeItem = new RangeItem
             {
@@ -459,8 +459,8 @@ namespace Talifun.Web.Tests.Http
                 EndRange = firstEndRange
             };
 
-            var secondStartRange = 500l;
-            var secondEndRange = 999l;
+            var secondStartRange = 500L;
+            var secondEndRange = 999L;
 
             var secondRangeItem = new RangeItem
             {

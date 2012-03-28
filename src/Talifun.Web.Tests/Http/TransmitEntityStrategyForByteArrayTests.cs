@@ -39,8 +39,8 @@ namespace Talifun.Web.Tests.Http
             var text = "123456789012345678901234567890";
             var entityData = Encoding.ASCII.GetBytes(text);
 
-            var offset = 5l;
-            var length = 10l;
+            var offset = 5L;
+            var length = 10L;
 
             var expectedByteArray = Encoding.ASCII.GetBytes(text.Substring((int)offset, (int)length));
 

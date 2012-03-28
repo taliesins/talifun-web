@@ -11,13 +11,4 @@
 # Resharper
 *[Rr]e[Ss]harper.user
 _ReSharper.*/
-Talifun.Web.Examples/Compress.Demo/bin
-Talifun.Web.Examples/Crusher.Demo/bin
-Talifun.Web.Examples/CssSprite.Demo/bin
-Talifun.Web.Examples/IpAddressAuthentication.Demo/bin
-Talifun.Web.Examples/LogUrl.Demo/bin
-Talifun.Web.Examples/RegexUrlAuthorization.Demo/bin
-Talifun.Web.Examples/StaticFile.Demo/bin
-Talifun.Web.Examples/StaticFileGenericHandler.Demo/bin
-Talifun.Web.Mvc.Examples/StaticFile.Demo/bin
-Talifun.Web.UrlRewriter.Examples/UrlRewriter.Demo/bin
+bin/

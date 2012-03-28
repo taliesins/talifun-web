@@ -63,7 +63,7 @@ namespace Talifun.Web.Tests.Http
         protected override void Given()
         {
             EntityContentType = "";
-            EntityContentLength = 1000l;
+            EntityContentLength = 1000L;
             EntityCompressionType = ResponseCompressionType.None;
             ResponseCompressionType = ResponseCompressionType.None;
         }
@@ -98,7 +98,7 @@ namespace Talifun.Web.Tests.Http
         protected override void Given()
         {
             EntityContentType = "";
-            EntityContentLength = 1000l;
+            EntityContentLength = 1000L;
             EntityCompressionType = ResponseCompressionType.None;
             ResponseCompressionType = ResponseCompressionType.GZip;
         }
@@ -133,7 +133,7 @@ namespace Talifun.Web.Tests.Http
         protected override void Given()
         {
             EntityContentType = "";
-            EntityContentLength = 1000l;
+            EntityContentLength = 1000L;
             EntityCompressionType = ResponseCompressionType.None;
             ResponseCompressionType = ResponseCompressionType.Deflate;
         }
@@ -169,7 +169,7 @@ namespace Talifun.Web.Tests.Http
         {
             RecordAnyExceptionsThrown();
             EntityContentType = "";
-            EntityContentLength = 1000l;
+            EntityContentLength = 1000L;
             EntityCompressionType = ResponseCompressionType.GZip;
             ResponseCompressionType = ResponseCompressionType.None;
         }
@@ -186,7 +186,7 @@ namespace Talifun.Web.Tests.Http
         protected override void Given()
         {
             EntityContentType = "";
-            EntityContentLength = 1000l;
+            EntityContentLength = 1000L;
             EntityCompressionType = ResponseCompressionType.GZip;
             ResponseCompressionType = ResponseCompressionType.GZip;
         }
@@ -222,7 +222,7 @@ namespace Talifun.Web.Tests.Http
         {
             RecordAnyExceptionsThrown();
             EntityContentType = "";
-            EntityContentLength = 1000l;
+            EntityContentLength = 1000L;
             EntityCompressionType = ResponseCompressionType.GZip;
             ResponseCompressionType = ResponseCompressionType.Deflate;
         }
@@ -240,7 +240,7 @@ namespace Talifun.Web.Tests.Http
         {
             RecordAnyExceptionsThrown();
             EntityContentType = "";
-            EntityContentLength = 1000l;
+            EntityContentLength = 1000L;
             EntityCompressionType = ResponseCompressionType.Deflate;
             ResponseCompressionType = ResponseCompressionType.None;
         }
@@ -258,7 +258,7 @@ namespace Talifun.Web.Tests.Http
         {
             RecordAnyExceptionsThrown();
             EntityContentType = "";
-            EntityContentLength = 1000l;
+            EntityContentLength = 1000L;
             EntityCompressionType = ResponseCompressionType.Deflate;
             ResponseCompressionType = ResponseCompressionType.GZip;
         }
@@ -275,7 +275,7 @@ namespace Talifun.Web.Tests.Http
         protected override void Given()
         {
             EntityContentType = "";
-            EntityContentLength = 1000l;
+            EntityContentLength = 1000L;
             EntityCompressionType = ResponseCompressionType.Deflate;
             ResponseCompressionType = ResponseCompressionType.Deflate;
         }

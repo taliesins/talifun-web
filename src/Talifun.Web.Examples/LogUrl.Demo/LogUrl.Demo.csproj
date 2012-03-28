@@ -17,6 +17,7 @@
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation />
     <TargetFrameworkProfile />
+    <UseIISExpress>false</UseIISExpress>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -70,19 +71,18 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Talifun.Web\Talifun.Web.csproj">
-      <Project>{FB8D10A5-40A2-44B0-A30F-1B316B5AFC34}</Project>
-      <Name>Talifun.Web</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="..\..\Talifun.Web\LogUrl\Config\Talifun.Web.LogUrl.xsd">
       <Link>Talifun.Web.LogUrl.xsd</Link>
       <SubType>Designer</SubType>
     </None>
     <None Include="test.pdf" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\..\Talifun.Web\Talifun.Web.csproj">
+      <Project>{FB8D10A5-40A2-44B0-A30F-1B316B5AFC34}</Project>
+      <Name>Talifun.Web</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

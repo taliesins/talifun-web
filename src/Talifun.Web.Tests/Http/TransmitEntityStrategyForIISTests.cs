@@ -34,8 +34,8 @@ namespace Talifun.Web.Tests.Http
             var entity = MockRepository.GenerateMock<IEntity>();
             var filename = "test.zip";
 
-            var offset = 2l;
-            var length = 2l;
+            var offset = 2L;
+            var length = 2L;
 
             httpResponse.Stub(x => x.TransmitFile(filename, offset, length));
 

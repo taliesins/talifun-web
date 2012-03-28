@@ -19,11 +19,11 @@ namespace Talifun.Web.Tests.Http
             var httpResponseHeaderHelper = MockRepository.GenerateMock<IHttpResponseHeaderHelper>();
             var entity = MockRepository.GenerateMock<IEntity>();
             var responseCompressionType = ResponseCompressionType.None;
-            var entityLength = 1000l;
+            var entityLength = 1000L;
             var entityCompressionType = ResponseCompressionType.None;
 
-            var startRange = 0l;
-            var endRange = 499l;
+            var startRange = 0L;
+            var endRange = 499L;
             var rangeItem = new RangeItem
             {
                 StartRange = startRange,
@@ -56,8 +56,8 @@ namespace Talifun.Web.Tests.Http
             var entity = MockRepository.GenerateMock<IEntity>();
             var responseCompressionType = ResponseCompressionType.GZip;
 
-            var startRange = 0l;
-            var endRange = 499l;
+            var startRange = 0L;
+            var endRange = 499L;
             var rangeItem = new RangeItem
             {
                 StartRange = startRange,
@@ -90,8 +90,8 @@ namespace Talifun.Web.Tests.Http
             var entity = MockRepository.GenerateMock<IEntity>();
             var responseCompressionType = ResponseCompressionType.Deflate;
 
-            var startRange = 0l;
-            var endRange = 499l;
+            var startRange = 0L;
+            var endRange = 499L;
             var rangeItem = new RangeItem
             {
                 StartRange = startRange,
@@ -126,8 +126,8 @@ namespace Talifun.Web.Tests.Http
             var entityCompressionType = ResponseCompressionType.GZip;
             var responseCompressionType = ResponseCompressionType.None;
 
-            var startRange = 0l;
-            var endRange = 499l;
+            var startRange = 0L;
+            var endRange = 499L;
             var rangeItem = new RangeItem
             {
                 StartRange = startRange,
@@ -152,8 +152,8 @@ namespace Talifun.Web.Tests.Http
             var entityCompressionType = ResponseCompressionType.GZip;
             var responseCompressionType = ResponseCompressionType.Deflate;
 
-            var startRange = 0l;
-            var endRange = 499l;
+            var startRange = 0L;
+            var endRange = 499L;
             var rangeItem = new RangeItem
             {
                 StartRange = startRange,
@@ -178,8 +178,8 @@ namespace Talifun.Web.Tests.Http
             var entityCompressionType = ResponseCompressionType.Deflate;
             var responseCompressionType = ResponseCompressionType.None;
 
-            var startRange = 0l;
-            var endRange = 499l;
+            var startRange = 0L;
+            var endRange = 499L;
             var rangeItem = new RangeItem
             {
                 StartRange = startRange,
@@ -204,8 +204,8 @@ namespace Talifun.Web.Tests.Http
             var entityCompressionType = ResponseCompressionType.Deflate;
             var responseCompressionType = ResponseCompressionType.GZip;
 
-            var startRange = 0l;
-            var endRange = 499l;
+            var startRange = 0L;
+            var endRange = 499L;
             var rangeItem = new RangeItem
             {
                 StartRange = startRange,
@@ -231,8 +231,8 @@ namespace Talifun.Web.Tests.Http
             var transmitEntityStrategy = MockRepository.GenerateMock<ITransmitEntityStrategy>();
             var requestHttpMethod = HttpMethod.Get;
 
-            var startRange = 0l;
-            var endRange = 499l;
+            var startRange = 0L;
+            var endRange = 499L;
             var rangeItem = new RangeItem
             {
                 StartRange = startRange,
@@ -257,8 +257,8 @@ namespace Talifun.Web.Tests.Http
             var transmitEntityStrategy = MockRepository.GenerateMock<ITransmitEntityStrategy>();
             var requestHttpMethod = HttpMethod.Head;
 
-            var startRange = 0l;
-            var endRange = 499l;
+            var startRange = 0L;
+            var endRange = 499L;
             var rangeItem = new RangeItem
             {
                 StartRange = startRange,
@@ -284,8 +284,8 @@ namespace Talifun.Web.Tests.Http
             var transmitEntityStrategy = MockRepository.GenerateMock<ITransmitEntityStrategy>();
             var requestHttpMethod = HttpMethod.Options;
 
-            var startRange = 0l;
-            var endRange = 499l;
+            var startRange = 0L;
+            var endRange = 499L;
             var rangeItem = new RangeItem
             {
                 StartRange = startRange,

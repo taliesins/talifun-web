@@ -44,8 +44,8 @@ namespace Talifun.Web.Tests.Http
             var entityData = Encoding.ASCII.GetBytes(text);
             var stream = new MemoryStream(entityData);
 
-            var offset = 2l;
-            var length = 2l;
+            var offset = 2L;
+            var length = 2L;
 
             var outputStream = new MemoryStream();
             httpResponse.Stub(x => x.OutputStream).Return(outputStream);

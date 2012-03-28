@@ -83,8 +83,8 @@ namespace Talifun.Web.Tests.Http
             var entity = MockRepository.GenerateMock<IEntity>();
             var fileInfo = MockRepository.GenerateMock<FileInfo>();
             var bufferSize = 50;
-            var offset = 5l;
-            var length = 10l;
+            var offset = 5L;
+            var length = 10L;
 
             var text = "123456789012345678901234567890";
             var byteArray = Encoding.ASCII.GetBytes(text);
@@ -124,8 +124,8 @@ namespace Talifun.Web.Tests.Http
             var entity = MockRepository.GenerateMock<IEntity>();
             var fileInfo = MockRepository.GenerateMock<FileInfo>();
             var bufferSize = 2;
-            var offset = 5l;
-            var length = 10l;
+            var offset = 5L;
+            var length = 10L;
 
             var text = "123456789012345678901234567890";
             var byteArray = Encoding.ASCII.GetBytes(text);

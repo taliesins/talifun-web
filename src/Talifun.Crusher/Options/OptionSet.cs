@@ -348,7 +348,9 @@ namespace Talifun.Crusher.Options
             bool process = true;
             OptionContext c = CreateOptionContext();
             c.OptionIndex = -1;
+// ReSharper disable CSharpWarnings::CS0612
             var def = GetOptionForName("<>");
+// ReSharper restore CSharpWarnings::CS0612
             var unprocessed =
                 from argument in arguments
                 where ++c.OptionIndex >= 0 && (process || def != null)
