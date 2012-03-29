@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talifun.Web.Mvc", "src\Tali
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talifun.Web.UrlRewriter", "src\Talifun.Web.UrlRewriter\Talifun.Web.UrlRewriter.csproj", "{43D2AC34-0EEA-4A82-B907-80D4CBDD63A1}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Talifun.Web Examples", "src\Talifun.Web Examples", "{E40C6C03-83CA-4590-84EF-90FCB8253463}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Talifun.Web Examples", "Talifun.Web Examples", "{E40C6C03-83CA-4590-84EF-90FCB8253463}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compress.Demo", "src\Talifun.Web.Examples\Compress.Demo\Compress.Demo.csproj", "{F4AB8CB0-90E3-46D6-93E1-8C796F388E68}"
 EndProject
@@ -25,7 +25,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StaticFileGenericHandler.De
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IpAddressAuthentication.Demo", "src\Talifun.Web.Examples\IpAddressAuthentication.Demo\IpAddressAuthentication.Demo.csproj", "{F9590CD0-6DF8-4393-855C-6ABC56DAB6F6}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Talifun.Web.Mvc Examples", "src\Talifun.Web.Mvc Examples", "{CFF647EC-A72D-4D59-B3FD-250894F85E59}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Talifun.Web.Mvc Examples", "Talifun.Web.Mvc Examples", "{CFF647EC-A72D-4D59-B3FD-250894F85E59}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StaticFile.Demo", "src\Talifun.Web.Mvc.Examples\StaticFile.Demo\StaticFile.Demo.csproj", "{25C56455-C2FF-4C1F-801D-496AF186D1C3}"
 EndProject
