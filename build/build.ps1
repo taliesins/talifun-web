@@ -24,8 +24,8 @@ properties {
   # and will not have access to any of your shared properties.
 }
 
-Task Default -depends Initialize, Compile, Test
-Task Release -depends Default, Package
+Task Default -depends Initialize, Compile, Test, Package
+Task Release -depends Default
 Task Deploy -depends Publish
 
 Task Test { 
@@ -55,7 +55,6 @@ Task Publish -Depends Package {
 }
 
 Task Package -Depends Create-NuGetPackage {
-  
 }
 
 Task ? -Description "Helper to display task info" {

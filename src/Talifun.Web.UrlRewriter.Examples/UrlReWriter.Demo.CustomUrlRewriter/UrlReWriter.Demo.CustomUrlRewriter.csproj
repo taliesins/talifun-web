@@ -42,7 +42,7 @@
   <ItemGroup>
     <Reference Include="Intelligencia.UrlRewriter, Version=2.0.0.3, Culture=neutral, PublicKeyToken=0573f3650687980d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Talifun.Web.UrlRewriter.References\Intelligencia.UrlRewriter.dll</HintPath>
+      <HintPath>..\..\..\lib\Intelligencia.UrlRewriter.dll</HintPath>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>

@@ -74,7 +74,7 @@ Task Publish-NuGetPackage {
 Task Set-NuSpecVersion {
   Assert (![string]::IsNullOrEmpty($nuget.target) -and (Test-Path($nuget.target))) "The location of the nuspec file must be specified."
 
-  $version_pattern = "<version>\d*\.\d*\.\d*</version>"   # 3 digit for semver
+  $version_pattern = "<version>\d*\.\d*\.\d*.\d*</version>"   # 3 digit for semver
   $content = Get-Content $nuget.target | % { [Regex]::Replace($_, $version_pattern, "<version>$($build.version)</version>") } 
   Set-Content -Value $content -Path $nuget.target
 }

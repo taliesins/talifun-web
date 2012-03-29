@@ -18,7 +18,7 @@ function script:BootStrap-Chewie {
   if(!(test-path $pwd\.NugetFile)) {
     new-item -path $pwd -name .NugetFile -itemtype file
     add-content $pwd\.NugetFile "install_to '.'"
-    add-content $pwd\.NugetFile "chew 'psake' '4.0.1.0'"
+    add-content $pwd\.NugetFile "chew 'psake' '4.1.0'"
   }
 }
 

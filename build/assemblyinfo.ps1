@@ -11,7 +11,7 @@ properties {
   # You can also override the version pattern to "\d*\.\d*\.\d*\.\d*" if you want 4 digit
   $assemblyinfo = @{}
   $assemblyinfo.dir = "$($source.dir)"
-  $assemblyinfo.version_pattern = "\d*\.\d*\.\d*"   # 3 digit for semver
+  $assemblyinfo.version_pattern = "\d*\.\d*\.\d*.\d*"   # 3 digit for semver
   $assemblyinfo.file = "GlobalAssemblyInfo.cs"
   $assemblyinfo.contents = @"
 using System.Reflection;
