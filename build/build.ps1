@@ -25,7 +25,7 @@ properties {
 }
 
 Task Default -depends Initialize, Compile, Test
-Task Release -depends Default #, Package
+Task Release -depends Default, Package
 Task Deploy -depends Publish
 
 Task Test { 
