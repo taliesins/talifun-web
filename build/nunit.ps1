@@ -23,5 +23,8 @@ function Invoke-TestRunner {
      Write-Output "No tests defined"
      return 
   }
-  exec { & $nunit.runner $dlls /noshadow }
+
+  $testOutput = $build.dir + '\test-results.xml'
+
+  exec { & $nunit.runner $dlls /noshadow /framework=net-4.0 /xml=$testOutput}
 }
