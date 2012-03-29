@@ -24,7 +24,7 @@ properties {
   # and will not have access to any of your shared properties.
 }
 
-Task Default -depends Initialize, Compile
+Task Default -depends Initialize, Compile, Test
 Task Release -depends Default #, Package
 Task Deploy -depends Publish
 
