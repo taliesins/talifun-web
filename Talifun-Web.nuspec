@@ -21,6 +21,5 @@
   </metadata>
   <files>
 	<file src="bin\Talifun.Web.dll" target="lib" /> 
-	<file src="bin\Talifun.Web.Mvc.dll" target="lib" /> 
   </files>  
 </package>
