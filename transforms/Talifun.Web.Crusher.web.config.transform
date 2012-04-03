@@ -22,7 +22,7 @@
 		</cssGroups>
 		<!-- outputFilePath is the identifier for the jsGroup, so make sure its unique for each jsGroup  -->
 		<jsGroups>
-			<!-- Js group to demo the crushing  -->
+			<!-- Js group to crush  -->
 			<!--
 			<jsGroup name="SiteJs" debug="false" outputFilePath="~/Scripts/crushed.site.js">
 					<files>
@@ -44,7 +44,10 @@
 	<system.web>
 		<pages>
 			<controls>
+				<!-- If you want to use a web controls instead of calling CrusherHelper in the view -->
+				<!--
 				<add tagPrefix="talifun" namespace="Talifun.Web.Crusher" assembly="Talifun.Web"/>
+				-->
 			</controls>
 		</pages>
 		<httpModules>
