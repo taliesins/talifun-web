@@ -10,9 +10,14 @@ namespace Talifun.Web.Crusher
         protected string ApplicationPath;
         protected string PhysicalApplicationPath;
 
-        public PathProvider() : this("/", Environment.CurrentDirectory)
+        public PathProvider()
+            : this("/", GetPhysicalApplicationPath())
         {
-            
+        }
+
+        private static string GetPhysicalApplicationPath()
+        {
+            return !string.IsNullOrEmpty(HostingEnvironment.ApplicationPhysicalPath) ? HostingEnvironment.ApplicationPhysicalPath : Environment.CurrentDirectory;
         }
 
         public PathProvider(string applicationPath, string physicalApplicationPath)
