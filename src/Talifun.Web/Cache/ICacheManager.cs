@@ -15,6 +15,7 @@ namespace Talifun.Web
             TimeSpan slidingExpiration,
             CacheItemPriority priority,
             CacheItemRemovedCallback onRemoveCallback) where T : class;
+
         T Remove<T>(string key) where T : class;
     }
 }

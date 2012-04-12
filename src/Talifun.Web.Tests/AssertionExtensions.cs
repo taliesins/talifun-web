@@ -33,6 +33,7 @@ namespace Talifun.Web.Tests
         {
             Assert.That(target, Has.Count.EqualTo(expectedCount));
         }
+
         public static void ShouldContain(this string target, string expectedString)
         {
             Assert.That(target.Contains(expectedString));

@@ -14,7 +14,7 @@ namespace Talifun.Web.Compress
     /// <summary>
     /// A Module that replace the System.Web.Handlers.AssemblyResourceLoader handler for better performance and 
     /// supporting compression (gzip & deflate).
-    /// This module will noly handle WebResource files (with any content)
+    /// This module will only handle WebResource files (with any content)
     /// </summary>
     public class WebResourceCompressionModule : HttpModuleBase
     {

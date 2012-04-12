@@ -15,7 +15,7 @@ namespace Talifun.Web.CssSprite
     /// </summary>
     public sealed class CssSpriteManager : IDisposable
     {
-        private readonly int BufferSize = 32768;
+        private const int BufferSize = 32768;
         private readonly CssSpriteGroupElementCollection _cssSpriteGroups = CurrentCssSpriteConfiguration.Current.CssSpriteGroups;
         private readonly ICacheManager _cacheManager;
         private readonly ICssSpriteCreator _cssSpriteCreator;
