@@ -1,15 +1,24 @@
 Talifun-Web
 ===========
 # Status
-Stable. It is implemented successfully in a few large ecommerce organization's web applications. One installation has 50+ web servers in a web farm. 
+Stable. It is implemented successfully in a number of large ecommerce organization's web applications. One installation has 50+ web servers in a web farm. 
 
 # LICENSE
 Apache 2.0 - see LICENSE.txt
 
 # RESOURCES
+## Help
+Homepage: [http://www.talifun.com/products/talifun-web/](http://www.talifun.com/products/talifun-web/)
+Documentation: [http://www.talifun.com/products/talifun-web/](http://www.talifun.com/products/talifun-web/)
+Forum: [http://www.talifun.com/products/talifun-web/](http://www.talifun.com/products/talifun-web/)
+
 ## Source
-1. Homepage: [http://code.google.com/p/talifun-web](http://code.google.com/p/talifun-web)
-2. Clone to repository locally: `git clone git@github.com:taliesins/talifun-web.git`
+Clone to repository locally: `git clone git@github.com:taliesins/talifun-web.git`
 
 ## Build
-* Open the Talifun.Web.sln solution and explore!
+Run build.cmd
+
+## Nuget
+Install assembly: [https://nuget.org/packages/Talifun.Web](https://nuget.org/packages/Talifun.Web)
+Install Crusher Module with web.config transform: [https://nuget.org/packages/Talifun.Web.Crusher](https://nuget.org/packages/Talifun.Web.Crusher)
+Install Css Sprite Module with web.config transform: [https://nuget.org/packages/Talifun.Web.CssSprite](https://nuget.org/packages/Talifun.Web.CssSprite)
