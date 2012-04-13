@@ -1,0 +1,70 @@
+<configuration>
+	<configSections>
+		<section name="Crusher" type="Talifun.Web.Crusher.Config.CrusherSection, Talifun.Web" requirePermission="false" allowDefinition="MachineToApplication"/>
+	</configSections>
+	<Crusher querystringKeyName="etag">
+		<!-- outputFilePath is the identifier for the cssGroup, so make sure its unique for each cssGroup  -->
+		<cssGroups>
+			<!-- Css group to crush -->
+			<!--
+			<cssGroup name="SiteCss" debug="false" appendHash="true" outputFilePath="~/Content/Css/crushed.site.css">
+				<files>
+					<file name="Default" filePath="~/Content/Css/site.css" compressionType="Hybrid" />
+					<file name="JQueryUI" filePath="~/Content/Css/base/jquery.ui.all.css" compressionType="Hybrid" />
+				</files>
+			</cssGroup>
+			<cssGroup name="PrintSiteCss" Media="print" debug="false" appendHash="true" outputFilePath="~/Content/Css/crushed.print.site.css">
+				<files>
+					<file name="Default" filePath="~/Content/Css/print.site.css" compressionType="Hybrid" />
+				</files>
+			</cssGroup>
+			-->
+		</cssGroups>
+		<!-- outputFilePath is the identifier for the jsGroup, so make sure its unique for each jsGroup  -->
+		<jsGroups>
+			<!-- Js group to crush  -->
+			<!--
+			<jsGroup name="SiteJs" debug="false" outputFilePath="~/Scripts/crushed.site.js">
+					<files>
+							<file name="JQuery" filePath="~/Scripts/jquery-1.5.1.js" compressionType="Min"/>
+							<file name="JQueryUI" filePath="~/Scripts/jquery-ui-1.8.11.js" compressionType="Min"/>
+							<file name="JQueryUnobtrusiveAjax" filePath="~/Scripts/jquery.unobtrusive-ajax.js" compressionType="Min"/>
+							<file name="JQueryValidate" filePath="~/Scripts/jquery.validate.js" compressionType="Min"/>
+							<file name="JQueryValidateUnobtrusive" filePath="~/Scripts/jquery.validate.unobtrusive.js" compressionType="Min"/>
+							<file name="Modernizr" filePath="~/Scripts/modernizr-1.7.js" compressionType="Min"/>
+							
+							<file name="MicrosoftAjax" filePath="~/Scripts/MicrosoftAjax.debug.js" compressionType="Min"/>
+							<file name="MicrosoftMvcAjax" filePath="~/Scripts/MicrosoftMvcAjax.debug.js" compressionType="Min"/>
+							<file name="MicrosoftMvcValidation" filePath="~/Scripts/MicrosoftMvcValidation.debug.js" compressionType="Min"/>
+					</files>
+			</jsGroup>
+			-->
+		</jsGroups>
+	</Crusher>
+	<system.web>
+		<pages>
+			<controls>
+				<!-- If you want to use a web controls instead of calling CrusherHelper in the view -->
+				<!--
+				<add tagPrefix="talifun" namespace="Talifun.Web.Crusher" assembly="Talifun.Web"/>
+				-->
+			</controls>
+		</pages>
+		<httpModules>
+			<!-- Only recommended when doing local development or using a CMS thats allows people to change stylesheets
+			rather use Talifun.Crusher.exe as part of your build script -->
+			<!--
+			<add name="CrusherModule" type="Talifun.Web.Crusher.CrusherModule, Talifun.Web"/>
+			-->
+		</httpModules>
+	</system.web>
+	<system.webServer>
+		<modules>
+			<!-- Only recommended when doing local development or using a CMS thats allows people to change stylesheets
+			rather use Talifun.Crusher.exe as part of your build script -->
+			<!--
+			<add name="CrusherModule" type="Talifun.Web.Crusher.CrusherModule, Talifun.Web" />
+			-->
+		</modules>
+	</system.webServer>
+</configuration>

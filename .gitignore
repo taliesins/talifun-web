@@ -5,7 +5,16 @@
 *.sln.cache
 *.suo
 *.csproj.user
+*.TeamCity.user
+*.DotSettings.user
 
 # Resharper
 *[Rr]e[Ss]harper.user
 _ReSharper.*/
+bin/
+/src/Talifun.Web.Examples/Crusher.Demo/Static/debug-site.css
+/src/Talifun.Web.Examples/Crusher.Demo/Static/debug-site.js
+/src/Talifun.Web.Examples/Crusher.Demo/Static/site.css
+/src/Talifun.Web.Examples/Crusher.Demo/Static/site.js
+/src/Talifun.Web.Examples/Crusher.Demo/Static/url-site.css
+/src/Talifun.Web.Examples/Crusher.Demo/Static/url-site.js

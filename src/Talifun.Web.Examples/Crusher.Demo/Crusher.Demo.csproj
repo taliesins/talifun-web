@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0F576746-2042-433F-8543-FCB9321FDEF0}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Crusher.Demo</RootNamespace>
+    <AssemblyName>Crusher.Demo</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <TargetFrameworkProfile />
+    <UseIISExpress>false</UseIISExpress>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Web.Extensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Web.Mobile" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="CrushedPage.aspx" />
+    <Content Include="DebugCrushedPage.aspx" />
+    <Content Include="Default.aspx" />
+    <Content Include="Static\Css\default.css" />
+    <Content Include="Static\Css\jquery\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Static\Css\jquery\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Static\Css\jquery\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Static\Css\jquery\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Static\Css\jquery\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Static\Css\jquery\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Static\Css\jquery\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Static\Css\jquery\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Static\Css\jquery\images\ui-icons_222222_256x240.png" />
+    <Content Include="Static\Css\jquery\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Static\Css\jquery\images\ui-icons_454545_256x240.png" />
+    <Content Include="Static\Css\jquery\images\ui-icons_888888_256x240.png" />
+    <Content Include="Static\Css\jquery\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Static\Css\jquery\jquery-ui-1.8.7.css" />
+    <Content Include="Static\Css\test.less.css" />
+    <Content Include="Static\Js\additional-validation-methods.min.js" />
+    <Content Include="Static\Js\jquery-1.4.4.min.js" />
+    <Content Include="Static\Js\jquery-ui-1.8.7.min.js" />
+    <Content Include="Static\Js\jquery.flash.min.js" />
+    <Content Include="Static\Js\jquery.validate.min.js" />
+    <Content Include="Static\Js\test.js" />
+    <Content Include="UncrushedPage.aspx" />
+    <Content Include="UrlCrushedPage.aspx" />
+    <Content Include="Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Talifun.Web\Crusher\Config\Talifun.Web.Crusher.xsd">
+      <Link>Talifun.Web.Crusher.xsd</Link>
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Talifun.Web\Talifun.Web.csproj">
+      <Project>{FB8D10A5-40A2-44B0-A30F-1B316B5AFC34}</Project>
+      <Name>Talifun.Web</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>4162</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>
+          </IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>
