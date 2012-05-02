@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Web;
 using System.Web.Caching;
 using System.Web.Hosting;
 using System.Web.UI;
@@ -79,7 +80,19 @@ namespace Talifun.Web.Crusher
                 {
                     var fileInfo = new FileInfo(MapPath(outputFilePath));
                     var etag = Hasher.CalculateMd5Etag(fileInfo);
-                    var url = string.IsNullOrEmpty(cssGroup.Url) ? this.ResolveUrl(outputFilePath) : cssGroup.Url;
+					var url = cssGroup.Url;
+
+					if (string.IsNullOrEmpty(url))
+					{
+						url = this.ResolveUrl(outputFilePath);
+					}
+					else
+					{
+						if (HttpContext.Current != null && url.StartsWith("//", StringComparison.InvariantCultureIgnoreCase))
+						{
+							url = HttpContext.Current.Request.Url.Scheme + ":" + url;
+						}
+					}
 
                     scriptLinks = "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + url + "?" + QuerystringKeyName + "=" + etag + "\" media=\"" + cssGroup.Media + "\" />";
                 }
@@ -129,6 +142,18 @@ namespace Talifun.Web.Crusher
                     var fileInfo = new FileInfo(MapPath(outputFilePath));
                     var etag = Hasher.CalculateMd5Etag(fileInfo);
                     var url = string.IsNullOrEmpty(jsGroup.Url) ? this.ResolveUrl(outputFilePath) : jsGroup.Url;
+
+					if (string.IsNullOrEmpty(url))
+					{
+						url = this.ResolveUrl(outputFilePath);
+					}
+					else
+					{
+						if (HttpContext.Current != null && url.StartsWith("//", StringComparison.InvariantCultureIgnoreCase))
+						{
+							url = HttpContext.Current.Request.Url.Scheme + ":" + url;
+						}
+					}
 
                     scriptLinks = "<script language=\"javascript\" type=\"text/javascript\" src=\"" + url + "?" + QuerystringKeyName + "=" + etag + "\"></script>";
                 }
