@@ -75,6 +75,9 @@
     <Reference Include="System.Web.Abstractions" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.Xml" />
+    <Reference Include="Talifun.FileWatcher">
+      <HintPath>..\..\packages\Talifun.FileWatcher.1.0.0.0\lib\net40\Talifun.FileWatcher.dll</HintPath>
+    </Reference>
     <Reference Include="Yahoo.Yui.Compressor">
       <HintPath>..\..\packages\YUICompressor.NET.1.7.1.0\lib\net35\Yahoo.Yui.Compressor.dll</HintPath>
     </Reference>
@@ -83,6 +86,12 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Crusher\Config\JsDirectoryElementCollection.cs" />
+    <Compile Include="Crusher\Config\JsDirectoryElement.cs" />
+    <Compile Include="Crusher\Config\CssDirectoryElementCollection.cs" />
+    <Compile Include="Crusher\Config\CssDirectoryElement.cs" />
+    <Compile Include="Crusher\JsDirectory.cs" />
+    <Compile Include="Crusher\CssDirectory.cs" />
     <Compile Include="Crusher\CrusherHelper.cs" />
     <Compile Include="Crusher\CssFileToWatch.cs" />
     <Compile Include="Crusher\JsFileToWatch.cs" />

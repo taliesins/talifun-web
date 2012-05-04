@@ -5,9 +5,9 @@ using Talifun.Web.Configuration;
 namespace Talifun.Web.Crusher.Config
 {
     /// <summary>
-    /// Represents the configuration for a css directory element.
+    /// Represents the configuration for a css file element.
     /// </summary>
-    public sealed class CssFileElement : NamedConfigurationElement
+    public sealed class CssDirectoryElement : NamedConfigurationElement
     {
         private static ConfigurationPropertyCollection properties = new ConfigurationPropertyCollection();
         private static readonly ConfigurationProperty name = new ConfigurationProperty("name", typeof(string), null, ConfigurationPropertyOptions.IsRequired);
@@ -18,7 +18,7 @@ namespace Talifun.Web.Crusher.Config
         /// Initializes the <see cref="CssFileElement"/> class.
         /// </summary>
         [SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
-        static CssFileElement()
+        static CssDirectoryElement()
         {
             properties.Add(name);
             properties.Add(filePath);

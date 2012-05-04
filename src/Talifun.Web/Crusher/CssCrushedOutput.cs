@@ -7,6 +7,7 @@ namespace Talifun.Web.Crusher
     public class CssCrushedOutput
     {
         public StringBuilder Output { get; set; }
+		public IEnumerable<CssFileToWatch> FilesToWatch { get; set; }
         public IEnumerable<FileInfo> CssAssetFilePaths { get; set; }
     }
 }

@@ -29,42 +29,42 @@ namespace Talifun.Web.Crusher
             RetryableFileWriter = retryableFileWriter;
         }
 
-        /// <summary>
-        /// Add js files to be crushed.
-        /// </summary>
-        /// <param name="outputUri">The virtual path for the crushed js file.</param>
-        /// <param name="files">The js files to be crushed.</param>
-        /// 
-        public virtual void AddFiles(Uri outputUri, IEnumerable<JsFile> files)
+    	/// <summary>
+    	/// Add js files to be crushed.
+    	/// </summary>
+    	/// <param name="outputUri">The virtual path for the crushed js file.</param>
+    	/// <param name="files">The js files to be crushed.</param>
+    	/// <param name="directories">The js directories to be crushed. </param>
+    	public virtual void AddGroup(Uri outputUri, IEnumerable<JsFile> files, IEnumerable<JsDirectory> directories)
         {
             var outputFileInfo = new FileInfo(PathProvider.MapPath(outputUri));
-            var crushedContent = ProcessFiles(outputFileInfo, files);
+			var crushedContent = ProcessGroup(outputFileInfo, files, directories);
             
             RetryableFileWriter.SaveContentsToFile(crushedContent.Output, outputFileInfo);
-            AddFilesToCache(outputUri, files);
+            AddGroupToCache(outputUri, crushedContent.FilesToWatch, files, directories);
         }
 
-        private IEnumerable<JsFileToWatch> GetFiles(JsFile jsFile)
+		private IEnumerable<JsFileToWatch> GetFilesToWatch(IEnumerable<JsFile> files, IEnumerable<JsDirectory> directories)
         {
-            var temp = new[] {jsFile};
-            return temp.Select(x=> new JsFileToWatch()
-                                       {
-                                           CompressionType = x.CompressionType,
-                                           FilePath = x.FilePath
-                                       });
+			return files.Select(x => new JsFileToWatch()
+            {
+                CompressionType = x.CompressionType,
+                FilePath = x.FilePath
+            });
         }
 
-        /// <summary>
-        /// Compress the js files and store them in the specified js file.
-        /// </summary>
-        /// <param name="outputFileInfo">The output path for the crushed js file.</param>
-        /// <param name="files">The js files to be crushed.</param>
-        public virtual JsCrushedOutput ProcessFiles(FileInfo outputFileInfo, IEnumerable<JsFile> files)
+    	/// <summary>
+    	/// Compress the js files and store them in the specified js file.
+    	/// </summary>
+    	/// <param name="outputFileInfo">The output path for the crushed js file.</param>
+    	/// <param name="files">The js files to be crushed.</param>
+    	/// <param name="directories"> </param>
+    	public virtual JsCrushedOutput ProcessGroup(FileInfo outputFileInfo, IEnumerable<JsFile> files, IEnumerable<JsDirectory> directories)
         {
             var uncompressedContents = new StringBuilder();
             var toBeCompressedContents = new StringBuilder();
 
-            var filesToWatch = files.SelectMany(GetFiles);
+    		var filesToWatch = GetFilesToWatch(files, directories);
 
             var filesToProcess = filesToWatch.Select(jsFile => new JsFileProcessor(RetryableFileOpener, PathProvider, jsFile.FilePath, jsFile.CompressionType));
             foreach (var fileToProcess in filesToProcess)
@@ -85,7 +85,11 @@ namespace Talifun.Web.Crusher
                 uncompressedContents.Append(JavaScriptCompressor.Compress(toBeCompressedContents.ToString()));
             }
 
-            var crushedOutput = new JsCrushedOutput {Output = uncompressedContents};
+            var crushedOutput = new JsCrushedOutput
+            {
+                Output = uncompressedContents,
+				FilesToWatch = filesToWatch
+            };
 
             return crushedOutput;
         }
@@ -94,34 +98,38 @@ namespace Talifun.Web.Crusher
         /// Remove all js files from being crushed
         /// </summary>
         /// <param name="outputUri">The path for the crushed js file</param>
-        public virtual void RemoveFiles(Uri outputUri)
+        public virtual void RemoveGroup(Uri outputUri)
         {
             CacheManager.Remove<JsCacheItem>(GetKey(outputUri));
         }
 
-        /// <summary>
-        /// Add the js files to the cache so that they are monitored for any changes.
-        /// </summary>
-        /// <param name="outputUri">The path for the crushed js file.</param>
-        /// <param name="jsFiles">The js files to be crushed.</param>
-        public virtual void AddFilesToCache(Uri outputUri, IEnumerable<JsFile> jsFiles)
+    	/// <summary>
+    	/// Add the js files to the cache so that they are monitored for any changes.
+    	/// </summary>
+    	/// <param name="outputUri">The path for the crushed js file.</param>
+    	/// <param name="filesToWatch">Files that are crushed.</param>
+    	/// <param name="files">The js files to be crushed.</param>
+    	/// <param name="directories">The js directories to be crushed.</param>
+    	public virtual void AddGroupToCache(Uri outputUri, IEnumerable<JsFileToWatch> filesToWatch, IEnumerable<JsFile> files, IEnumerable<JsDirectory> directories)
         {
             var fileNames = new List<string>
-                                {
-                                     PathProvider.MapPath(outputUri)
-                                };
+            {
+                    PathProvider.MapPath(outputUri)
+            };
 
-            fileNames.AddRange(jsFiles.Select(file => PathProvider.MapPath(file.FilePath)));
+			fileNames.AddRange(filesToWatch.Select(file => PathProvider.MapPath(file.FilePath)));
 
-            var jsCacheItem = new JsCacheItem()
-                                  {
-                                      OutputUri = outputUri,
-                                      JsFiles = jsFiles
-                                  };
+            var cacheItem = new JsCacheItem()
+            {
+                OutputUri = outputUri,
+				FilesToWatch = filesToWatch,
+                Files = files,
+				Directories = directories
+            };
 
             CacheManager.Insert(
                 GetKey(outputUri),
-                jsCacheItem,
+                cacheItem,
                 new CacheDependency(fileNames.ToArray(), System.DateTime.Now),
                 Cache.NoAbsoluteExpiration,
                 Cache.NoSlidingExpiration,
@@ -139,15 +147,15 @@ namespace Talifun.Web.Crusher
         /// <param name="reason">The reason the file was removed from cache.</param>
         public virtual void FileRemoved(string key, object value, CacheItemRemovedReason reason)
         {
-            var jsCacheItem = (JsCacheItem)value;
+            var cacheItem = (JsCacheItem)value;
             switch (reason)
             {
                 case CacheItemRemovedReason.DependencyChanged:
-                    AddFiles(jsCacheItem.OutputUri, jsCacheItem.JsFiles);
+                    AddGroup(cacheItem.OutputUri, cacheItem.Files, cacheItem.Directories);
                     break;
                 case CacheItemRemovedReason.Underused:
                 case CacheItemRemovedReason.Expired:
-                    AddFilesToCache(jsCacheItem.OutputUri, jsCacheItem.JsFiles);
+                    AddGroupToCache(cacheItem.OutputUri, cacheItem.FilesToWatch, cacheItem.Files, cacheItem.Directories);
                     break;
             }
         }

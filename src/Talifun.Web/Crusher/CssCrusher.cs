@@ -30,39 +30,40 @@ namespace Talifun.Web.Crusher
             CssPathRewriter = cssPathRewriter;
         }
 
-        /// <summary>
-        /// Add css files to be crushed.
-        /// </summary>
-        /// <param name="outputUri">The virtual path for the crushed css file.</param>
-        /// <param name="cssFiles">The css files to be crushed.</param>
-        /// <param name="appendHashToAssets">Should css assets have a hash appended to them.</param>
-        public virtual void AddFiles(Uri outputUri, IEnumerable<CssFile> cssFiles, bool appendHashToAssets)
+    	/// <summary>
+    	/// Add css files to be crushed.
+    	/// </summary>
+    	/// <param name="outputUri">The virtual path for the crushed css file.</param>
+    	/// <param name="files">The css files to be crushed.</param>
+    	/// <param name="directories"> </param>
+    	/// <param name="appendHashToAssets">Should css assets have a hash appended to them.</param>
+    	public virtual void CreateGroup(Uri outputUri, IEnumerable<CssFile> files, IEnumerable<CssDirectory> directories, bool appendHashToAssets)
         {
             var outputFileInfo = new FileInfo(PathProvider.MapPath(outputUri));
-            var crushedContent = ProcessFiles(outputFileInfo, outputUri, cssFiles, appendHashToAssets);
+            var crushedContent = ProcessGroup(outputFileInfo, outputUri, files, directories, appendHashToAssets);
             
             RetryableFileWriter.SaveContentsToFile(crushedContent.Output, outputFileInfo);
-            AddFilesToCache(outputUri, cssFiles, crushedContent.CssAssetFilePaths);
+			AddGroupToCache(outputUri, crushedContent.FilesToWatch, crushedContent.CssAssetFilePaths, files, directories);
         }
 
-        private IEnumerable<CssFileToWatch> GetFiles(CssFile cssFile)
+		private IEnumerable<CssFileToWatch> GetFilesToWatch(IEnumerable<CssFile> files, IEnumerable<CssDirectory> directories)
         {
-            var temp = new[] { cssFile };
-            return temp.Select(x => new CssFileToWatch()
+			return files.Select(x => new CssFileToWatch()
             {
                 CompressionType = x.CompressionType,
                 FilePath = x.FilePath
             });
         }
 
-        /// <summary>
-        /// Compress the css files and store them in the specified css file.
-        /// </summary>
-        /// <param name="outputFileInfo">The virtual path for the crushed js file.</param>
-        /// <param name="cssRootUri">The path for the crushed css file.</param>
-        /// <param name="cssFiles">The css files to be crushed.</param>
-        /// <param name="appendHashToAssets"></param>
-        public virtual CssCrushedOutput ProcessFiles(FileInfo outputFileInfo, Uri cssRootUri, IEnumerable<CssFile> cssFiles, bool appendHashToAssets)
+    	/// <summary>
+    	/// Compress the css files and store them in the specified css file.
+    	/// </summary>
+    	/// <param name="outputFileInfo">The virtual path for the crushed js file.</param>
+    	/// <param name="cssRootUri">The path for the crushed css file.</param>
+    	/// <param name="files">The css files to be crushed.</param>
+    	/// <param name="directories">The css directories to be crushed.</param>
+    	/// <param name="appendHashToAssets"></param>
+    	public virtual CssCrushedOutput ProcessGroup(FileInfo outputFileInfo, Uri cssRootUri, IEnumerable<CssFile> files, IEnumerable<CssDirectory> directories, bool appendHashToAssets)
         {
             var uncompressedContents = new StringBuilder();
             var toBeStockYuiCompressedContents = new StringBuilder();
@@ -70,7 +71,7 @@ namespace Talifun.Web.Crusher
             var toBeHybridCompressedContents = new StringBuilder();
             var localCssAssetFilesThatExist = new List<FileInfo>();
 
-            var filesToWatch = cssFiles.SelectMany(GetFiles);
+    		var filesToWatch = GetFilesToWatch(files, directories);
 
             var filesToProcess = filesToWatch
                 .Select(cssFile => new CssFileProcessor(RetryableFileOpener, PathProvider, CssPathRewriter, cssFile.FilePath, cssFile.CompressionType, cssRootUri, appendHashToAssets));
@@ -115,6 +116,7 @@ namespace Talifun.Web.Crusher
             var crushedOutput = new CssCrushedOutput
                                     {
                                         Output = uncompressedContents,
+										FilesToWatch = filesToWatch,
                                         CssAssetFilePaths = localCssAssetFilesThatExist
                                     };
 
@@ -125,36 +127,40 @@ namespace Talifun.Web.Crusher
         /// Remove all css files from being crushed
         /// </summary>
         /// <param name="outputUri">The path for the crushed css file.</param>
-        public virtual void RemoveFiles(Uri outputUri)
+        public virtual void RemoveGroup(Uri outputUri)
         {
             CacheManager.Remove<CssCacheItem>(GetKey(outputUri));
         }
 
-        /// <summary>
-        /// Add the css files to the cache so that they are monitored for any changes.
-        /// </summary>
-        /// <param name="outputUri">The path for the crushed css file.</param>
-        /// <param name="cssFiles">The css files to be crushed.</param>
-        /// <param name="cssAssetFilePaths">The css asset files referenced by the css files.</param>
-        public virtual void AddFilesToCache(Uri outputUri, IEnumerable<CssFile> cssFiles, IEnumerable<FileInfo> cssAssetFilePaths)
+    	/// <summary>
+    	/// Add the css files to the cache so that they are monitored for any changes.
+    	/// </summary>
+    	/// <param name="outputUri">The path for the crushed css file.</param>
+		/// <param name="filesToWatch">Files that are crushed.</param>
+		/// <param name="assetFilesToWatch">The css asset files referenced by the css files.</param>
+		/// <param name="files">The css files to be crushed.</param>
+    	/// <param name="directories">The css directories to be crushed. </param>
+    	public virtual void AddGroupToCache(Uri outputUri, IEnumerable<CssFileToWatch> filesToWatch, IEnumerable<FileInfo> assetFilesToWatch, IEnumerable<CssFile> files, IEnumerable<CssDirectory> directories)
         {
             var fileNames = new List<string>
-                                {
-                                    PathProvider.MapPath(outputUri)
-                                };
-            fileNames.AddRange(cssFiles.Select(cssFile => PathProvider.MapPath(cssFile.FilePath)));
-            fileNames.AddRange(cssAssetFilePaths.Select(cssAssetFilePath => cssAssetFilePath.FullName));
+            {
+                PathProvider.MapPath(outputUri)
+            };
+			fileNames.AddRange(filesToWatch.Select(cssFile => PathProvider.MapPath(cssFile.FilePath)));
+            fileNames.AddRange(assetFilesToWatch.Select(cssAssetFilePath => cssAssetFilePath.FullName));
 
-            var cssCacheItem = new CssCacheItem()
-                                   {
-                                       OutputUri = outputUri,
-                                       CssFiles = cssFiles,
-                                       CssAssetFilePaths = cssAssetFilePaths
-                                   };
+            var cacheItem = new CssCacheItem()
+            {
+                OutputUri = outputUri,
+				AssetFilesToWatch = assetFilesToWatch,
+				FilesToWatch = filesToWatch,
+                Files = files,
+				Directories = directories,
+            };
 
             CacheManager.Insert(
                 GetKey(outputUri),
-                cssCacheItem,
+                cacheItem,
                 new CacheDependency(fileNames.ToArray(), System.DateTime.Now),
                 Cache.NoAbsoluteExpiration,
                 Cache.NoSlidingExpiration,
@@ -172,15 +178,15 @@ namespace Talifun.Web.Crusher
         /// <param name="reason">The reason the file was removed from cache.</param>
         public virtual void FileRemoved(string key, object value, CacheItemRemovedReason reason)
         {
-            var cssCacheItem = (CssCacheItem)value;
+            var cacheItem = (CssCacheItem)value;
             switch (reason)
             {
                 case CacheItemRemovedReason.DependencyChanged:
-                    AddFiles(cssCacheItem.OutputUri, cssCacheItem.CssFiles, cssCacheItem.AppendHashToAssets);
+                    CreateGroup(cacheItem.OutputUri, cacheItem.Files, cacheItem.Directories, cacheItem.AppendHashToAssets);
                     break;
                 case CacheItemRemovedReason.Underused:
                 case CacheItemRemovedReason.Expired:
-                    AddFilesToCache(cssCacheItem.OutputUri, cssCacheItem.CssFiles, cssCacheItem.CssAssetFilePaths);
+					AddGroupToCache(cacheItem.OutputUri, cacheItem.FilesToWatch, cacheItem.AssetFilesToWatch, cacheItem.Files, cacheItem.Directories);
                     break;
             }
         }

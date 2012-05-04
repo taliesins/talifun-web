@@ -5,18 +5,19 @@ namespace Talifun.Web.Crusher
 {
     public interface ICssCrusher
     {
-        /// <summary>
-        /// Add css files to be crushed.
-        /// </summary>
-        /// <param name="outputUri">The path for the crushed css file.</param>
-        /// <param name="cssFiles">The css files to be crushed.</param>
-        /// <param name="appendHashToAssets">Should css assets have a hash appended to them.</param>
-        void AddFiles(Uri outputUri, IEnumerable<CssFile> cssFiles, bool appendHashToAssets);
+    	/// <summary>
+    	/// Add group to be crushed.
+    	/// </summary>
+    	/// <param name="outputUri">The path for the crushed css file.</param>
+    	/// <param name="cssFiles">The css files to be crushed.</param>
+    	/// <param name="cssDirectories">The css directories to be crushed.</param>
+    	/// <param name="appendHashToAssets">Should css assets have a hash appended to them.</param>
+    	void CreateGroup(Uri outputUri, IEnumerable<CssFile> cssFiles, IEnumerable<CssDirectory> cssDirectories , bool appendHashToAssets);
 
         /// <summary>
-        /// Remove all css files from being crushed
+        /// Remove a group from being crushed.
         /// </summary>
         /// <param name="outputUri">The path for the crushed css file.</param>
-        void RemoveFiles(Uri outputUri);
+        void RemoveGroup(Uri outputUri);
     }
 }

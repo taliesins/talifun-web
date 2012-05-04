@@ -220,7 +220,7 @@ namespace Talifun.Crusher
                 }
 
                 var outputUri = new Uri(pathProvider.ToAbsolute(group.OutputFilePath), UriKind.Relative);
-                cssCrusher.AddFiles(outputUri, files, group.AppendHashToCssAsset);
+                cssCrusher.CreateGroup(outputUri, files, group.AppendHashToCssAsset);
 
                 _cssOutput += outputUri + " (" + group.Name + ")\r\n";
                 foreach (var cssFile in files)
@@ -246,7 +246,7 @@ namespace Talifun.Crusher
                 }
 
                 var outputUri = new Uri(pathProvider.ToAbsolute(group.OutputFilePath), UriKind.Relative);
-                jsCrusher.AddFiles(outputUri, files);
+                jsCrusher.AddGroup(outputUri, files);
 
                 _jsOutput += outputUri + " (" + group.Name + ")\r\n";
                 foreach (var jsFile in files)

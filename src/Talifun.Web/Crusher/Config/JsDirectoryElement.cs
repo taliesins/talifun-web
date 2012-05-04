@@ -5,20 +5,20 @@ using Talifun.Web.Configuration;
 namespace Talifun.Web.Crusher.Config
 {
     /// <summary>
-    /// Represents the configuration for a css directory element.
+    /// Represents the configuration for a js directory element.
     /// </summary>
-    public sealed class CssFileElement : NamedConfigurationElement
+    public sealed class JsDirectoryElement : NamedConfigurationElement
     {
         private static ConfigurationPropertyCollection properties = new ConfigurationPropertyCollection();
         private static readonly ConfigurationProperty name = new ConfigurationProperty("name", typeof(string), null, ConfigurationPropertyOptions.IsRequired);
         private static readonly ConfigurationProperty filePath = new ConfigurationProperty("filePath", typeof(string), null, ConfigurationPropertyOptions.IsRequired);
-        private static readonly ConfigurationProperty compressionType = new ConfigurationProperty("compressionType", typeof(CssCompressionType), CssCompressionType.Hybrid, ConfigurationPropertyOptions.None);
+        private static readonly ConfigurationProperty compressionType = new ConfigurationProperty("compressionType", typeof(JsCompressionType), JsCompressionType.Min, ConfigurationPropertyOptions.None);
 
         /// <summary>
-        /// Initializes the <see cref="CssFileElement"/> class.
+        /// Initializes the <see cref="JsFileElement"/> class.
         /// </summary>
         [SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
-        static CssFileElement()
+        static JsDirectoryElement()
         {
             properties.Add(name);
             properties.Add(filePath);
@@ -48,10 +48,10 @@ namespace Talifun.Web.Crusher.Config
         /// <summary>
         /// The compression type to use for the css file
         /// </summary>
-        [ConfigurationProperty("compressionType", DefaultValue = CssCompressionType.Hybrid, IsRequired = false)]
-        public CssCompressionType CompressionType
+        [ConfigurationProperty("compressionType", DefaultValue = JsCompressionType.Min, IsRequired = false)]
+        public JsCompressionType CompressionType
         {
-            get { return ((CssCompressionType)base[compressionType]); }
+            get { return ((JsCompressionType)base[compressionType]); }
             set { base[compressionType] = value; }
         }
 

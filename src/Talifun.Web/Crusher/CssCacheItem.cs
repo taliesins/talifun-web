@@ -8,7 +8,9 @@ namespace Talifun.Web.Crusher
     {
         public bool AppendHashToAssets { get; set; }
         public Uri OutputUri { get; set; }
-        public IEnumerable<CssFile> CssFiles { get; set; }
-        public IEnumerable<FileInfo> CssAssetFilePaths { get; set; }
+    	public IEnumerable<CssFileToWatch> FilesToWatch { get; set; }
+		public IEnumerable<FileInfo> AssetFilesToWatch { get; set; }
+        public IEnumerable<CssFile> Files { get; set; }
+    	public IEnumerable<CssDirectory> Directories { get; set; } 
     }
 }

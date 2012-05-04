@@ -15,6 +15,7 @@ namespace Talifun.Web.Crusher.Config
         private static readonly ConfigurationProperty url = new ConfigurationProperty("url", typeof(string), null, ConfigurationPropertyOptions.None);
         private static readonly ConfigurationProperty debug = new ConfigurationProperty("debug", typeof(bool), null, ConfigurationPropertyOptions.IsRequired);
         private static readonly ConfigurationProperty files = new ConfigurationProperty("files", typeof(JsFileElementCollection), null, ConfigurationPropertyOptions.None | ConfigurationPropertyOptions.IsDefaultCollection);
+		private static readonly ConfigurationProperty directories = new ConfigurationProperty("directories", typeof(JsDirectoryElementCollection), null, ConfigurationPropertyOptions.None | ConfigurationPropertyOptions.IsDefaultCollection);
 
         /// <summary>
         /// Initializes the <see cref="JsGroupElement"/> class.
@@ -27,6 +28,7 @@ namespace Talifun.Web.Crusher.Config
             properties.Add(url);
             properties.Add(debug);
             properties.Add(files);
+			properties.Add(directories);
         }
 
         /// <summary>
@@ -86,6 +88,17 @@ namespace Talifun.Web.Crusher.Config
         {
             get { return ((JsFileElementCollection)base[files]); }
         }
+
+		/// <summary>
+		/// Gets a <see cref="JsDirectoryElementCollection" /> containing the <see cref="ProviderSettingsCollection" /> elements
+		/// for the conversion type to run upon matching.
+		/// </summary>
+		/// <value>A <see cref="JsDirectoryElement" /> containing the configuration elements associated with this configuration section.</value>
+		[ConfigurationProperty("directories", DefaultValue = null, IsDefaultCollection = true)]
+		public JsDirectoryElementCollection Directories
+		{
+			get { return ((JsDirectoryElementCollection)base[directories]); }
+		}
 
         /// <summary>
         /// The collection of configuration properties contained by this configuration element.

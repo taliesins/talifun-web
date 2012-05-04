@@ -86,56 +86,89 @@ namespace Talifun.Web.Crusher
         {
             AppDomain.CurrentDomain.DomainUnload += OnDomainUnload;
 
-            foreach (CssGroupElement group in _cssGroups)
-            {
-                var files = new List<CssFile>();
-                
-                foreach (CssFileElement cssFile in group.Files)
-                {
-                    var file = new CssFile()
-                                   {
-                                       CompressionType = cssFile.CompressionType,
-                                       FilePath = cssFile.FilePath
-                                   };
-                    files.Add(file);
-                }
-
-                var outputUri = new Uri(_pathProvider.ToAbsolute(group.OutputFilePath), UriKind.Relative);
-
-                _cssCrusher.AddFiles(outputUri, files, group.AppendHashToCssAsset);
-            }
-
-            foreach (JsGroupElement group in _jsGroups)
-            {
-                var files = new List<JsFile>();
-
-                foreach (JsFileElement cssFile in group.Files)
-                {
-                    var file = new JsFile()
-                                   {
-                                       CompressionType = cssFile.CompressionType,
-                                       FilePath = cssFile.FilePath
-                                   };
-                    files.Add(file);
-                }
-
-                var outputUri = new Uri(_pathProvider.ToAbsolute(group.OutputFilePath), UriKind.Relative);
-                _jsCrusher.AddFiles(outputUri, files);
-            }
+        	ConfigureJs();
+        	ConfigureCss();
         }
+
+		private void ConfigureJs()
+		{
+			foreach (CssGroupElement group in _cssGroups)
+			{
+				var files = new List<CssFile>();
+
+				foreach (CssFileElement cssFile in group.Files)
+				{
+					var file = new CssFile()
+					{
+						CompressionType = cssFile.CompressionType,
+						FilePath = cssFile.FilePath
+					};
+					files.Add(file);
+				}
+
+				var directories = new List<CssDirectory>();
+
+				foreach (CssDirectoryElement cssFile in group.Directories)
+				{
+					var directory = new CssDirectory()
+					{
+						CompressionType = cssFile.CompressionType,
+						FilePath = cssFile.FilePath
+					};
+					directories.Add(directory);
+				}
+
+				var outputUri = new Uri(_pathProvider.ToAbsolute(group.OutputFilePath), UriKind.Relative);
+
+				_cssCrusher.CreateGroup(outputUri, files, directories, group.AppendHashToCssAsset);
+			}
+		}
+
+		private void ConfigureCss()
+		{
+			foreach (JsGroupElement group in _jsGroups)
+			{
+				var files = new List<JsFile>();
+
+				foreach (JsFileElement cssFile in group.Files)
+				{
+					var file = new JsFile()
+					{
+						CompressionType = cssFile.CompressionType,
+						FilePath = cssFile.FilePath
+					};
+					files.Add(file);
+				}
+
+				var directories = new List<JsDirectory>();
+
+				foreach (JsDirectoryElement jsFile in group.Directories)
+				{
+					var directory = new JsDirectory()
+					{
+						CompressionType = jsFile.CompressionType,
+						FilePath = jsFile.FilePath
+					};
+					directories.Add(directory);
+				}
+
+				var outputUri = new Uri(_pathProvider.ToAbsolute(group.OutputFilePath), UriKind.Relative);
+				_jsCrusher.AddGroup(outputUri, files, directories);
+			}
+		}
 
         private void DisposeManager()
         {
             foreach (CssGroupElement group in _cssGroups)
             {
                 var outputUri = new Uri(_pathProvider.ToAbsolute(group.OutputFilePath), UriKind.Relative);
-                _cssCrusher.RemoveFiles(outputUri);
+                _cssCrusher.RemoveGroup(outputUri);
             }
 
             foreach (JsGroupElement group in _jsGroups)
             {
                 var outputUri = new Uri(_pathProvider.ToAbsolute(group.OutputFilePath), UriKind.Relative);
-                _jsCrusher.RemoveFiles(outputUri);
+                _jsCrusher.RemoveGroup(outputUri);
             }
 
             if (AppDomain.CurrentDomain != null)

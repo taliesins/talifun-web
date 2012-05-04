@@ -17,6 +17,7 @@ namespace Talifun.Web.Crusher.Config
         private static readonly ConfigurationProperty appendHashToCssAsset = new ConfigurationProperty("appendHashToCssAsset", typeof(bool), true, ConfigurationPropertyOptions.None);
         private static readonly ConfigurationProperty debug = new ConfigurationProperty("debug", typeof(bool), null, ConfigurationPropertyOptions.IsRequired);
         private static readonly ConfigurationProperty files = new ConfigurationProperty("files", typeof(CssFileElementCollection), null, ConfigurationPropertyOptions.None | ConfigurationPropertyOptions.IsDefaultCollection);
+		private static readonly ConfigurationProperty directories = new ConfigurationProperty("directories", typeof(CssDirectoryElementCollection), null, ConfigurationPropertyOptions.None | ConfigurationPropertyOptions.IsDefaultCollection);
         
         /// <summary>
         /// Initializes the <see cref="CssGroupElement"/> class.
@@ -31,6 +32,7 @@ namespace Talifun.Web.Crusher.Config
             properties.Add(appendHashToCssAsset);
             properties.Add(debug);
             properties.Add(files);
+			properties.Add(directories);
         }
 
         /// <summary>
@@ -116,6 +118,17 @@ namespace Talifun.Web.Crusher.Config
         {
             get { return ((CssFileElementCollection)base[files]); }
         }
+
+		/// <summary>
+		/// Gets a <see cref="CssDirectoryElementCollection" /> containing the <see cref="ProviderSettingsCollection" /> elements
+		/// for the conversion type to run upon matching.
+		/// </summary>
+		/// <value>A <see cref="CssDirectoryElement" /> containing the configuration elements associated with this configuration section.</value>
+		[ConfigurationProperty("directories", DefaultValue = null, IsDefaultCollection = true)]
+		public CssDirectoryElementCollection Directories
+		{
+			get { return ((CssDirectoryElementCollection)base[files]); }
+		}
 
         /// <summary>
         /// The collection of configuration properties contained by this configuration element.
