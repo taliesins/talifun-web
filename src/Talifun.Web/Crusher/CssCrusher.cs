@@ -45,6 +45,15 @@ namespace Talifun.Web.Crusher
             AddFilesToCache(outputUri, cssFiles, crushedContent.CssAssetFilePaths);
         }
 
+        private IEnumerable<CssFileToWatch> GetFiles(CssFile cssFile)
+        {
+            var temp = new[] { cssFile };
+            return temp.Select(x => new CssFileToWatch()
+            {
+                CompressionType = x.CompressionType,
+                FilePath = x.FilePath
+            });
+        }
 
         /// <summary>
         /// Compress the css files and store them in the specified css file.
@@ -60,9 +69,11 @@ namespace Talifun.Web.Crusher
             var toBeMichaelAshRegexCompressedContents = new StringBuilder();
             var toBeHybridCompressedContents = new StringBuilder();
             var localCssAssetFilesThatExist = new List<FileInfo>();
-            
-            var filesToProcess = cssFiles
-                .Select(cssFile => new CssFileProcessor(RetryableFileOpener, PathProvider, CssPathRewriter, cssFile, cssRootUri, appendHashToAssets));
+
+            var filesToWatch = cssFiles.SelectMany(GetFiles);
+
+            var filesToProcess = filesToWatch
+                .Select(cssFile => new CssFileProcessor(RetryableFileOpener, PathProvider, CssPathRewriter, cssFile.FilePath, cssFile.CompressionType, cssRootUri, appendHashToAssets));
 
             foreach (var fileToProcess in filesToProcess)
             {

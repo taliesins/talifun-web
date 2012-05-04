@@ -44,6 +44,16 @@ namespace Talifun.Web.Crusher
             AddFilesToCache(outputUri, files);
         }
 
+        private IEnumerable<JsFileToWatch> GetFiles(JsFile jsFile)
+        {
+            var temp = new[] {jsFile};
+            return temp.Select(x=> new JsFileToWatch()
+                                       {
+                                           CompressionType = x.CompressionType,
+                                           FilePath = x.FilePath
+                                       });
+        }
+
         /// <summary>
         /// Compress the js files and store them in the specified js file.
         /// </summary>
@@ -53,7 +63,10 @@ namespace Talifun.Web.Crusher
         {
             var uncompressedContents = new StringBuilder();
             var toBeCompressedContents = new StringBuilder();
-            var filesToProcess = files.Select(jsFile => new JsFileProcessor(RetryableFileOpener, PathProvider, jsFile));
+
+            var filesToWatch = files.SelectMany(GetFiles);
+
+            var filesToProcess = filesToWatch.Select(jsFile => new JsFileProcessor(RetryableFileOpener, PathProvider, jsFile.FilePath, jsFile.CompressionType));
             foreach (var fileToProcess in filesToProcess)
             {
                 switch (fileToProcess.CompressionType)

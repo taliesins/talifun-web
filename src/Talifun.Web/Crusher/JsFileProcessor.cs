@@ -9,13 +9,13 @@ namespace Talifun.Web.Crusher
         protected readonly IPathProvider PathProvider;
         protected readonly FileInfo FileInfo;
 
-        public JsFileProcessor(IRetryableFileOpener retryableFileOpener, IPathProvider pathProvider, JsFile jsFile)
+        public JsFileProcessor(IRetryableFileOpener retryableFileOpener, IPathProvider pathProvider, string filePath, JsCompressionType compressionType)
         {
             RetryableFileOpener = retryableFileOpener;
             PathProvider = pathProvider;
-            CompressionType = jsFile.CompressionType;
-            var filePath = PathProvider.MapPath(jsFile.FilePath);
-            FileInfo = new FileInfo(filePath);
+            CompressionType = compressionType;
+            var resolvedFilePath = PathProvider.MapPath(filePath);
+            FileInfo = new FileInfo(resolvedFilePath);
         }
 
         public JsCompressionType CompressionType { get; protected set; }

@@ -16,17 +16,17 @@ namespace Talifun.Web.Crusher
         protected readonly Uri RelativeRootUri;
         protected readonly bool AppendHashToAssets;
 
-        public CssFileProcessor(IRetryableFileOpener retryableFileOpener, IPathProvider pathProvider, ICssPathRewriter cssPathRewriter, CssFile cssFile, Uri cssRootUri, bool appendHashToAssets)
+        public CssFileProcessor(IRetryableFileOpener retryableFileOpener, IPathProvider pathProvider, ICssPathRewriter cssPathRewriter, string filePath, CssCompressionType compressionType, Uri cssRootUri, bool appendHashToAssets)
         {
             RetryableFileOpener = retryableFileOpener;
             PathProvider = pathProvider;
             CssPathRewriter = cssPathRewriter;
-            CompressionType = cssFile.CompressionType;
+            CompressionType = compressionType;
 
-            var filePath = PathProvider.MapPath(cssFile.FilePath);
-            FileInfo = new FileInfo(filePath);
+            var resolvedFilePath = PathProvider.MapPath(filePath);
+            FileInfo = new FileInfo(resolvedFilePath);
             CssRootUri = cssRootUri;
-            RelativeRootUri = GetRelativeRootUri(cssFile.FilePath);
+            RelativeRootUri = GetRelativeRootUri(filePath);
 
             AppendHashToAssets = appendHashToAssets;
         }
