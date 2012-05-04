@@ -13,7 +13,7 @@ namespace Talifun.Web.Crusher.Config
         private static readonly ConfigurationProperty name = new ConfigurationProperty("name", typeof(string), null, ConfigurationPropertyOptions.IsRequired);
         private static readonly ConfigurationProperty filePath = new ConfigurationProperty("filePath", typeof(string), null, ConfigurationPropertyOptions.IsRequired);
         private static readonly ConfigurationProperty compressionType = new ConfigurationProperty("compressionType", typeof(JsCompressionType), JsCompressionType.Min, ConfigurationPropertyOptions.None);
-
+		
         /// <summary>
         /// Initializes the <see cref="JsFileElement"/> class.
         /// </summary>

@@ -13,6 +13,8 @@ namespace Talifun.Web.Crusher.Config
         private static readonly ConfigurationProperty name = new ConfigurationProperty("name", typeof(string), null, ConfigurationPropertyOptions.IsRequired);
         private static readonly ConfigurationProperty filePath = new ConfigurationProperty("filePath", typeof(string), null, ConfigurationPropertyOptions.IsRequired);
         private static readonly ConfigurationProperty compressionType = new ConfigurationProperty("compressionType", typeof(JsCompressionType), JsCompressionType.Min, ConfigurationPropertyOptions.None);
+		private static readonly ConfigurationProperty includeSubDirectories = new ConfigurationProperty("includeSubDirectories", typeof(bool), true, ConfigurationPropertyOptions.None);
+		private static readonly ConfigurationProperty filter = new ConfigurationProperty("filter", typeof(string), "", ConfigurationPropertyOptions.None);
 
         /// <summary>
         /// Initializes the <see cref="JsFileElement"/> class.
@@ -23,6 +25,8 @@ namespace Talifun.Web.Crusher.Config
             properties.Add(name);
             properties.Add(filePath);
             properties.Add(compressionType);
+			properties.Add(includeSubDirectories);
+			properties.Add(filter);
         }
 
         /// <summary>
@@ -54,6 +58,26 @@ namespace Talifun.Web.Crusher.Config
             get { return ((JsCompressionType)base[compressionType]); }
             set { base[compressionType] = value; }
         }
+
+		/// <summary>
+		/// Should sub directories be scanned for js files as well. 
+		/// </summary>
+		[ConfigurationProperty("includeSubDirectories", DefaultValue = true, IsRequired = false)]
+		public bool IncludeSubDirectories
+		{
+			get { return ((bool)base[includeSubDirectories]); }
+			set { base[includeSubDirectories] = value; }
+		}
+
+		/// <summary>
+		/// Filter to be used for selecting files in directories.
+		/// </summary>
+		[ConfigurationProperty("filter", DefaultValue = "", IsRequired = false)]
+		public string Filter
+		{
+			get { return ((string)base[filter]); }
+			set { base[filter] = value; }
+		}
 
         /// <summary>
         /// The collection of configuration properties contained by this configuration element.
