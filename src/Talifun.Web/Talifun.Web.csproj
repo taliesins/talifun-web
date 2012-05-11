@@ -76,7 +76,7 @@
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.Xml" />
     <Reference Include="Talifun.FileWatcher">
-      <HintPath>..\..\packages\Talifun.FileWatcher.1.0.0.0\lib\net40\Talifun.FileWatcher.dll</HintPath>
+      <HintPath>..\..\packages\Talifun.FileWatcher.1.0.1.0\lib\net40\Talifun.FileWatcher.dll</HintPath>
     </Reference>
     <Reference Include="Yahoo.Yui.Compressor">
       <HintPath>..\..\packages\YUICompressor.NET.1.7.1.0\lib\net35\Yahoo.Yui.Compressor.dll</HintPath>
