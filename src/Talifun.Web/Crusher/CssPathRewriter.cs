@@ -87,7 +87,9 @@ namespace Talifun.Web.Crusher
             foreach (Match match in matches)
             {
                 var path = match.Groups[1].Captures[0].Value;
-                if (path.StartsWith("http", StringComparison.InvariantCultureIgnoreCase)) continue;
+                if (path.StartsWith("http", StringComparison.InvariantCultureIgnoreCase) ||
+                    path.StartsWith("data", StringComparison.InvariantCultureIgnoreCase))
+                        continue;
 
                 var uri = new Uri(path, UriKind.RelativeOrAbsolute);
                 matchesHash.Add(uri);
