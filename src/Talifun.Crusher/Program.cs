@@ -219,8 +219,20 @@ namespace Talifun.Crusher
                     files.Add(file);
                 }
 
+                var directories = new List<CssDirectory>();
+
+                foreach (CssDirectoryElement cssDirectory in group.Directories)
+                {
+                    var directory = new CssDirectory()
+                    {
+                        CompressionType = cssDirectory.CompressionType,
+                        FilePath = cssDirectory.FilePath
+                    };
+                    directories.Add(directory);
+                }
+
                 var outputUri = new Uri(pathProvider.ToAbsolute(group.OutputFilePath), UriKind.Relative);
-                cssCrusher.CreateGroup(outputUri, files, group.AppendHashToCssAsset);
+                cssCrusher.CreateGroup(outputUri, files, directories, group.AppendHashToCssAsset);
 
                 _cssOutput += outputUri + " (" + group.Name + ")\r\n";
                 foreach (var cssFile in files)
@@ -235,18 +247,30 @@ namespace Talifun.Crusher
             {
                 var files = new List<JsFile>();
 
-                foreach (JsFileElement cssFile in group.Files)
+                foreach (JsFileElement jsFile in group.Files)
                 {
                     var file = new JsFile()
                     {
-                        CompressionType = cssFile.CompressionType,
-                        FilePath = cssFile.FilePath
+                        CompressionType = jsFile.CompressionType,
+                        FilePath = jsFile.FilePath
                     };
                     files.Add(file);
                 }
 
+                var directories = new List<JsDirectory>();
+
+                foreach (JsDirectoryElement jsDirectory in group.Directories)
+                {
+                    var directory = new JsDirectory()
+                    {
+                        CompressionType = jsDirectory.CompressionType,
+                        FilePath = jsDirectory.FilePath
+                    };
+                    directories.Add(directory);
+                }
+
                 var outputUri = new Uri(pathProvider.ToAbsolute(group.OutputFilePath), UriKind.Relative);
-                jsCrusher.AddGroup(outputUri, files);
+                jsCrusher.AddGroup(outputUri, files, directories);
 
                 _jsOutput += outputUri + " (" + group.Name + ")\r\n";
                 foreach (var jsFile in files)

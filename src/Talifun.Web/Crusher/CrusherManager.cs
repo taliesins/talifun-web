@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using System.Web;
 using Talifun.Web.Crusher.Config;
 using Talifun.Web.Helper;
 
@@ -108,12 +107,12 @@ namespace Talifun.Web.Crusher
 
 				var directories = new List<CssDirectory>();
 
-				foreach (CssDirectoryElement cssFile in group.Directories)
+				foreach (CssDirectoryElement cssDirectory in group.Directories)
 				{
 					var directory = new CssDirectory()
 					{
-						CompressionType = cssFile.CompressionType,
-						FilePath = cssFile.FilePath
+						CompressionType = cssDirectory.CompressionType,
+						FilePath = cssDirectory.FilePath
 					};
 					directories.Add(directory);
 				}
@@ -130,24 +129,24 @@ namespace Talifun.Web.Crusher
 			{
 				var files = new List<JsFile>();
 
-				foreach (JsFileElement cssFile in group.Files)
+				foreach (JsFileElement jsFile in group.Files)
 				{
 					var file = new JsFile()
 					{
-						CompressionType = cssFile.CompressionType,
-						FilePath = cssFile.FilePath
+						CompressionType = jsFile.CompressionType,
+						FilePath = jsFile.FilePath
 					};
 					files.Add(file);
 				}
 
 				var directories = new List<JsDirectory>();
 
-				foreach (JsDirectoryElement jsFile in group.Directories)
+				foreach (JsDirectoryElement jsDirectory in group.Directories)
 				{
 					var directory = new JsDirectory()
 					{
-						CompressionType = jsFile.CompressionType,
-						FilePath = jsFile.FilePath
+						CompressionType = jsDirectory.CompressionType,
+						FilePath = jsDirectory.FilePath
 					};
 					directories.Add(directory);
 				}
