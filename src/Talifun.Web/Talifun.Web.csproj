@@ -76,7 +76,7 @@
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.Xml" />
     <Reference Include="Talifun.FileWatcher">
-      <HintPath>..\..\packages\Talifun.FileWatcher.1.0.1.0\lib\net40\Talifun.FileWatcher.dll</HintPath>
+      <HintPath>..\..\packages\Talifun.FileWatcher.1.0.2.0\lib\net40\Talifun.FileWatcher.dll</HintPath>
     </Reference>
     <Reference Include="Yahoo.Yui.Compressor">
       <HintPath>..\..\packages\YUICompressor.NET.1.7.1.0\lib\net35\Yahoo.Yui.Compressor.dll</HintPath>
@@ -90,11 +90,13 @@
     <Compile Include="Crusher\Config\JsDirectoryElement.cs" />
     <Compile Include="Crusher\Config\CssDirectoryElementCollection.cs" />
     <Compile Include="Crusher\Config\CssDirectoryElement.cs" />
+    <Compile Include="Crusher\CsFileToWatchComparer.cs" />
     <Compile Include="Crusher\JsDirectory.cs" />
     <Compile Include="Crusher\CssDirectory.cs" />
     <Compile Include="Crusher\CrusherHelper.cs" />
     <Compile Include="Crusher\CssFileToWatch.cs" />
     <Compile Include="Crusher\JsFileToWatch.cs" />
+    <Compile Include="Crusher\JsFileToWatchEqualityComparer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Cache\HttpCacheManager.cs" />
     <Compile Include="Compress\CompressionModuleHelper.cs" />

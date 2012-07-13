@@ -53,6 +53,38 @@
       </xs:annotation>
     </xs:attribute>
   </xs:complexType>
+
+  <xs:complexType name="cssDirectory">
+    <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="filePath" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          The file path for the generated css file.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="compressionType" type="cssCompressionType" default="Hybrid" >
+      <xs:annotation>
+        <xs:documentation>
+          The compression method to use when adding a css file to the generated css file.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="includeSubDirectories" type="xs:boolean" default="true">
+      <xs:annotation>
+        <xs:documentation>
+          Should all subdirectories also be scanned for matches.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="filter" type="xs:string" default="" >
+      <xs:annotation>
+        <xs:documentation>
+          Regular expressions to match file names against.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
   
 	<xs:complexType name="cssGroup">
 		<xs:all>
@@ -100,7 +132,39 @@
           The compression method to use when adding a js file to the generated js file.
         </xs:documentation>
       </xs:annotation>
-    </xs:attribute>    
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:complexType name="jsDirectory">
+    <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="filePath" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>
+          The file path for the generated js file.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="compressionType" type="jsCompressionType" default="Min" >
+      <xs:annotation>
+        <xs:documentation>
+          The compression method to use when adding a js file to the generated js file.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="includeSubDirectories" type="xs:boolean" default="true">
+      <xs:annotation>
+        <xs:documentation>
+          Should all subdirectories also be scanned for matches.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="filter" type="xs:string" default="" >
+      <xs:annotation>
+        <xs:documentation>
+          Regular expressions to match file names against.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>     
   </xs:complexType>
   
 	<xs:complexType name="jsGroup">

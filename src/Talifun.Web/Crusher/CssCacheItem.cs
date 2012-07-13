@@ -11,6 +11,7 @@ namespace Talifun.Web.Crusher
     	public IEnumerable<CssFileToWatch> FilesToWatch { get; set; }
 		public IEnumerable<FileInfo> AssetFilesToWatch { get; set; }
         public IEnumerable<CssFile> Files { get; set; }
+        public IEnumerable<Talifun.FileWatcher.IEnhancedFileSystemWatcher> FoldersToWatch { get; set; }
     	public IEnumerable<CssDirectory> Directories { get; set; } 
     }
 }

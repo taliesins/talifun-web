@@ -8,6 +8,7 @@ namespace Talifun.Web.Crusher
         public Uri OutputUri { get; set; }
 		public IEnumerable<JsFileToWatch> FilesToWatch { get; set; }
         public IEnumerable<JsFile> Files { get; set; }
+        public IEnumerable<Talifun.FileWatcher.IEnhancedFileSystemWatcher> FoldersToWatch { get; set; } 
 		public IEnumerable<JsDirectory> Directories { get; set; }
     }
 }

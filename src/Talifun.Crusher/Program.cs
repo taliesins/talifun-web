@@ -226,7 +226,10 @@ namespace Talifun.Crusher
                     var directory = new CssDirectory()
                     {
                         CompressionType = cssDirectory.CompressionType,
-                        FilePath = cssDirectory.FilePath
+                        FilePath = cssDirectory.FilePath,
+                        IncludeSubDirectories = cssDirectory.IncludeSubDirectories,
+                        PollTime = cssDirectory.PollTime,
+                        Filter = cssDirectory.Filter
                     };
                     directories.Add(directory);
                 }
@@ -264,7 +267,10 @@ namespace Talifun.Crusher
                     var directory = new JsDirectory()
                     {
                         CompressionType = jsDirectory.CompressionType,
-                        FilePath = jsDirectory.FilePath
+                        FilePath = jsDirectory.FilePath,
+                        IncludeSubDirectories = jsDirectory.IncludeSubDirectories,
+                        PollTime = jsDirectory.PollTime,
+                        Filter = jsDirectory.Filter
                     };
                     directories.Add(directory);
                 }

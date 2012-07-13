@@ -2,7 +2,17 @@
 {
     public class CssDirectory
     {
-		/// <summary>
+        /// <summary>
+        /// Filter file names
+        /// </summary>
+        public virtual string Filter { get; set; }
+
+        /// <summary>
+        /// The amount of time to wait without file changes before considering file changed
+        /// </summary>
+        public virtual int PollTime { get; set; }
+
+        /// <summary>
 		/// Should sub directories be scanned for css files as well. 
 		/// </summary>
 		public virtual bool IncludeSubDirectories { get; set; }

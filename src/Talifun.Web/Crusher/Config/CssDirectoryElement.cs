@@ -14,7 +14,8 @@ namespace Talifun.Web.Crusher.Config
         private static readonly ConfigurationProperty filePath = new ConfigurationProperty("filePath", typeof(string), null, ConfigurationPropertyOptions.IsRequired);
         private static readonly ConfigurationProperty compressionType = new ConfigurationProperty("compressionType", typeof(CssCompressionType), CssCompressionType.Hybrid, ConfigurationPropertyOptions.None);
 		private static readonly ConfigurationProperty includeSubDirectories = new ConfigurationProperty("includeSubDirectories", typeof(bool), true, ConfigurationPropertyOptions.None);
-		private static readonly ConfigurationProperty filter = new ConfigurationProperty("filter", typeof(string), "", ConfigurationPropertyOptions.None);
+		private static readonly ConfigurationProperty filter = new ConfigurationProperty("filter", typeof(string), "*.css", ConfigurationPropertyOptions.None);
+        private static readonly ConfigurationProperty pollTime = new ConfigurationProperty("pollTime", typeof(int), 2, ConfigurationPropertyOptions.None);
 		
         /// <summary>
         /// Initializes the <see cref="CssFileElement"/> class.
@@ -27,6 +28,7 @@ namespace Talifun.Web.Crusher.Config
             properties.Add(compressionType);
 			properties.Add(includeSubDirectories);
 			properties.Add(filter);
+            properties.Add(pollTime);
         }
 
         /// <summary>
@@ -78,6 +80,16 @@ namespace Talifun.Web.Crusher.Config
 			get { return ((string)base[filter]); }
 			set { base[filter] = value; }
 		}
+
+        /// <summary>
+        /// Filter to be used for selecting files in directories.
+        /// </summary>
+        [ConfigurationProperty("pollTime", DefaultValue = 2, IsRequired = false)]
+        public int PollTime
+        {
+            get { return ((int)base[pollTime]); }
+            set { base[pollTime] = value; }
+        }
 
         /// <summary>
         /// The collection of configuration properties contained by this configuration element.

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web.Caching;
 using Talifun.Web.Helper;
 using Yahoo.Yui.Compressor;
@@ -43,16 +44,35 @@ namespace Talifun.Web.Crusher
             var crushedContent = ProcessGroup(outputFileInfo, outputUri, files, directories, appendHashToAssets);
             
             RetryableFileWriter.SaveContentsToFile(crushedContent.Output, outputFileInfo);
-			AddGroupToCache(outputUri, crushedContent.FilesToWatch, crushedContent.CssAssetFilePaths, files, directories);
+			AddGroupToCache(outputUri, crushedContent.FilesToWatch, crushedContent.CssAssetFilePaths, files, crushedContent.FoldersToWatch, directories);
         }
 
-		private IEnumerable<CssFileToWatch> GetFilesToWatch(IEnumerable<CssFile> files, IEnumerable<CssDirectory> directories)
+        /// <summary>
+        /// Get all files and files in directories that are going to be crushed.
+        /// </summary>
+        /// <param name="files"></param>
+        /// <param name="directories"></param>
+        /// <returns></returns>
+        private IEnumerable<CssFileToWatch> GetFilesToWatch(IEnumerable<CssFile> files, IEnumerable<CssDirectory> directories)
         {
-			return files.Select(x => new CssFileToWatch()
+            var filesToWatch = files.Select(x => new CssFileToWatch()
             {
                 CompressionType = x.CompressionType,
                 FilePath = x.FilePath
             });
+
+            var filesInDirectoriesToWatch = directories
+                .SelectMany(x =>
+                    Directory.GetFiles(x.FilePath, "*", SearchOption.AllDirectories)
+                    .Where(y => Regex.IsMatch(y, x.Filter, RegexOptions.Compiled | RegexOptions.IgnoreCase))
+                    .Select(y => new CssFileToWatch()
+                    {
+                        CompressionType = x.CompressionType,
+                        FilePath = y
+                    }));
+
+
+            return filesInDirectoriesToWatch.Concat(filesToWatch).Distinct(new CssFileToWatchEqualityComparer());
         }
 
     	/// <summary>
@@ -75,6 +95,11 @@ namespace Talifun.Web.Crusher
 
             var filesToProcess = filesToWatch
                 .Select(cssFile => new CssFileProcessor(RetryableFileOpener, PathProvider, CssPathRewriter, cssFile.FilePath, cssFile.CompressionType, cssRootUri, appendHashToAssets));
+
+            var foldersToWatch = directories
+                .Select(x =>
+                    Talifun.FileWatcher.EnhancedFileSystemWatcherFactory.Instance
+                    .CreateEnhancedFileSystemWatcher(x.FilePath, x.Filter, x.PollTime, x.IncludeSubDirectories));
 
             foreach (var fileToProcess in filesToProcess)
             {
@@ -117,6 +142,7 @@ namespace Talifun.Web.Crusher
             {
                 Output = uncompressedContents,
 				FilesToWatch = filesToWatch,
+                FoldersToWatch = foldersToWatch,
                 CssAssetFilePaths = localCssAssetFilesThatExist
             };
 
@@ -132,15 +158,16 @@ namespace Talifun.Web.Crusher
             CacheManager.Remove<CssCacheItem>(GetKey(outputUri));
         }
 
-    	/// <summary>
-    	/// Add the css files to the cache so that they are monitored for any changes.
-    	/// </summary>
-    	/// <param name="outputUri">The path for the crushed css file.</param>
-		/// <param name="filesToWatch">Files that are crushed.</param>
-		/// <param name="assetFilesToWatch">The css asset files referenced by the css files.</param>
-		/// <param name="files">The css files to be crushed.</param>
-    	/// <param name="directories">The css directories to be crushed. </param>
-    	public virtual void AddGroupToCache(Uri outputUri, IEnumerable<CssFileToWatch> filesToWatch, IEnumerable<FileInfo> assetFilesToWatch, IEnumerable<CssFile> files, IEnumerable<CssDirectory> directories)
+        /// <summary>
+        /// Add the css files to the cache so that they are monitored for any changes.
+        /// </summary>
+        /// <param name="outputUri">The path for the crushed css file.</param>
+        /// <param name="filesToWatch">Files that are crushed.</param>
+        /// <param name="assetFilesToWatch">The css asset files referenced by the css files.</param>
+        /// <param name="files">The css files to be crushed.</param>
+        /// <param name="foldersToWatch"> </param>
+        /// <param name="directories">The css directories to be crushed. </param>
+        public virtual void AddGroupToCache(Uri outputUri, IEnumerable<CssFileToWatch> filesToWatch, IEnumerable<FileInfo> assetFilesToWatch, IEnumerable<CssFile> files, IEnumerable<Talifun.FileWatcher.IEnhancedFileSystemWatcher> foldersToWatch, IEnumerable<CssDirectory> directories)
         {
             var fileNames = new List<string>
             {
@@ -155,6 +182,7 @@ namespace Talifun.Web.Crusher
 				AssetFilesToWatch = assetFilesToWatch,
 				FilesToWatch = filesToWatch,
                 Files = files,
+                FoldersToWatch = foldersToWatch,
 				Directories = directories,
             };
 
@@ -166,6 +194,24 @@ namespace Talifun.Web.Crusher
                 Cache.NoSlidingExpiration,
                 CacheItemPriority.High,
                 FileRemoved);
+
+            foreach (var enhancedFileSystemWatcher in foldersToWatch)
+            {
+                enhancedFileSystemWatcher.AllFilesFinishedChangingEvent += OnAllFilesFinishedChangingEvent;
+                enhancedFileSystemWatcher.UserState = outputUri;
+                enhancedFileSystemWatcher.Start();
+            }
+        }
+
+        /// <summary>
+        /// When files have finished changing it means we should should remove them from the cache
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void OnAllFilesFinishedChangingEvent(object sender, FileWatcher.AllFilesFinishedChangingEventArgs e)
+        {
+            var outputUri = (Uri)e.UserState;
+            RemoveGroup(outputUri);
         }
 
         /// <summary>
@@ -179,6 +225,11 @@ namespace Talifun.Web.Crusher
         public virtual void FileRemoved(string key, object value, CacheItemRemovedReason reason)
         {
             var cacheItem = (CssCacheItem)value;
+            foreach (var enhancedFileSystemWatcher in cacheItem.FoldersToWatch)
+            {
+                enhancedFileSystemWatcher.Stop();
+                enhancedFileSystemWatcher.AllFilesFinishedChangingEvent -= OnAllFilesFinishedChangingEvent;
+            }
             switch (reason)
             {
                 case CacheItemRemovedReason.DependencyChanged:
@@ -186,7 +237,7 @@ namespace Talifun.Web.Crusher
                     break;
                 case CacheItemRemovedReason.Underused:
                 case CacheItemRemovedReason.Expired:
-					AddGroupToCache(cacheItem.OutputUri, cacheItem.FilesToWatch, cacheItem.AssetFilesToWatch, cacheItem.Files, cacheItem.Directories);
+					AddGroupToCache(cacheItem.OutputUri, cacheItem.FilesToWatch, cacheItem.AssetFilesToWatch, cacheItem.Files, cacheItem.FoldersToWatch, cacheItem.Directories);
                     break;
             }
         }

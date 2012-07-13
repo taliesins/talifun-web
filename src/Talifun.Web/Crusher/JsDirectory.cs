@@ -2,6 +2,16 @@
 {
     public class JsDirectory
     {
+        /// <summary>
+        /// Filter file names
+        /// </summary>
+        public virtual string Filter { get; set; }
+
+        /// <summary>
+        /// The amount of time to wait without file changes before considering file changed
+        /// </summary>
+        public virtual int PollTime { get; set; }
+
 		/// <summary>
 		/// Should sub directories be scanned for js files as well. 
 		/// </summary>
