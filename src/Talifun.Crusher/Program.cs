@@ -235,13 +235,20 @@ namespace Talifun.Crusher
                 }
 
                 var outputUri = new Uri(pathProvider.ToAbsolute(group.OutputFilePath), UriKind.Relative);
-                cssCrusher.CreateGroup(outputUri, files, directories, group.AppendHashToCssAsset);
-
+                var output = cssCrusher.CreateGroup(outputUri, files, directories, group.AppendHashToCssAsset);
+                
                 _cssOutput += outputUri + " (" + group.Name + ")\r\n";
-                foreach (var cssFile in files)
+                _cssOutput += outputUri + "   (Css)\r\n";
+                foreach (var cssFile in output.FilesToWatch)
                 {
                     outputUri = new Uri(pathProvider.ToAbsolute(cssFile.FilePath), UriKind.Relative);
-                    _cssOutput += "    " + outputUri + "\r\n";
+                    _cssOutput += "      " + outputUri + "\r\n";
+                }
+                _cssOutput += outputUri + "   (Css Assets)\r\n";
+                foreach (var cssAssetFile in output.CssAssetFilePaths)
+                {
+                    outputUri = new Uri(pathProvider.ToAbsolute(cssAssetFile.FullName), UriKind.Relative);
+                    _cssOutput += "      " + outputUri + "\r\n";
                 }
             }
 
@@ -276,10 +283,10 @@ namespace Talifun.Crusher
                 }
 
                 var outputUri = new Uri(pathProvider.ToAbsolute(group.OutputFilePath), UriKind.Relative);
-                jsCrusher.AddGroup(outputUri, files, directories);
+                var output = jsCrusher.AddGroup(outputUri, files, directories);
 
                 _jsOutput += outputUri + " (" + group.Name + ")\r\n";
-                foreach (var jsFile in files)
+                foreach (var jsFile in output.FilesToWatch)
                 {
                     outputUri = new Uri(pathProvider.ToAbsolute(jsFile.FilePath), UriKind.Relative);
                     _jsOutput += "    " + outputUri + "\r\n";

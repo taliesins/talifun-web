@@ -36,12 +36,14 @@ namespace Talifun.Web.Crusher
     	/// <param name="outputUri">The virtual path for the crushed js file.</param>
     	/// <param name="files">The js files to be crushed.</param>
     	/// <param name="directories">The js directories to be crushed. </param>
-    	public virtual void AddGroup(Uri outputUri, IEnumerable<JsFile> files, IEnumerable<JsDirectory> directories)
+    	public virtual JsCrushedOutput AddGroup(Uri outputUri, IEnumerable<JsFile> files, IEnumerable<JsDirectory> directories)
         {
             var outputFileInfo = new FileInfo(PathProvider.MapPath(outputUri));
 			var crushedContent = ProcessGroup(outputFileInfo, files, directories);            
             RetryableFileWriter.SaveContentsToFile(crushedContent.Output, outputFileInfo);
             AddGroupToCache(outputUri, crushedContent.FilesToWatch, files, crushedContent.FoldersToWatch, directories);
+
+    	    return crushedContent;
         }
 
         /// <summary>

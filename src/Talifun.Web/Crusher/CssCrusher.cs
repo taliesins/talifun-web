@@ -38,13 +38,15 @@ namespace Talifun.Web.Crusher
     	/// <param name="files">The css files to be crushed.</param>
     	/// <param name="directories"> </param>
     	/// <param name="appendHashToAssets">Should css assets have a hash appended to them.</param>
-    	public virtual void CreateGroup(Uri outputUri, IEnumerable<CssFile> files, IEnumerable<CssDirectory> directories, bool appendHashToAssets)
+    	public virtual CssCrushedOutput CreateGroup(Uri outputUri, IEnumerable<CssFile> files, IEnumerable<CssDirectory> directories, bool appendHashToAssets)
         {
             var outputFileInfo = new FileInfo(PathProvider.MapPath(outputUri));
             var crushedContent = ProcessGroup(outputFileInfo, outputUri, files, directories, appendHashToAssets);
             
             RetryableFileWriter.SaveContentsToFile(crushedContent.Output, outputFileInfo);
 			AddGroupToCache(outputUri, crushedContent.FilesToWatch, crushedContent.CssAssetFilePaths, files, crushedContent.FoldersToWatch, directories);
+
+    	    return crushedContent;
         }
 
         /// <summary>

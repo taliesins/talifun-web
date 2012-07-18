@@ -12,7 +12,7 @@ namespace Talifun.Web.Crusher
     	/// <param name="cssFiles">The css files to be crushed.</param>
     	/// <param name="cssDirectories">The css directories to be crushed.</param>
     	/// <param name="appendHashToAssets">Should css assets have a hash appended to them.</param>
-    	void CreateGroup(Uri outputUri, IEnumerable<CssFile> cssFiles, IEnumerable<CssDirectory> cssDirectories , bool appendHashToAssets);
+        CssCrushedOutput CreateGroup(Uri outputUri, IEnumerable<CssFile> cssFiles, IEnumerable<CssDirectory> cssDirectories, bool appendHashToAssets);
 
         /// <summary>
         /// Remove a group from being crushed.
