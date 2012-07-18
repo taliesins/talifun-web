@@ -197,18 +197,18 @@ namespace Talifun.Web.Crusher
 
             foreach (var enhancedFileSystemWatcher in foldersToWatch)
             {
-                enhancedFileSystemWatcher.AllFilesFinishedChangingEvent += OnAllFilesFinishedChangingEvent;
+                enhancedFileSystemWatcher.FileActivityFinishedEvent += OnFileActivityFinishedEvent;
                 enhancedFileSystemWatcher.UserState = outputUri;
                 enhancedFileSystemWatcher.Start();
             }
         }
 
         /// <summary>
-        /// When files have finished changing it means we should should remove them from the cache
+        /// When file events have finished it means we should should remove them from the cache
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        protected void OnAllFilesFinishedChangingEvent(object sender, FileWatcher.AllFilesFinishedChangingEventArgs e)
+        protected void OnFileActivityFinishedEvent(object sender, FileWatcher.FileActivityFinishedEventArgs e)
         {
             var outputUri = (Uri)e.UserState;
             RemoveGroup(outputUri);
@@ -228,7 +228,7 @@ namespace Talifun.Web.Crusher
             foreach (var enhancedFileSystemWatcher in cacheItem.FoldersToWatch)
             {
                 enhancedFileSystemWatcher.Stop();
-                enhancedFileSystemWatcher.AllFilesFinishedChangingEvent -= OnAllFilesFinishedChangingEvent;
+                enhancedFileSystemWatcher.FileActivityFinishedEvent -= OnFileActivityFinishedEvent;
             }
             switch (reason)
             {
