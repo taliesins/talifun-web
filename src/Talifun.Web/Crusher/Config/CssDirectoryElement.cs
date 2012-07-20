@@ -11,10 +11,11 @@ namespace Talifun.Web.Crusher.Config
     {
         private static ConfigurationPropertyCollection properties = new ConfigurationPropertyCollection();
         private static readonly ConfigurationProperty name = new ConfigurationProperty("name", typeof(string), null, ConfigurationPropertyOptions.IsRequired);
-        private static readonly ConfigurationProperty filePath = new ConfigurationProperty("filePath", typeof(string), null, ConfigurationPropertyOptions.IsRequired);
+        private static readonly ConfigurationProperty directoryPath = new ConfigurationProperty("directoryPath", typeof(string), null, ConfigurationPropertyOptions.IsRequired);
         private static readonly ConfigurationProperty compressionType = new ConfigurationProperty("compressionType", typeof(CssCompressionType), CssCompressionType.Hybrid, ConfigurationPropertyOptions.None);
 		private static readonly ConfigurationProperty includeSubDirectories = new ConfigurationProperty("includeSubDirectories", typeof(bool), true, ConfigurationPropertyOptions.None);
-		private static readonly ConfigurationProperty filter = new ConfigurationProperty("filter", typeof(string), "*.css", ConfigurationPropertyOptions.None);
+        private static readonly ConfigurationProperty includeFilter = new ConfigurationProperty("includeFilter", typeof(string), ".*\\.css", ConfigurationPropertyOptions.None);
+        private static readonly ConfigurationProperty excludeFilter = new ConfigurationProperty("excludeFilter", typeof(string), "crushed\\..*\\.css", ConfigurationPropertyOptions.None);
         private static readonly ConfigurationProperty pollTime = new ConfigurationProperty("pollTime", typeof(int), 2, ConfigurationPropertyOptions.None);
 		
         /// <summary>
@@ -24,10 +25,11 @@ namespace Talifun.Web.Crusher.Config
         static CssDirectoryElement()
         {
             properties.Add(name);
-            properties.Add(filePath);
+            properties.Add(directoryPath);
             properties.Add(compressionType);
 			properties.Add(includeSubDirectories);
-			properties.Add(filter);
+			properties.Add(includeFilter);
+            properties.Add(excludeFilter);
             properties.Add(pollTime);
         }
 
@@ -42,13 +44,13 @@ namespace Talifun.Web.Crusher.Config
         }
 
         /// <summary>
-        /// The file path for the css file
+        /// The directory path for the css file
         /// </summary>
-        [ConfigurationProperty("filePath", DefaultValue = null, IsRequired = true)]
-        public string FilePath
+        [ConfigurationProperty("directoryPath", DefaultValue = null, IsRequired = true)]
+        public string DirectoryPath
         {
-            get { return ((string)base[filePath]); }
-            set { base[filePath] = value; }
+            get { return ((string)base[directoryPath]); }
+            set { base[directoryPath] = value; }
         }
 
         /// <summary>
@@ -74,12 +76,23 @@ namespace Talifun.Web.Crusher.Config
 		/// <summary>
 		/// Filter to be used for selecting files in directories.
 		/// </summary>
-		[ConfigurationProperty("filter", DefaultValue = "", IsRequired = false)]
-		public string Filter
+        [ConfigurationProperty("includeFilter", DefaultValue = ".*\\.css", IsRequired = false)]
+		public string IncludeFilter
 		{
-			get { return ((string)base[filter]); }
-			set { base[filter] = value; }
+			get { return ((string)base[includeFilter]); }
+			set { base[includeFilter] = value; }
 		}
+
+        /// <summary>
+        /// Filter to be used for excluding files in directories.
+        /// </summary>
+        /// <remarks>Applied after the include filter.</remarks>
+        [ConfigurationProperty("excludeFilter", DefaultValue = "crushed\\..*\\.css", IsRequired = false)]
+        public string ExcludeFilter
+        {
+            get { return ((string)base[excludeFilter]); }
+            set { base[excludeFilter] = value; }
+        }
 
         /// <summary>
         /// Filter to be used for selecting files in directories.

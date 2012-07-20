@@ -127,7 +127,7 @@ namespace Talifun.Web.Crusher.Config
 		[ConfigurationProperty("directories", DefaultValue = null, IsDefaultCollection = true)]
 		public CssDirectoryElementCollection Directories
 		{
-			get { return ((CssDirectoryElementCollection)base[files]); }
+			get { return ((CssDirectoryElementCollection)base[directories]); }
 		}
 
         /// <summary>

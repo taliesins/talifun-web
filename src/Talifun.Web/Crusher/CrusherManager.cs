@@ -112,10 +112,11 @@ namespace Talifun.Web.Crusher
 					var directory = new CssDirectory()
 					{
 						CompressionType = cssDirectory.CompressionType,
-						FilePath = cssDirectory.FilePath,
+						DirectoryPath = cssDirectory.DirectoryPath,
                         IncludeSubDirectories = cssDirectory.IncludeSubDirectories,
                         PollTime = cssDirectory.PollTime,
-                        Filter = cssDirectory.Filter
+                        IncludeFilter = cssDirectory.IncludeFilter,
+                        ExcludeFilter = cssDirectory.ExcludeFilter
 					};
 					directories.Add(directory);
 				}
@@ -149,10 +150,11 @@ namespace Talifun.Web.Crusher
 					var directory = new JsDirectory()
 					{
 						CompressionType = jsDirectory.CompressionType,
-						FilePath = jsDirectory.FilePath,
+						DirectoryPath = jsDirectory.DirectoryPath,
                         IncludeSubDirectories = jsDirectory.IncludeSubDirectories,
                         PollTime = jsDirectory.PollTime,
-                        Filter = jsDirectory.Filter
+                        IncludeFilter = jsDirectory.IncludeFilter,
+                        ExcludeFilter = jsDirectory.ExcludeFilter
 					};
 					directories.Add(directory);
 				}

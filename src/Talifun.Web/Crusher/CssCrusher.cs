@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web.Caching;
+using Talifun.FileWatcher;
 using Talifun.Web.Helper;
 using Yahoo.Yui.Compressor;
 
@@ -64,15 +65,15 @@ namespace Talifun.Web.Crusher
             });
 
             var filesInDirectoriesToWatch = directories
-                .SelectMany(x =>
-                    Directory.GetFiles(x.FilePath, "*", SearchOption.AllDirectories)
-                    .Where(y => Regex.IsMatch(y, x.Filter, RegexOptions.Compiled | RegexOptions.IgnoreCase))
+                .SelectMany(x => new DirectoryInfo(PathProvider.MapPath(x.DirectoryPath))
+                    .GetFiles( "*", SearchOption.AllDirectories)
+                    .Where(y => (string.IsNullOrEmpty(x.IncludeFilter) || Regex.IsMatch(y.Name, x.IncludeFilter, RegexOptions.Compiled | RegexOptions.IgnoreCase))
+                    && (string.IsNullOrEmpty(x.ExcludeFilter) || !Regex.IsMatch(y.Name, x.ExcludeFilter, RegexOptions.Compiled | RegexOptions.IgnoreCase)))
                     .Select(y => new CssFileToWatch()
                     {
                         CompressionType = x.CompressionType,
-                        FilePath = y
+                        FilePath = PathProvider.ToRelative(y.FullName).ToString()
                     }));
-
 
             return filesInDirectoriesToWatch.Concat(filesToWatch).Distinct(new CssFileToWatchEqualityComparer());
         }
@@ -101,7 +102,7 @@ namespace Talifun.Web.Crusher
             var foldersToWatch = directories
                 .Select(x =>
                     Talifun.FileWatcher.EnhancedFileSystemWatcherFactory.Instance
-                    .CreateEnhancedFileSystemWatcher(x.FilePath, x.Filter, x.PollTime, x.IncludeSubDirectories));
+                    .CreateEnhancedFileSystemWatcher(PathProvider.MapPath(x.DirectoryPath), x.IncludeFilter, x.ExcludeFilter, x.PollTime, x.IncludeSubDirectories));
 
             foreach (var fileToProcess in filesToProcess)
             {
@@ -213,7 +214,11 @@ namespace Talifun.Web.Crusher
         protected void OnFileActivityFinishedEvent(object sender, FileWatcher.FileActivityFinishedEventArgs e)
         {
             var outputUri = (Uri)e.UserState;
-            RemoveGroup(outputUri);
+
+            if (e.FileEventItems.Any(x => x.FileEventType != FileEventType.InDirectory))
+            {
+                RemoveGroup(outputUri);
+            }
         }
 
         /// <summary>

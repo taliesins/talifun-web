@@ -26,7 +26,7 @@ namespace Talifun.Web.Crusher
             var resolvedFilePath = PathProvider.MapPath(filePath);
             FileInfo = new FileInfo(resolvedFilePath);
             CssRootUri = cssRootUri;
-            RelativeRootUri = GetRelativeRootUri(filePath);
+            RelativeRootUri = PathProvider.GetRelativeRootUri(filePath);
 
             AppendHashToAssets = appendHashToAssets;
         }
@@ -61,7 +61,7 @@ namespace Talifun.Web.Crusher
                             _contents = ProcessDotLess(_contents);
                         }
 
-                        var cssRootPathUri = GetRootPathUri(CssRootUri);
+                        var cssRootPathUri = PathProvider.GetRootPathUri(CssRootUri);
                         var distinctRelativePaths = CssPathRewriter.FindDistinctRelativePaths(_contents);
                         _contents = CssPathRewriter.RewriteCssPathsToBeRelativeToPath(distinctRelativePaths,
                                                                                       cssRootPathUri,
@@ -154,46 +154,6 @@ namespace Talifun.Web.Crusher
             }
 
             return CssPathRewriter.RewriteCssPathsToAppendHash(distinctLocalPathsThatExist, cssRootPathUri, fileContents);
-        }
-
-        protected Uri GetUriDirectory(Uri uri)
-        {
-            var path = uri.OriginalString;
-
-            var queryStringPosition = path.IndexOf('?');
-
-            if (queryStringPosition > -1)
-            {
-                path = path.Substring(0, queryStringPosition);
-            }
-
-            var startIndex = path.Length - Path.GetFileName(path).Length;
-
-            path = path.Remove(startIndex);
-
-            return new Uri(path, UriKind.RelativeOrAbsolute);
-        }
-
-        protected Uri GetRootPathUri(Uri rootUri)
-        {
-            var cssRootPathUri = GetUriDirectory(rootUri);
-            cssRootPathUri = !rootUri.IsAbsoluteUri
-                                       ? new Uri(PathProvider.MapPath(rootUri))
-                                       : cssRootPathUri;
-
-            return cssRootPathUri;
-        }
-
-        protected Uri GetRelativeRootUri(string filePath)
-        {
-            var cssFilePath = PathProvider.ToAbsolute(filePath);
-
-            var relativeRootUri = GetUriDirectory(new Uri(cssFilePath, UriKind.RelativeOrAbsolute));
-            relativeRootUri = !relativeRootUri.IsAbsoluteUri
-                                  ? new Uri(PathProvider.MapPath(relativeRootUri))
-                                  : relativeRootUri;
-
-            return relativeRootUri;
         }
     }
 }

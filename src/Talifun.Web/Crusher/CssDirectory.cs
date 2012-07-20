@@ -5,7 +5,12 @@
         /// <summary>
         /// Filter file names
         /// </summary>
-        public virtual string Filter { get; set; }
+        public virtual string IncludeFilter { get; set; }
+
+        /// <summary>
+        /// Exclude filter file names
+        /// </summary>
+        public virtual string ExcludeFilter { get; set; }
 
         /// <summary>
         /// The amount of time to wait without file changes before considering file changed
@@ -20,7 +25,7 @@
         /// <summary>
         /// The file path where the css file will be created.
         /// </summary>
-        public virtual string FilePath { get; set; }
+        public virtual string DirectoryPath { get; set; }
 
         /// <summary>
         /// Compression type to use on css file

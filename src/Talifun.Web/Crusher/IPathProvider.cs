@@ -10,5 +10,10 @@ namespace Talifun.Web.Crusher
         string MapPath(Uri rootPath, Uri url);
         string ToAbsolute(string virtualPath);
         string ToAbsolute(string virtualPath, string applicationPath);
+        
+        Uri GetUriDirectory(Uri uri);
+        Uri GetRootPathUri(Uri rootUri);
+        Uri GetRelativeRootUri(string filePath);
+        Uri ToRelative(string filePath);
     }
 }

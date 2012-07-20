@@ -14,6 +14,7 @@
             <li><asp:HyperLink ID="DebugCrushedHyperlink" runat="server" Text="Debug Crushed Page" NavigateUrl="~/DebugCrushedPage.aspx"/></li>
             <li><asp:HyperLink ID="UrlCrushedHyperLink" runat="server" Text="Url Crushed Page" NavigateUrl="~/UrlCrushedPage.aspx"/></li>
             <li><asp:HyperLink ID="UncrushedHyperLink" runat="server" Text="Uncrushed Page" NavigateUrl="~/UncrushedPage.aspx"/></li>
+            <li><asp:HyperLink ID="ConventionCrushedHyperLink" runat="server" Text="Convention Crushed Page" NavigateUrl="~/ConventionPage.aspx"/></li>
         </ul>
     </div>
     </form>

@@ -41,7 +41,7 @@
     <xs:attribute name="filePath" type="xs:string" use="required">
       <xs:annotation>
         <xs:documentation>
-          The file path for the generated css file.
+          The file path for the css file to crush.
         </xs:documentation>
       </xs:annotation>
     </xs:attribute>
@@ -56,10 +56,10 @@
 
   <xs:complexType name="cssDirectory">
     <xs:attribute name="name" type="xs:string" use="required" />
-    <xs:attribute name="filePath" type="xs:string" use="required">
+    <xs:attribute name="directoryPath" type="xs:string" use="required">
       <xs:annotation>
         <xs:documentation>
-          The file path for the generated css file.
+          The directory path to watch for css files.
         </xs:documentation>
       </xs:annotation>
     </xs:attribute>
@@ -77,10 +77,17 @@
         </xs:documentation>
       </xs:annotation>
     </xs:attribute>
-    <xs:attribute name="filter" type="xs:string" default="" >
+    <xs:attribute name="includeFilter" type="xs:string" default=".*\.css" >
       <xs:annotation>
         <xs:documentation>
           Regular expressions to match file names against.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="excludeFilter" type="xs:string" default="crushed\..*\.css" >
+      <xs:annotation>
+        <xs:documentation>
+          Regular expressions to exclude matched file names against.
         </xs:documentation>
       </xs:annotation>
     </xs:attribute>
@@ -88,7 +95,7 @@
   
 	<xs:complexType name="cssGroup">
 		<xs:all>
-			<xs:element name="files">
+			<xs:element name="files" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence >
 						<xs:element name="file" type="cssFile" minOccurs="0" maxOccurs="unbounded">
@@ -96,7 +103,15 @@
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
-		</xs:all>
+      <xs:element name="directories" minOccurs="0" maxOccurs="1">
+        <xs:complexType>
+          <xs:sequence >
+            <xs:element name="directory" type="cssDirectory" minOccurs="0" maxOccurs="unbounded">
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:all>
 		<xs:attributeGroup ref="typeGroup"></xs:attributeGroup>
 		<xs:attribute name="media" type="xs:string" default="screen">
 			<xs:annotation>
@@ -122,7 +137,7 @@
     <xs:attribute name="filePath" type="xs:string" use="required">
       <xs:annotation>
         <xs:documentation>
-          The file path for the generated js file.
+          The file path for the js file to crush.
         </xs:documentation>
       </xs:annotation>
     </xs:attribute>
@@ -137,10 +152,10 @@
 
   <xs:complexType name="jsDirectory">
     <xs:attribute name="name" type="xs:string" use="required" />
-    <xs:attribute name="filePath" type="xs:string" use="required">
+    <xs:attribute name="directoryPath" type="xs:string" use="required">
       <xs:annotation>
         <xs:documentation>
-          The file path for the generated js file.
+          The directory path to watch for js files.
         </xs:documentation>
       </xs:annotation>
     </xs:attribute>
@@ -158,18 +173,25 @@
         </xs:documentation>
       </xs:annotation>
     </xs:attribute>
-    <xs:attribute name="filter" type="xs:string" default="" >
+    <xs:attribute name="includeFilter" type="xs:string" default=".*\.js" >
       <xs:annotation>
         <xs:documentation>
           Regular expressions to match file names against.
         </xs:documentation>
       </xs:annotation>
-    </xs:attribute>     
+    </xs:attribute>
+    <xs:attribute name="excludeFilter" type="xs:string" default="crushed\..*\.js" >
+      <xs:annotation>
+        <xs:documentation>
+          Regular expressions to exclude matched file names against.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>    
   </xs:complexType>
   
 	<xs:complexType name="jsGroup">
 		<xs:all>
-			<xs:element name="files">
+			<xs:element name="files" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
 						<xs:element name="file" type="jsFile" minOccurs="0" maxOccurs="unbounded">
@@ -177,6 +199,14 @@
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
+      <xs:element name="directories" minOccurs="0" maxOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="directory" type="jsDirectory" minOccurs="0" maxOccurs="unbounded">
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
 		</xs:all>
 		<xs:attributeGroup ref="typeGroup"></xs:attributeGroup>
 	</xs:complexType>

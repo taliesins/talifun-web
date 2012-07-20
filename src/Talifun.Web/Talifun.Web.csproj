@@ -75,8 +75,8 @@
     <Reference Include="System.Web.Abstractions" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.Xml" />
-    <Reference Include="Talifun.FileWatcher">
-      <HintPath>..\..\packages\Talifun.FileWatcher.1.0.2.0\lib\net40\Talifun.FileWatcher.dll</HintPath>
+    <Reference Include="Talifun.FileWatcher, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Talifun.FileWatcher.1.5.0.0\lib\net40\Talifun.FileWatcher.dll</HintPath>
     </Reference>
     <Reference Include="Yahoo.Yui.Compressor">
       <HintPath>..\..\packages\YUICompressor.NET.1.7.1.0\lib\net35\Yahoo.Yui.Compressor.dll</HintPath>
@@ -282,7 +282,6 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

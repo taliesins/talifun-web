@@ -104,5 +104,56 @@ namespace Talifun.Web.Crusher
         {
             return VirtualPathUtility.ToAbsolute(virtualPath, applicationPath);
         }
+
+        public virtual Uri GetUriDirectory(Uri uri)
+        {
+            var path = uri.OriginalString;
+
+            var queryStringPosition = path.IndexOf('?');
+
+            if (queryStringPosition > -1)
+            {
+                path = path.Substring(0, queryStringPosition);
+            }
+
+            var startIndex = path.Length - Path.GetFileName(path).Length;
+
+            path = path.Remove(startIndex);
+
+            return new Uri(path, UriKind.RelativeOrAbsolute);
+        }
+
+        public virtual Uri GetRootPathUri(Uri rootUri)
+        {
+            var cssRootPathUri = GetUriDirectory(rootUri);
+            cssRootPathUri = !rootUri.IsAbsoluteUri
+                                       ? new Uri(MapPath(rootUri))
+                                       : cssRootPathUri;
+
+            return cssRootPathUri;
+        }
+
+        public virtual Uri GetRelativeRootUri(string filePath)
+        {
+            var cssFilePath = ToAbsolute(filePath);
+
+            var relativeRootUri = GetUriDirectory(new Uri(cssFilePath, UriKind.RelativeOrAbsolute));
+            relativeRootUri = !relativeRootUri.IsAbsoluteUri
+                                  ? new Uri(MapPath(relativeRootUri))
+                                  : relativeRootUri;
+
+            return relativeRootUri;
+        }
+
+
+        public virtual Uri ToRelative(string filePath)
+        {
+            var absolutePathUri = new Uri(filePath);
+            var rootUri = new Uri(PhysicalApplicationPath);
+
+            var relativeUri = new Uri("~/" + rootUri.MakeRelativeUri(absolutePathUri), UriKind.Relative);
+
+            return relativeUri;
+        }
     }
 }

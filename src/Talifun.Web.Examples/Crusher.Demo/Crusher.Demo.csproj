@@ -60,6 +60,7 @@
     <Reference Include="System.Web.Mobile" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ConventionPage.aspx" />
     <Content Include="CrushedPage.aspx" />
     <Content Include="DebugCrushedPage.aspx" />
     <Content Include="Default.aspx" />
@@ -87,7 +88,9 @@
     <Content Include="Static\Js\test.js" />
     <Content Include="UncrushedPage.aspx" />
     <Content Include="UrlCrushedPage.aspx" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
