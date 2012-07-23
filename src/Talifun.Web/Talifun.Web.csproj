@@ -105,6 +105,9 @@
     <Compile Include="Crusher\CssFileToWatch.cs" />
     <Compile Include="Crusher\JsFileToWatch.cs" />
     <Compile Include="Crusher\JsFileToWatchEqualityComparer.cs" />
+    <Compile Include="CssSprite\Config\ImageDirectoryElement.cs" />
+    <Compile Include="CssSprite\Config\ImageDirectoryElementCollection.cs" />
+    <Compile Include="CssSprite\ImageDirectory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Cache\HttpCacheManager.cs" />
     <Compile Include="Compress\CompressionModuleHelper.cs" />

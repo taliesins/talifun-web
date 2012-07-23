@@ -139,12 +139,6 @@ namespace Talifun.Web.Crusher
 				}
 			}
 
-        	var crushedOutput = new CssCrushedOutput
-            {
-                Output = uncompressedContents,
-                CssAssetFilePaths = localCssAssetFilesThatExist
-            };
-
             var crushedOutput = new CssCrushedOutput
             {
                 Output = uncompressedContents,

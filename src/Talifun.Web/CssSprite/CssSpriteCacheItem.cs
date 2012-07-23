@@ -9,6 +9,7 @@ namespace Talifun.Web.CssSprite
         public FileInfo ImageOutputPath { get; set; }
         public FileInfo CssOutputPath { get; set; }
         public Uri SpriteImageUrl { get; set; }
-        public IEnumerable<ImageFile> ImageFiles { get; set; }
+        public IEnumerable<ImageFile> Files { get; set; }
+        public IEnumerable<ImageDirectory> Directories { get; set; }
     }
 }

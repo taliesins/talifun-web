@@ -113,7 +113,7 @@ namespace Talifun.Web.CssSprite
                     directories.Add(directory);
                 }
 
-                _cssSpriteCreator.AddFiles(imageOutputPath, imageUri, cssOutputPath, files);
+                _cssSpriteCreator.AddFiles(imageOutputPath, imageUri, cssOutputPath, files, directories);
             }
         }
 

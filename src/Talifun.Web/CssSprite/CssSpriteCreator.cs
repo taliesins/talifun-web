@@ -48,7 +48,7 @@ namespace Talifun.Web.CssSprite
             var etag = SaveSpritesImage(spriteElements, imageOutputPath);
             var css = GetCssSpriteCss(spriteElements, etag, spriteImageUrl);
             RetryableFileWriter.SaveContentsToFile(css, cssOutputPath);
-            AddFilesToCache(imageOutputPath, spriteImageUrl, cssOutputPath, files);
+            AddFilesToCache(imageOutputPath, spriteImageUrl, cssOutputPath, files, directories);
         }
 
         /// <summary>
@@ -166,13 +166,13 @@ namespace Talifun.Web.CssSprite
         /// <param name="spriteImageUrl">Sprite image url.</param>
         /// <param name="cssOutputPath">Sprite css output path.</param>
         /// <param name="files">The component images for the sprite.</param>
-        public virtual void AddFilesToCache(FileInfo imageOutputPath, Uri spriteImageUrl, FileInfo cssOutputPath, IEnumerable<ImageFile> files)
+        public virtual void AddFilesToCache(FileInfo imageOutputPath, Uri spriteImageUrl, FileInfo cssOutputPath, IEnumerable<ImageFile> files, IEnumerable<ImageDirectory> directories)
         {
             var fileNames = new List<string>
-                                {
-                                    imageOutputPath.FullName,
-                                    cssOutputPath.FullName
-                                };
+            {
+                imageOutputPath.FullName,
+                cssOutputPath.FullName
+            };
 
             foreach (var file in files)
             {
@@ -181,7 +181,8 @@ namespace Talifun.Web.CssSprite
 
             var cssSpriteCacheItem = new CssSpriteCacheItem()
             {
-                ImageFiles = files,
+                Files = files,
+                Directories = directories,
                 CssOutputPath = cssOutputPath,
                 ImageOutputPath = imageOutputPath,
                 SpriteImageUrl = spriteImageUrl
@@ -212,11 +213,11 @@ namespace Talifun.Web.CssSprite
             switch (reason)
             {
                 case CacheItemRemovedReason.DependencyChanged:
-                    AddFiles(cssSpriteCacheItem.ImageOutputPath, cssSpriteCacheItem.SpriteImageUrl, cssSpriteCacheItem.CssOutputPath, cssSpriteCacheItem.ImageFiles);
+                    AddFiles(cssSpriteCacheItem.ImageOutputPath, cssSpriteCacheItem.SpriteImageUrl, cssSpriteCacheItem.CssOutputPath, cssSpriteCacheItem.Files, cssSpriteCacheItem.Directories);
                     break;
                 case CacheItemRemovedReason.Underused:
                 case CacheItemRemovedReason.Expired:
-                    AddFilesToCache(cssSpriteCacheItem.ImageOutputPath, cssSpriteCacheItem.SpriteImageUrl, cssSpriteCacheItem.CssOutputPath, cssSpriteCacheItem.ImageFiles);
+                    AddFilesToCache(cssSpriteCacheItem.ImageOutputPath, cssSpriteCacheItem.SpriteImageUrl, cssSpriteCacheItem.CssOutputPath, cssSpriteCacheItem.Files, cssSpriteCacheItem.Directories);
                     break;
             }
         }

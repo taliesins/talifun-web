@@ -12,7 +12,7 @@ namespace Talifun.Web.Crusher.Config
         private static ConfigurationPropertyCollection properties = new ConfigurationPropertyCollection();
         private static readonly ConfigurationProperty name = new ConfigurationProperty("name", typeof(string), null, ConfigurationPropertyOptions.IsRequired);
         private static readonly ConfigurationProperty directoryPath = new ConfigurationProperty("directoryPath", typeof(string), null, ConfigurationPropertyOptions.IsRequired);
-        private static readonly ConfigurationProperty compressionType = new ConfigurationProperty("compressionType", typeof(CssCompressionType), CssCompressionType.Hybrid, ConfigurationPropertyOptions.None);
+        private static readonly ConfigurationProperty compressionType = new ConfigurationProperty("compressionType", typeof(CssCompressionType), CssCompressionType.YahooYui, ConfigurationPropertyOptions.None);
 		private static readonly ConfigurationProperty includeSubDirectories = new ConfigurationProperty("includeSubDirectories", typeof(bool), true, ConfigurationPropertyOptions.None);
         private static readonly ConfigurationProperty includeFilter = new ConfigurationProperty("includeFilter", typeof(string), ".*\\.css", ConfigurationPropertyOptions.None);
         private static readonly ConfigurationProperty excludeFilter = new ConfigurationProperty("excludeFilter", typeof(string), "crushed\\..*\\.css", ConfigurationPropertyOptions.None);
@@ -56,7 +56,7 @@ namespace Talifun.Web.Crusher.Config
         /// <summary>
         /// The compression type to use for the css file
         /// </summary>
-        [ConfigurationProperty("compressionType", DefaultValue = CssCompressionType.Hybrid, IsRequired = false)]
+        [ConfigurationProperty("compressionType", DefaultValue = CssCompressionType.YahooYui, IsRequired = false)]
         public CssCompressionType CompressionType
         {
             get { return ((CssCompressionType)base[compressionType]); }

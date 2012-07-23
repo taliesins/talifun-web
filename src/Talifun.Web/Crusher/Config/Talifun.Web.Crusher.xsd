@@ -63,7 +63,7 @@
         </xs:documentation>
       </xs:annotation>
     </xs:attribute>
-    <xs:attribute name="compressionType" type="cssCompressionType" default="Hybrid" >
+    <xs:attribute name="compressionType" type="cssCompressionType" default="YahooYui" >
       <xs:annotation>
         <xs:documentation>
           The compression method to use when adding a css file to the generated css file.
@@ -159,7 +159,7 @@
         </xs:documentation>
       </xs:annotation>
     </xs:attribute>
-    <xs:attribute name="compressionType" type="jsCompressionType" default="Min" >
+    <xs:attribute name="compressionType" type="jsCompressionType" default="YahooYui" >
       <xs:annotation>
         <xs:documentation>
           The compression method to use when adding a js file to the generated js file.

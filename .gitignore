@@ -7,6 +7,8 @@
 *.csproj.user
 *.TeamCity.user
 *.DotSettings.user
+crushed.*.css
+crushed.*.js
 
 # Resharper
 *[Rr]e[Ss]harper.user
