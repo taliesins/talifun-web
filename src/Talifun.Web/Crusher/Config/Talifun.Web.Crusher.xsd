@@ -45,7 +45,7 @@
         </xs:documentation>
       </xs:annotation>
     </xs:attribute>
-    <xs:attribute name="compressionType" type="cssCompressionType" default="Hybrid" >
+    <xs:attribute name="compressionType" type="cssCompressionType" default="YahooYui" >
       <xs:annotation>
         <xs:documentation>
           The compression method to use when adding a css file to the generated css file.
@@ -94,7 +94,7 @@
         </xs:documentation>
       </xs:annotation>
     </xs:attribute>
-    <xs:attribute name="compressionType" type="jsCompressionType" default="Min" >
+    <xs:attribute name="compressionType" type="jsCompressionType" default="YahooYui" >
       <xs:annotation>
         <xs:documentation>
           The compression method to use when adding a js file to the generated js file.
@@ -126,14 +126,21 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="Min" >
+			<xs:enumeration value="YahooYui" >
 				<xs:annotation>
 					<xs:documentation>
-						Compress js using jsmin method.
-					</xs:documentation>
+            Compress js using Yahoo Yui Compressor method.
+          </xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-		</xs:restriction>
+      <xs:enumeration value="MicrosoftAjaxMin" >
+        <xs:annotation>
+          <xs:documentation>
+            Compress js using Microsoft Ajax Min Compressor method.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
 	</xs:simpleType>
 
 	<xs:simpleType name="cssCompressionType" >
@@ -145,26 +152,21 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="StockYuiCompressor">
+			<xs:enumeration value="YahooYui">
 				<xs:annotation>
 					<xs:documentation>
-						Compress css using Stock Yui Compressor method.
-					</xs:documentation>
+            Compress css using Yahoo Yui Compressor method.
+          </xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="MichaelAshRegexEnhancements">
-				<xs:annotation>
-					<xs:documentation>
-						Compress css using Miachael Ash Regex Enhancements method.
-					</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="Hybrid">
-				<xs:annotation>
-					<xs:documentation>Compress css using a combinitation of Stock Yui Compressor and Michael Ash Regex Enhancements Compressor methods.</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-		</xs:restriction>
+      <xs:enumeration value="MicrosoftAjaxMin">
+        <xs:annotation>
+          <xs:documentation>
+            Compress css using Microsoft Ajax Min Compressor method.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
 	</xs:simpleType>
 
 	<xs:element name="Crusher">

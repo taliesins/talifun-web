@@ -11,8 +11,13 @@
         None,
 
         /// <summary>
-        /// Use jsmin to compress the js file
+		/// Compress js using Yahoo Yui Compressor method.
         /// </summary>
-        Min
+        YahooYui,
+
+		/// <summary>
+		/// Compress js using Microsoft Ajax Min Compressor method.
+		/// </summary>
+		MicrosoftAjaxMin,
     }
 }

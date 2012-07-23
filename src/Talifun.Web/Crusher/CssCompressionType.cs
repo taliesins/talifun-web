@@ -9,8 +9,7 @@
         /// Do not use any compression at all on css file
         /// </summary>
         None,
-        StockYuiCompressor,
-        MichaelAshRegexEnhancements,
-        Hybrid
+        YahooYui,
+		MicrosoftAjaxMin
     }
 }
