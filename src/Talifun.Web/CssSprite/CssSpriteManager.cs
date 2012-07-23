@@ -97,6 +97,22 @@ namespace Talifun.Web.CssSprite
                     files.Add(file);
                 }
 
+                var directories = new List<ImageDirectory>();
+
+                foreach (ImageDirectoryElement imageDirectory in group.Directories)
+                {
+                    var directory = new ImageDirectory()
+                    {
+                        DirectoryPath = imageDirectory.DirectoryPath,
+                        ExcludeFilter = imageDirectory.ExcludeFilter,
+                        IncludeFilter = imageDirectory.IncludeFilter,
+                        IncludeSubDirectories = imageDirectory.IncludeSubDirectories,
+                        PollTime = imageDirectory.PollTime
+                    };
+
+                    directories.Add(directory);
+                }
+
                 _cssSpriteCreator.AddFiles(imageOutputPath, imageUri, cssOutputPath, files);
             }
         }

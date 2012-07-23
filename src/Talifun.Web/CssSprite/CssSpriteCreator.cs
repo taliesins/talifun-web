@@ -40,7 +40,8 @@ namespace Talifun.Web.CssSprite
         /// <param name="spriteImageUrl">Sprite image url.</param>
         /// <param name="cssOutputPath">Sprite css output path.</param>
         /// <param name="files">The component images for the sprite.</param>
-        public virtual void AddFiles(FileInfo imageOutputPath, Uri spriteImageUrl, FileInfo cssOutputPath, IEnumerable<ImageFile> files)
+        /// <param name="directories">The component images via convention for the sprite </param>
+        public virtual void AddFiles(FileInfo imageOutputPath, Uri spriteImageUrl, FileInfo cssOutputPath, IEnumerable<ImageFile> files, IEnumerable<ImageDirectory> directories)
         {
             var spriteElements = ProcessFiles(files);
             spriteElements = CalculatePositions(spriteElements);

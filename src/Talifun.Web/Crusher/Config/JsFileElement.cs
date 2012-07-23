@@ -12,7 +12,7 @@ namespace Talifun.Web.Crusher.Config
         private static ConfigurationPropertyCollection properties = new ConfigurationPropertyCollection();
         private static readonly ConfigurationProperty name = new ConfigurationProperty("name", typeof(string), null, ConfigurationPropertyOptions.IsRequired);
         private static readonly ConfigurationProperty filePath = new ConfigurationProperty("filePath", typeof(string), null, ConfigurationPropertyOptions.IsRequired);
-        private static readonly ConfigurationProperty compressionType = new ConfigurationProperty("compressionType", typeof(JsCompressionType), JsCompressionType.Min, ConfigurationPropertyOptions.None);
+        private static readonly ConfigurationProperty compressionType = new ConfigurationProperty("compressionType", typeof(JsCompressionType), JsCompressionType.YahooYui, ConfigurationPropertyOptions.None);
 		
         /// <summary>
         /// Initializes the <see cref="JsFileElement"/> class.
@@ -48,7 +48,7 @@ namespace Talifun.Web.Crusher.Config
         /// <summary>
         /// The compression type to use for the css file
         /// </summary>
-        [ConfigurationProperty("compressionType", DefaultValue = JsCompressionType.Min, IsRequired = false)]
+        [ConfigurationProperty("compressionType", DefaultValue = JsCompressionType.YahooYui, IsRequired = false)]
         public JsCompressionType CompressionType
         {
             get { return ((JsCompressionType)base[compressionType]); }

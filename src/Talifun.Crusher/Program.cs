@@ -314,13 +314,29 @@ namespace Talifun.Crusher
 					files.Add(file);
 				}
 
+                var directories = new List<ImageDirectory>();
+
+                foreach (ImageDirectoryElement imageDirectory in group.Directories)
+                {
+                    var directory = new ImageDirectory()
+                    {
+                        DirectoryPath = imageDirectory.DirectoryPath,
+                        ExcludeFilter = imageDirectory.ExcludeFilter,
+                        IncludeFilter = imageDirectory.IncludeFilter,
+                        IncludeSubDirectories = imageDirectory.IncludeSubDirectories,
+                        PollTime = imageDirectory.PollTime
+                    };
+
+                    directories.Add(directory);
+                }
+
 				var cssOutPutUri = string.IsNullOrEmpty(group.CssUrl) ? new Uri(pathProvider.ToAbsolute(group.CssOutputFilePath), UriKind.Relative) : new Uri(group.CssUrl, UriKind.RelativeOrAbsolute);
 				var cssOutputPath = new FileInfo(pathProvider.MapPath(group.CssOutputFilePath));
 
 				var imageOutputUri = string.IsNullOrEmpty(group.ImageUrl) ? new Uri(pathProvider.ToAbsolute(group.ImageOutputFilePath), UriKind.Relative) : new Uri(group.ImageUrl, UriKind.RelativeOrAbsolute);
 				var imageOutputPath = new FileInfo(pathProvider.MapPath(group.ImageOutputFilePath));
-				
-				cssSpriteCreator.AddFiles(imageOutputPath, imageOutputUri, cssOutputPath, files);
+
+                cssSpriteCreator.AddFiles(imageOutputPath, imageOutputUri, cssOutputPath, files, directories);
 
 				_cssSpriteOutput += cssOutPutUri + "(" + group.Name + ")\r\n";
 				_cssSpriteOutput += imageOutputUri + "(" + group.Name + ")\r\n";

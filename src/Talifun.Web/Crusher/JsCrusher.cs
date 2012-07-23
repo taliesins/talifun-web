@@ -7,7 +7,6 @@ using System.Text.RegularExpressions;
 using System.Web.Caching;
 using Talifun.FileWatcher;
 using Talifun.Web.Helper;
-using Yahoo.Yui.Compressor;
 
 namespace Talifun.Web.Crusher
 {
@@ -20,6 +19,8 @@ namespace Talifun.Web.Crusher
         protected readonly IPathProvider PathProvider;
         protected readonly IRetryableFileOpener RetryableFileOpener;
         protected readonly IRetryableFileWriter RetryableFileWriter;
+    	protected readonly Lazy<Yahoo.Yui.Compressor.JavaScriptCompressor> YahooYuiJavaScriptCompressor;
+    	protected readonly Lazy<Microsoft.Ajax.Utilities.Minifier> MicrosoftAjaxMinJavaScriptCompressor;
         
         protected static string JsCrusherType = typeof(JsCrusher).ToString();
 
@@ -29,6 +30,8 @@ namespace Talifun.Web.Crusher
             PathProvider = pathProvider;
             RetryableFileOpener = retryableFileOpener;
             RetryableFileWriter = retryableFileWriter;
+			YahooYuiJavaScriptCompressor = new Lazy<Yahoo.Yui.Compressor.JavaScriptCompressor>();
+        	MicrosoftAjaxMinJavaScriptCompressor = new Lazy<Microsoft.Ajax.Utilities.Minifier>();
         }
 
     	/// <summary>
@@ -84,7 +87,8 @@ namespace Talifun.Web.Crusher
     	public virtual JsCrushedOutput ProcessGroup(FileInfo outputFileInfo, IEnumerable<JsFile> files, IEnumerable<JsDirectory> directories)
         {
             var uncompressedContents = new StringBuilder();
-            var toBeCompressedContents = new StringBuilder();
+            var yahooYuiToBeCompressedContents = new StringBuilder();
+			var microsoftAjaxMinToBeCompressedContents = new StringBuilder();
 
     		var filesToWatch = GetFilesToWatch(files, directories);
     	    var foldersToWatch = directories
@@ -100,17 +104,26 @@ namespace Talifun.Web.Crusher
                     case JsCompressionType.None:
                         uncompressedContents.AppendLine(fileToProcess.GetContents());
                         break;
-                    case JsCompressionType.Min:
-                        toBeCompressedContents.AppendLine(fileToProcess.GetContents());
+                    case JsCompressionType.YahooYui:
+                        yahooYuiToBeCompressedContents.AppendLine(fileToProcess.GetContents());
                         break;
+					case JsCompressionType.MicrosoftAjaxMin:
+                		microsoftAjaxMinToBeCompressedContents.AppendLine(fileToProcess.GetContents());
+                		break;
                 }
             }
 
-            if (toBeCompressedContents.Length > 0)
+            if (yahooYuiToBeCompressedContents.Length > 0)
             {
-                uncompressedContents.Append(JavaScriptCompressor.Compress(toBeCompressedContents.ToString()));
+                uncompressedContents.Append(YahooYuiJavaScriptCompressor.Value.Compress(yahooYuiToBeCompressedContents.ToString()));
             }
 
+			if (microsoftAjaxMinToBeCompressedContents.Length > 0)
+			{
+				uncompressedContents.Append(MicrosoftAjaxMinJavaScriptCompressor.Value.MinifyJavaScript(microsoftAjaxMinToBeCompressedContents.ToString()));
+			}
+
+           
             var crushedOutput = new JsCrushedOutput
             {
                 Output = uncompressedContents,

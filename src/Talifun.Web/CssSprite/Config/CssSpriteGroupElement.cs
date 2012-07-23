@@ -13,6 +13,7 @@ namespace Talifun.Web.CssSprite.Config
         private static readonly ConfigurationProperty cssUrl = new ConfigurationProperty("cssUrl", typeof(string), null, ConfigurationPropertyOptions.None);
         private static readonly ConfigurationProperty imageUrl = new ConfigurationProperty("imageUrl", typeof(string), null, ConfigurationPropertyOptions.None);
         private static readonly ConfigurationProperty files = new ConfigurationProperty("files", typeof(ImageFileElementCollection), null, ConfigurationPropertyOptions.None | ConfigurationPropertyOptions.IsDefaultCollection);
+        private static readonly ConfigurationProperty directories = new ConfigurationProperty("directories", typeof(ImageDirectoryElementCollection), null, ConfigurationPropertyOptions.None | ConfigurationPropertyOptions.IsDefaultCollection);
 
          /// <summary>
         /// Initializes the <see cref="CssSpriteGroupElement"/> class.
@@ -26,6 +27,7 @@ namespace Talifun.Web.CssSprite.Config
             properties.Add(cssUrl);
             properties.Add(imageUrl);
             properties.Add(files);
+            properties.Add(directories);
         }
 
         /// <summary>
@@ -93,6 +95,17 @@ namespace Talifun.Web.CssSprite.Config
         public ImageFileElementCollection Files
         {
             get { return ((ImageFileElementCollection)base[files]); }
+        }
+
+        /// <summary>
+        /// Gets a <see cref="ImageDirectoryElementCollection" /> containing the <see cref="ProviderSettingsCollection" /> elements
+        /// for the conversion type to run upon matching.
+        /// </summary>
+        /// <value>A <see cref="ImageDirectoryElement" /> containing the configuration elements associated with this configuration section.</value>
+        [ConfigurationProperty("directories", DefaultValue = null, IsDefaultCollection = true)]
+        public ImageDirectoryElementCollection Directories
+        {
+            get { return ((ImageDirectoryElementCollection)base[files]); }
         }
 
         /// <summary>

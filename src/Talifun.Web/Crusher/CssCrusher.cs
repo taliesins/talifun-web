@@ -7,7 +7,6 @@ using System.Text.RegularExpressions;
 using System.Web.Caching;
 using Talifun.FileWatcher;
 using Talifun.Web.Helper;
-using Yahoo.Yui.Compressor;
 
 namespace Talifun.Web.Crusher
 {
@@ -22,6 +21,8 @@ namespace Talifun.Web.Crusher
         protected readonly IRetryableFileWriter RetryableFileWriter;
         protected readonly ICssPathRewriter CssPathRewriter;
         protected static string CssCrusherType = typeof(CssCrusher).ToString();
+		protected readonly Lazy<Yahoo.Yui.Compressor.CssCompressor> YahooYuiCssCompressor;
+		protected readonly Lazy<Microsoft.Ajax.Utilities.Minifier> MicrosoftAjaxMinCssCompressor;
 
         public CssCrusher(ICacheManager cacheManager, IPathProvider pathProvider, IRetryableFileOpener retryableFileOpener, IRetryableFileWriter retryableFileWriter, ICssPathRewriter cssPathRewriter)
         {
@@ -30,6 +31,8 @@ namespace Talifun.Web.Crusher
             RetryableFileOpener = retryableFileOpener;
             RetryableFileWriter = retryableFileWriter;
             CssPathRewriter = cssPathRewriter;
+			YahooYuiCssCompressor = new Lazy<Yahoo.Yui.Compressor.CssCompressor>();
+			MicrosoftAjaxMinCssCompressor = new Lazy<Microsoft.Ajax.Utilities.Minifier>();
         }
 
     	/// <summary>
@@ -89,9 +92,8 @@ namespace Talifun.Web.Crusher
     	public virtual CssCrushedOutput ProcessGroup(FileInfo outputFileInfo, Uri cssRootUri, IEnumerable<CssFile> files, IEnumerable<CssDirectory> directories, bool appendHashToAssets)
         {
             var uncompressedContents = new StringBuilder();
-            var toBeStockYuiCompressedContents = new StringBuilder();
-            var toBeMichaelAshRegexCompressedContents = new StringBuilder();
-            var toBeHybridCompressedContents = new StringBuilder();
+            var yahooYuiToBeCompressedContents = new StringBuilder();
+			var microsoftAjaxMintoBeCompressedContents = new StringBuilder();
             var localCssAssetFilesThatExist = new List<FileInfo>();
 
     		var filesToWatch = GetFilesToWatch(files, directories);
@@ -111,35 +113,37 @@ namespace Talifun.Web.Crusher
                     case CssCompressionType.None:
                         uncompressedContents.AppendLine(fileToProcess.GetContents());
                         break;
-                    case CssCompressionType.StockYuiCompressor:
-                        toBeStockYuiCompressedContents.AppendLine(fileToProcess.GetContents());
+                    case CssCompressionType.YahooYui:
+                        yahooYuiToBeCompressedContents.AppendLine(fileToProcess.GetContents());
                         break;
-                    case CssCompressionType.MichaelAshRegexEnhancements:
-                        toBeMichaelAshRegexCompressedContents.AppendLine(fileToProcess.GetContents());
-                        break;
-                    case CssCompressionType.Hybrid:
-                        toBeHybridCompressedContents.AppendLine(fileToProcess.GetContents());
-                        break;
+					case CssCompressionType.MicrosoftAjaxMin:
+						microsoftAjaxMintoBeCompressedContents.AppendLine(fileToProcess.GetContents());
+                		break;
                 }
 
                 var cssAssets = fileToProcess.GetLocalCssAssetFilesThatExist();
                 localCssAssetFilesThatExist.AddRange(cssAssets);
             }
 
-            if (toBeStockYuiCompressedContents.Length > 0)
-            {
-				uncompressedContents.Append(CssCompressor.Compress(toBeStockYuiCompressedContents.ToString(), 0, Yahoo.Yui.Compressor.CssCompressionType.StockYuiCompressor, true));
-            }
+			if (yahooYuiToBeCompressedContents.Length > 0)
+			{
+				{
+					uncompressedContents.Append(YahooYuiCssCompressor.Value.Compress(yahooYuiToBeCompressedContents.ToString()));
+				}
+			}
 
-            if (toBeMichaelAshRegexCompressedContents.Length > 0)
-            {
-				uncompressedContents.Append(CssCompressor.Compress(toBeMichaelAshRegexCompressedContents.ToString(), 0, Yahoo.Yui.Compressor.CssCompressionType.MichaelAshRegexEnhancements, true));
-            }
+			if (microsoftAjaxMintoBeCompressedContents.Length > 0)
+			{
+				{
+					uncompressedContents.Append(MicrosoftAjaxMinCssCompressor.Value.MinifyStyleSheet(microsoftAjaxMintoBeCompressedContents.ToString()));
+				}
+			}
 
-            if (toBeHybridCompressedContents.Length > 0)
+        	var crushedOutput = new CssCrushedOutput
             {
-				uncompressedContents.Append(CssCompressor.Compress(toBeHybridCompressedContents.ToString(), 0, Yahoo.Yui.Compressor.CssCompressionType.Hybrid, true));
-            }
+                Output = uncompressedContents,
+                CssAssetFilePaths = localCssAssetFilesThatExist
+            };
 
             var crushedOutput = new CssCrushedOutput
             {
