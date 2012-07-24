@@ -43,42 +43,40 @@ namespace Talifun.Web.CssSprite
         /// <param name="cssOutputPath">Sprite css output path.</param>
         /// <param name="files">The component images for the sprite.</param>
         /// <param name="directories">The component images via convention for the sprite </param>
-        public virtual IEnumerable<FileInfo> AddFiles(FileInfo imageOutputPath, Uri spriteImageUrl, FileInfo cssOutputPath, IEnumerable<ImageFile> files, IEnumerable<ImageDirectory> directories)
+        public virtual IEnumerable<ImageFile> AddFiles(FileInfo imageOutputPath, Uri spriteImageUrl, FileInfo cssOutputPath, IEnumerable<ImageFile> files, IEnumerable<ImageDirectory> directories)
         {
-            var spriteElements = ProcessFiles(files);
+            var filesToWatch = GetFilesToWatch(files, directories);
+
+            var foldersToWatch = directories
+                .Select(x => Talifun.FileWatcher.EnhancedFileSystemWatcherFactory.Instance
+                .CreateEnhancedFileSystemWatcher(PathProvider.MapPath(x.DirectoryPath), x.IncludeFilter, x.ExcludeFilter, x.PollTime, x.IncludeSubDirectories));
+
+            var spriteElements = ProcessFiles(filesToWatch);
             spriteElements = CalculatePositions(spriteElements);
             var etag = SaveSpritesImage(spriteElements, imageOutputPath);
             var css = GetCssSpriteCss(spriteElements, etag, spriteImageUrl);
             RetryableFileWriter.SaveContentsToFile(css, cssOutputPath);
-
-            var filesToWatch = GetFilesToWatch(files, directories);
-         
-            var foldersToWatch = directories
-                .Select(x => Talifun.FileWatcher.EnhancedFileSystemWatcherFactory.Instance
-                .CreateEnhancedFileSystemWatcher(PathProvider.MapPath(x.DirectoryPath), x.IncludeFilter, x.ExcludeFilter, x.PollTime, x.IncludeSubDirectories));
 
             AddFilesToCache(imageOutputPath, spriteImageUrl, cssOutputPath, filesToWatch, files, foldersToWatch, directories);
 
             return filesToWatch;
         }
 
-        private IEnumerable<FileInfo> GetFilesToWatch(IEnumerable<ImageFile> files, IEnumerable<ImageDirectory> directories)
+        private IEnumerable<ImageFile> GetFilesToWatch(IEnumerable<ImageFile> files, IEnumerable<ImageDirectory> directories)
         {
-            var filesToWatch = new List<FileInfo>();
-
-            foreach (var file in files)
-            {
-                filesToWatch.Add(new FileInfo(PathProvider.MapPath(file.FilePath)));
-            }
-
             var filesInDirectoriesToWatch = directories
                 .SelectMany(x => new DirectoryInfo(PathProvider.MapPath(x.DirectoryPath))
                     .GetFiles("*", SearchOption.AllDirectories)
                     .Where(y => (string.IsNullOrEmpty(x.IncludeFilter) || Regex.IsMatch(y.Name, x.IncludeFilter, RegexOptions.Compiled | RegexOptions.IgnoreCase))
                     && (string.IsNullOrEmpty(x.ExcludeFilter) || !Regex.IsMatch(y.Name, x.ExcludeFilter, RegexOptions.Compiled | RegexOptions.IgnoreCase)))
-                    );
+                    )
+                    .Select(x=>new ImageFile()
+                        {
+                            Name = x.Name,
+                            FilePath = PathProvider.ToRelative(x.FullName).ToString(),
+                        });
 
-            return filesInDirectoriesToWatch.Concat(filesToWatch).Distinct();
+            return filesInDirectoriesToWatch.Concat(files).Distinct();
         }
 
         /// <summary>
@@ -207,14 +205,14 @@ namespace Talifun.Web.CssSprite
         /// <param name="outputUri">Sprite image url.</param>
         /// <param name="cssOutputPath">Sprite css output path.</param>
         /// <param name="files">The component images for the sprite.</param>
-        public virtual void AddFilesToCache(FileInfo imageOutputPath, Uri outputUri, FileInfo cssOutputPath, IEnumerable<FileInfo> filesToWatch, IEnumerable<ImageFile> files, IEnumerable<Talifun.FileWatcher.IEnhancedFileSystemWatcher> foldersToWatch, IEnumerable<ImageDirectory> directories)
+        public virtual void AddFilesToCache(FileInfo imageOutputPath, Uri outputUri, FileInfo cssOutputPath, IEnumerable<ImageFile> filesToWatch, IEnumerable<ImageFile> files, IEnumerable<Talifun.FileWatcher.IEnhancedFileSystemWatcher> foldersToWatch, IEnumerable<ImageDirectory> directories)
         {
             var fileNames = new List<string>
             {
                 imageOutputPath.FullName,
                 cssOutputPath.FullName
             };
-            fileNames.AddRange(filesToWatch.Select(fileToWatch => fileToWatch.FullName));
+            fileNames.AddRange(filesToWatch.Select(fileToWatch => PathProvider.MapPath(fileToWatch.FilePath)));
 
             var cssSpriteCacheItem = new CssSpriteCacheItem()
             {
@@ -222,6 +220,8 @@ namespace Talifun.Web.CssSprite
                 Directories = directories,
                 CssOutputPath = cssOutputPath,
                 ImageOutputPath = imageOutputPath,
+                FoldersToWatch = foldersToWatch,
+                FilesToWatch = filesToWatch,
                 SpriteImageUrl = outputUri
             };
 
@@ -317,7 +317,16 @@ namespace Talifun.Web.CssSprite
             
             foreach (var element in spriteElements)
             {
-                cssBuilder.AppendFormat(".{0} {{background-image: url('{1}');background-position: -{2}px -{3}px;width: {4}px;height: {5}px;}}", element.Name, cssSpriteImageUrl + "?" + etag, element.Rectangle.X+element.BorderWidth, element.Rectangle.Y+element.BorderWidth, element.Image.Width, element.Image.Height);    
+                var className = element.Name.Replace(".", "_").Replace(" ", "_");
+                if (className.Length < 1)
+                {
+                    continue;
+                }
+                if (Char.IsDigit(className[0]))
+                {
+                    className = "_" + className;
+                }
+                cssBuilder.AppendFormat(".{0} {{background-image: url('{1}');background-position: -{2}px -{3}px;width: {4}px;height: {5}px;}}", className, cssSpriteImageUrl + "?" + etag, element.Rectangle.X + element.BorderWidth, element.Rectangle.Y + element.BorderWidth, element.Image.Width, element.Image.Height);    
             }
 
             return cssBuilder.ToString();

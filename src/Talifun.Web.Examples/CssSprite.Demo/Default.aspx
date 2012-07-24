@@ -13,6 +13,7 @@
         <ul>
             <li><asp:HyperLink ID="GoodCssSpriteHyperLink" runat="server" Text="Good Css Sprite" NavigateUrl="~/GoodCssSprite.aspx"/></li>
             <li><asp:HyperLink ID="BadCssSpriteHyperlink" runat="server" Text="Bad Css Sprite" NavigateUrl="~/BadCssSprite.aspx"/></li>
+            <li><asp:HyperLink ID="ConventionCssSpriteHyperLink" runat="server" Text="Convention Css Sprite" NavigateUrl="~/ConventionCssSprite.aspx"/></li>
         </ul>
         
         The generated sprite image has to be a png and it will be upsized to 32 bit colour to support transparency.

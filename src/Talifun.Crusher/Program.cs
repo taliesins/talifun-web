@@ -342,7 +342,7 @@ namespace Talifun.Crusher
 				_cssSpriteOutput += imageOutputUri + "(" + group.Name + ")\r\n";
                 foreach (var filesToWatch in output)
 				{
-                    imageOutputUri = new Uri(pathProvider.ToAbsolute(filesToWatch.FullName), UriKind.Relative);
+                    imageOutputUri = new Uri(pathProvider.ToAbsolute(filesToWatch.FilePath), UriKind.Relative);
 					_cssSpriteOutput += "    " + imageOutputUri + "\r\n";
 				}
 			}

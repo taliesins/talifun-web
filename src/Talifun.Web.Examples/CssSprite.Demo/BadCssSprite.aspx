@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" >
 <head runat="server">
     <title></title>
-    <link id="Link1" runat="server" href="~/Static/Css/bad-css-sprite.css" rel="stylesheet" type="text/css" />
+    <link id="Link1" runat="server" href="~/Static/Css/crushed.bad-css-sprite.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
     <form id="form1" runat="server">

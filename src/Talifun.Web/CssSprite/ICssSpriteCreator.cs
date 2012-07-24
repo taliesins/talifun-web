@@ -6,7 +6,7 @@ namespace Talifun.Web.CssSprite
 {
     public interface ICssSpriteCreator
     {
-        IEnumerable<FileInfo> AddFiles(FileInfo imageOutputPath, Uri spriteImageUrl, FileInfo cssOutputPath, IEnumerable<ImageFile> files, IEnumerable<ImageDirectory> directories);
+        IEnumerable<ImageFile> AddFiles(FileInfo imageOutputPath, Uri spriteImageUrl, FileInfo cssOutputPath, IEnumerable<ImageFile> files, IEnumerable<ImageDirectory> directories);
         void RemoveFiles(Uri spriteImageUrl);
     }
 }

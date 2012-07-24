@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="BadCssSprite.aspx" />
+    <Content Include="ConventionCssSprite.aspx" />
     <Content Include="Default.aspx" />
     <Content Include="GoodCssSprite.aspx" />
     <Content Include="Static\Image\bad\background-nav-ages-11-14.gif" />
