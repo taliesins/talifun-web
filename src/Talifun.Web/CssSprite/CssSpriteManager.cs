@@ -121,14 +121,12 @@ namespace Talifun.Web.CssSprite
         {
             foreach (CssSpriteGroupElement group in _cssSpriteGroups)
             {
-                var imageOutputPath = new FileInfo(_pathProvider.MapPath(group.ImageOutputFilePath));
                 var imageUrl = string.IsNullOrEmpty(group.ImageUrl)
                                    ? VirtualPathUtility.ToAbsolute(group.ImageOutputFilePath)
                                    : group.ImageUrl;
                 var imageUri = new Uri(imageUrl, UriKind.RelativeOrAbsolute);
-                var cssOutputPath = new FileInfo(_pathProvider.MapPath(group.CssOutputFilePath));
 
-                _cssSpriteCreator.RemoveFiles(imageOutputPath, imageUri, cssOutputPath);
+                _cssSpriteCreator.RemoveFiles(imageUri);
             }
 
             if (AppDomain.CurrentDomain != null)

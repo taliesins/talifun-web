@@ -5,7 +5,9 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web.Caching;
+using Talifun.FileWatcher;
 using Talifun.Web.Crusher;
 using Talifun.Web.Helper;
 
@@ -41,14 +43,42 @@ namespace Talifun.Web.CssSprite
         /// <param name="cssOutputPath">Sprite css output path.</param>
         /// <param name="files">The component images for the sprite.</param>
         /// <param name="directories">The component images via convention for the sprite </param>
-        public virtual void AddFiles(FileInfo imageOutputPath, Uri spriteImageUrl, FileInfo cssOutputPath, IEnumerable<ImageFile> files, IEnumerable<ImageDirectory> directories)
+        public virtual IEnumerable<FileInfo> AddFiles(FileInfo imageOutputPath, Uri spriteImageUrl, FileInfo cssOutputPath, IEnumerable<ImageFile> files, IEnumerable<ImageDirectory> directories)
         {
             var spriteElements = ProcessFiles(files);
             spriteElements = CalculatePositions(spriteElements);
             var etag = SaveSpritesImage(spriteElements, imageOutputPath);
             var css = GetCssSpriteCss(spriteElements, etag, spriteImageUrl);
             RetryableFileWriter.SaveContentsToFile(css, cssOutputPath);
-            AddFilesToCache(imageOutputPath, spriteImageUrl, cssOutputPath, files, directories);
+
+            var filesToWatch = GetFilesToWatch(files, directories);
+         
+            var foldersToWatch = directories
+                .Select(x => Talifun.FileWatcher.EnhancedFileSystemWatcherFactory.Instance
+                .CreateEnhancedFileSystemWatcher(PathProvider.MapPath(x.DirectoryPath), x.IncludeFilter, x.ExcludeFilter, x.PollTime, x.IncludeSubDirectories));
+
+            AddFilesToCache(imageOutputPath, spriteImageUrl, cssOutputPath, filesToWatch, files, foldersToWatch, directories);
+
+            return filesToWatch;
+        }
+
+        private IEnumerable<FileInfo> GetFilesToWatch(IEnumerable<ImageFile> files, IEnumerable<ImageDirectory> directories)
+        {
+            var filesToWatch = new List<FileInfo>();
+
+            foreach (var file in files)
+            {
+                filesToWatch.Add(new FileInfo(PathProvider.MapPath(file.FilePath)));
+            }
+
+            var filesInDirectoriesToWatch = directories
+                .SelectMany(x => new DirectoryInfo(PathProvider.MapPath(x.DirectoryPath))
+                    .GetFiles("*", SearchOption.AllDirectories)
+                    .Where(y => (string.IsNullOrEmpty(x.IncludeFilter) || Regex.IsMatch(y.Name, x.IncludeFilter, RegexOptions.Compiled | RegexOptions.IgnoreCase))
+                    && (string.IsNullOrEmpty(x.ExcludeFilter) || !Regex.IsMatch(y.Name, x.ExcludeFilter, RegexOptions.Compiled | RegexOptions.IgnoreCase)))
+                    );
+
+            return filesInDirectoriesToWatch.Concat(filesToWatch).Distinct();
         }
 
         /// <summary>
@@ -72,6 +102,8 @@ namespace Talifun.Web.CssSprite
 
             return spriteElements;
         }
+
+
 
         public List<SpriteElement> CalculatePositions(List<SpriteElement> spriteElements)
         {
@@ -160,24 +192,29 @@ namespace Talifun.Web.CssSprite
         }
 
         /// <summary>
+        /// Remove all css files from being crushed
+        /// </summary>
+        /// <param name="outputUri">The path for the crushed css file.</param>
+        public virtual void RemoveGroup(Uri outputUri)
+        {
+            CacheManager.Remove<CssSpriteCacheItem>(GetKey(outputUri));
+        }
+
+        /// <summary>
         /// Add the images to the cache so that they are monitored for any changes.
         /// </summary>
         /// <param name="imageOutputPath">Sprite image output path.</param>
-        /// <param name="spriteImageUrl">Sprite image url.</param>
+        /// <param name="outputUri">Sprite image url.</param>
         /// <param name="cssOutputPath">Sprite css output path.</param>
         /// <param name="files">The component images for the sprite.</param>
-        public virtual void AddFilesToCache(FileInfo imageOutputPath, Uri spriteImageUrl, FileInfo cssOutputPath, IEnumerable<ImageFile> files, IEnumerable<ImageDirectory> directories)
+        public virtual void AddFilesToCache(FileInfo imageOutputPath, Uri outputUri, FileInfo cssOutputPath, IEnumerable<FileInfo> filesToWatch, IEnumerable<ImageFile> files, IEnumerable<Talifun.FileWatcher.IEnhancedFileSystemWatcher> foldersToWatch, IEnumerable<ImageDirectory> directories)
         {
             var fileNames = new List<string>
             {
                 imageOutputPath.FullName,
                 cssOutputPath.FullName
             };
-
-            foreach (var file in files)
-            {
-				fileNames.Add(PathProvider.MapPath(file.FilePath));
-            }
+            fileNames.AddRange(filesToWatch.Select(fileToWatch => fileToWatch.FullName));
 
             var cssSpriteCacheItem = new CssSpriteCacheItem()
             {
@@ -185,17 +222,39 @@ namespace Talifun.Web.CssSprite
                 Directories = directories,
                 CssOutputPath = cssOutputPath,
                 ImageOutputPath = imageOutputPath,
-                SpriteImageUrl = spriteImageUrl
+                SpriteImageUrl = outputUri
             };
 
             CacheManager.Insert(
-                GetKey(imageOutputPath, spriteImageUrl, cssOutputPath),
+                GetKey(outputUri),
                 cssSpriteCacheItem,
                 new CacheDependency(fileNames.ToArray(), System.DateTime.Now),
                 Cache.NoAbsoluteExpiration,
                 Cache.NoSlidingExpiration,
                 CacheItemPriority.High,
                 FileRemoved);
+
+            foreach (var enhancedFileSystemWatcher in foldersToWatch)
+            {
+                enhancedFileSystemWatcher.FileActivityFinishedEvent += OnFileActivityFinishedEvent;
+                enhancedFileSystemWatcher.UserState = outputUri;
+                enhancedFileSystemWatcher.Start();
+            }
+        }
+
+        /// <summary>
+        /// When file events have finished it means we should should remove them from the cache
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void OnFileActivityFinishedEvent(object sender, FileWatcher.FileActivityFinishedEventArgs e)
+        {
+            var outputUri = (Uri)e.UserState;
+
+            if (e.FileEventItems.Any(x => x.FileEventType != FileEventType.InDirectory))
+            {
+                RemoveGroup(outputUri);
+            }
         }
 
         /// <summary>
@@ -209,7 +268,11 @@ namespace Talifun.Web.CssSprite
         public virtual void FileRemoved(string key, object value, CacheItemRemovedReason reason)
         {
             var cssSpriteCacheItem = (CssSpriteCacheItem)value;
-
+            foreach (var enhancedFileSystemWatcher in cssSpriteCacheItem.FoldersToWatch)
+            {
+                enhancedFileSystemWatcher.Stop();
+                enhancedFileSystemWatcher.FileActivityFinishedEvent -= OnFileActivityFinishedEvent;
+            }
             switch (reason)
             {
                 case CacheItemRemovedReason.DependencyChanged:
@@ -217,7 +280,7 @@ namespace Talifun.Web.CssSprite
                     break;
                 case CacheItemRemovedReason.Underused:
                 case CacheItemRemovedReason.Expired:
-                    AddFilesToCache(cssSpriteCacheItem.ImageOutputPath, cssSpriteCacheItem.SpriteImageUrl, cssSpriteCacheItem.CssOutputPath, cssSpriteCacheItem.Files, cssSpriteCacheItem.Directories);
+                    AddFilesToCache(cssSpriteCacheItem.ImageOutputPath, cssSpriteCacheItem.SpriteImageUrl, cssSpriteCacheItem.CssOutputPath, cssSpriteCacheItem.FilesToWatch, cssSpriteCacheItem.Files, cssSpriteCacheItem.FoldersToWatch, cssSpriteCacheItem.Directories);
                     break;
             }
         }
@@ -225,25 +288,20 @@ namespace Talifun.Web.CssSprite
         /// <summary>
         /// Remove sprite image from cache.
         /// </summary>
-        /// <param name="imageOutputPath">Sprite image output path.</param>
         /// <param name="spriteImageUrl">Sprite image url.</param>
-        /// <param name="cssOutputPath">Sprite css output path.</param>
-        public virtual void RemoveFiles(FileInfo imageOutputPath, Uri spriteImageUrl, FileInfo cssOutputPath)
+        public virtual void RemoveFiles(Uri spriteImageUrl)
         {
-            CacheManager.Remove<CssSpriteCacheItem>(GetKey(imageOutputPath, spriteImageUrl, cssOutputPath));
+            CacheManager.Remove<CssSpriteCacheItem>(GetKey(spriteImageUrl));
         }
 
         /// <summary>
         /// Get the cache key to use.
         /// </summary>
-        /// <param name="imageOutputPath">Sprite image output path.</param>
         /// <param name="spriteImageUrl">Sprite image url.</param>
-        /// <param name="cssOutputPath">Sprite css output path.</param>
         /// <returns></returns>
-        public virtual string GetKey(FileInfo imageOutputPath, Uri spriteImageUrl, FileInfo cssOutputPath)
+        public virtual string GetKey(Uri spriteImageUrl)
         {
-            var prefix = CssSpriteCreatorType + "|";
-            return prefix + imageOutputPath + "|" + spriteImageUrl + "|" + cssOutputPath;
+            return CssSpriteCreatorType + "|" + spriteImageUrl;
         }
 
         /// <summary>

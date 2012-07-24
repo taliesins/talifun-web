@@ -336,13 +336,13 @@ namespace Talifun.Crusher
 				var imageOutputUri = string.IsNullOrEmpty(group.ImageUrl) ? new Uri(pathProvider.ToAbsolute(group.ImageOutputFilePath), UriKind.Relative) : new Uri(group.ImageUrl, UriKind.RelativeOrAbsolute);
 				var imageOutputPath = new FileInfo(pathProvider.MapPath(group.ImageOutputFilePath));
 
-                cssSpriteCreator.AddFiles(imageOutputPath, imageOutputUri, cssOutputPath, files, directories);
+                var output = cssSpriteCreator.AddFiles(imageOutputPath, imageOutputUri, cssOutputPath, files, directories);
 
 				_cssSpriteOutput += cssOutPutUri + "(" + group.Name + ")\r\n";
 				_cssSpriteOutput += imageOutputUri + "(" + group.Name + ")\r\n";
-				foreach (var imageFile in files)
+                foreach (var filesToWatch in output)
 				{
-					imageOutputUri = new Uri(pathProvider.ToAbsolute(imageFile.FilePath), UriKind.Relative);
+                    imageOutputUri = new Uri(pathProvider.ToAbsolute(filesToWatch.FullName), UriKind.Relative);
 					_cssSpriteOutput += "    " + imageOutputUri + "\r\n";
 				}
 			}

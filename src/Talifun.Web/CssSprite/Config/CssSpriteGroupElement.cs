@@ -105,7 +105,7 @@ namespace Talifun.Web.CssSprite.Config
         [ConfigurationProperty("directories", DefaultValue = null, IsDefaultCollection = true)]
         public ImageDirectoryElementCollection Directories
         {
-            get { return ((ImageDirectoryElementCollection)base[files]); }
+            get { return ((ImageDirectoryElementCollection)base[directories]); }
         }
 
         /// <summary>
