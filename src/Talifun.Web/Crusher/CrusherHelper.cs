@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Caching;
 using System.Web.Hosting;
@@ -99,11 +102,22 @@ namespace Talifun.Web.Crusher
                 else
                 {
                     var scriptLinksBuilder = new StringBuilder();
-                    foreach (CssFileElement file in cssGroup.Files)
+
+                    var files = cssGroup.Files.Cast<CssFileElement>()
+                        .Select(file => new FileInfo(MapPath(file.FilePath)));
+
+                    var filesInDirectory = cssGroup.Directories.Cast<CssDirectoryElement>()
+                        .SelectMany(x => new DirectoryInfo(MapPath((x).DirectoryPath))
+                            .GetFiles("*", SearchOption.AllDirectories)
+                            .Where(y => (string.IsNullOrEmpty(x.IncludeFilter) || Regex.IsMatch(y.Name, x.IncludeFilter, RegexOptions.Compiled | RegexOptions.IgnoreCase))
+                            && (string.IsNullOrEmpty(x.ExcludeFilter) || !Regex.IsMatch(y.Name, x.ExcludeFilter, RegexOptions.Compiled | RegexOptions.IgnoreCase))));
+
+                    files = files.Concat(filesInDirectory);
+
+                    foreach (var fileInfo in files)
                     {
-                        var fileInfo = new FileInfo(MapPath(file.FilePath));
                         var etag = Hasher.CalculateMd5Etag(fileInfo);
-                        var url = this.ResolveUrl(file.FilePath);
+                        var url = this.ResolveUrl(ToRelative(fileInfo.FullName).ToString());
 
                         var fileName = fileInfo.Name.ToLower();
 
@@ -160,11 +174,22 @@ namespace Talifun.Web.Crusher
                 else
                 {
                     var scriptLinksBuilder = new StringBuilder();
-                    foreach (JsFileElement file in jsGroup.Files)
+
+                    var files = jsGroup.Files.Cast<JsFileElement>()
+                        .Select(file => new FileInfo(MapPath(file.FilePath)));
+
+                    var filesInDirectory = jsGroup.Directories.Cast<JsDirectoryElement>()
+                        .SelectMany(x => new DirectoryInfo(MapPath((x).DirectoryPath))
+                            .GetFiles("*", SearchOption.AllDirectories)
+                            .Where(y => (string.IsNullOrEmpty(x.IncludeFilter) || Regex.IsMatch(y.Name, x.IncludeFilter, RegexOptions.Compiled | RegexOptions.IgnoreCase))
+                            && (string.IsNullOrEmpty(x.ExcludeFilter) || !Regex.IsMatch(y.Name, x.ExcludeFilter, RegexOptions.Compiled | RegexOptions.IgnoreCase))));
+
+                    files = files.Concat(filesInDirectory);
+
+                    foreach (var fileInfo in files)
                     {
-                        var fileInfo = new FileInfo(MapPath(file.FilePath));
                         var etag = Hasher.CalculateMd5Etag(fileInfo);
-                        var url = this.ResolveUrl(file.FilePath);
+                        var url = this.ResolveUrl(ToRelative(fileInfo.FullName).ToString());
 
                         scriptLinksBuilder.Append("<script language=\"javascript\" type=\"text/javascript\" src=\"" + url + "?" + QuerystringKeyName + "=" + etag + "\"></script>");
                     }
@@ -217,6 +242,16 @@ namespace Talifun.Web.Crusher
         protected string MapPath(string virtualPath)
         {
             return HostingEnvironment.MapPath(virtualPath);
+        }
+
+        public virtual Uri ToRelative(string filePath)
+        {
+            var absolutePathUri = new Uri(filePath);
+            var rootUri = new Uri(HostingEnvironment.ApplicationPhysicalPath);
+
+            var relativeUri = new Uri("~/" + rootUri.MakeRelativeUri(absolutePathUri), UriKind.Relative);
+
+            return relativeUri;
         }
     }
 }
