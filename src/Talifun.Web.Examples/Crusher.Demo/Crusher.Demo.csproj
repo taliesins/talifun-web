@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ConventionPage.aspx" />
+    <Content Include="DebugConventionPage.aspx" />
     <Content Include="CrushedPage.aspx" />
     <Content Include="DebugCrushedPage.aspx" />
     <Content Include="Default.aspx" />

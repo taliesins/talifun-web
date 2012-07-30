@@ -27,7 +27,7 @@ namespace Talifun.Web
             // Now that we have a byte array we can ask the CSP to hash it
             var md5 = new MD5CryptoServiceProvider();
             var hashBytes = md5.ComputeHash(stream);
-            return Convert.ToBase64String(hashBytes);
+            return Convert.ToBase64String(hashBytes, Base64FormattingOptions.None);
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace Talifun.Web
             // Now that we have a byte array we can ask the CSP to hash it
             var md5 = new MD5CryptoServiceProvider();
             var hashBytes = md5.ComputeHash(data);
-            return Convert.ToBase64String(hashBytes);
+            return Convert.ToBase64String(hashBytes, Base64FormattingOptions.None);
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Talifun.Web
                 // Now that we have a byte array we can ask the CSP to hash it
                 var md5 = new MD5CryptoServiceProvider();
                 var hashBytes = md5.ComputeHash(stream);
-                return Convert.ToBase64String(hashBytes);
+                return Convert.ToBase64String(hashBytes, Base64FormattingOptions.None);
             }
         }
     }
