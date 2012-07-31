@@ -1,34 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
+using Talifun.Web.Crusher.CssModule;
 
 namespace Talifun.Web.Crusher
 {
     public class CssFileProcessor
     {
-        private ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
-        protected readonly IRetryableFileOpener RetryableFileOpener;
-        protected readonly IPathProvider PathProvider;
-        protected readonly ICssPathRewriter CssPathRewriter;
-        protected readonly FileInfo FileInfo;
-        protected readonly Uri CssRootUri;
-        protected readonly Uri RelativeRootUri;
-        protected readonly bool AppendHashToAssets;
+        private readonly ReaderWriterLockSlim _contentsLock = new ReaderWriterLockSlim();
+        private readonly ReaderWriterLockSlim _assetsLock = new ReaderWriterLockSlim();
+        private readonly IRetryableFileOpener _retryableFileOpener;
+        private readonly IPathProvider _pathProvider;
+        private readonly ICssPathRewriter _cssPathRewriter;
+        private readonly FileInfo _fileInfo;
+        private readonly Uri _cssRootUri;
+        private readonly List<ICssModule> _modules;
 
         public CssFileProcessor(IRetryableFileOpener retryableFileOpener, IPathProvider pathProvider, ICssPathRewriter cssPathRewriter, string filePath, CssCompressionType compressionType, Uri cssRootUri, bool appendHashToAssets)
         {
-            RetryableFileOpener = retryableFileOpener;
-            PathProvider = pathProvider;
-            CssPathRewriter = cssPathRewriter;
+            _retryableFileOpener = retryableFileOpener;
+            _pathProvider = pathProvider;
+            _cssPathRewriter = cssPathRewriter;
             CompressionType = compressionType;
 
-            var resolvedFilePath = PathProvider.MapPath(filePath);
-            FileInfo = new FileInfo(resolvedFilePath);
-            CssRootUri = cssRootUri;
-            RelativeRootUri = PathProvider.GetRelativeRootUri(filePath);
+            var resolvedFilePath = _pathProvider.MapPath(filePath);
+            _fileInfo = new FileInfo(resolvedFilePath);
+            _cssRootUri = cssRootUri;
+            _pathProvider.GetRelativeRootUri(filePath);
 
-            AppendHashToAssets = appendHashToAssets;
+            _modules = new List<ICssModule>()
+            {
+                new DotLessModule(),
+                new RelativePathModule(cssPathRewriter, pathProvider),
+                new CssAssetsHashModule(appendHashToAssets, cssPathRewriter, pathProvider)
+            };
         }
 
         public CssCompressionType CompressionType { get; protected set; }
@@ -43,38 +50,28 @@ namespace Talifun.Web.Crusher
         /// <returns>The processed contents of a file.</returns>
         public string GetContents()
         {
-            _lock.EnterUpgradeableReadLock();
+            _contentsLock.EnterUpgradeableReadLock();
 
             try
             {
                 if (_contents == null)
                 {
-                    _lock.EnterWriteLock();
+                    _contentsLock.EnterWriteLock();
                     try
                     {
-                        _contents = RetryableFileOpener.ReadAllText(FileInfo);
-
-                        var fileName = FileInfo.Name.ToLower();
-
-                        if (fileName.EndsWith(".less") || fileName.EndsWith(".less.css"))
+                        if (_contents == null)
                         {
-                            _contents = ProcessDotLess(_contents);
-                        }
+                            _contents = _retryableFileOpener.ReadAllText(_fileInfo);
 
-                        var cssRootPathUri = PathProvider.GetRootPathUri(CssRootUri);
-                        var distinctRelativePaths = CssPathRewriter.FindDistinctRelativePaths(_contents);
-                        _contents = CssPathRewriter.RewriteCssPathsToBeRelativeToPath(distinctRelativePaths,
-                                                                                      cssRootPathUri,
-                                                                                      RelativeRootUri, _contents);
-
-                        if (AppendHashToAssets)
-                        {
-                            _contents = ProcessAppendHash(cssRootPathUri, _contents);
+                            foreach (var module in _modules)
+                            {
+                                _contents = module.Process(_cssRootUri, _fileInfo, _contents);
+                            }
                         }
                     }
                     finally
                     {
-                        _lock.ExitWriteLock();
+                        _contentsLock.ExitWriteLock();
                     }
                 }
 
@@ -82,78 +79,60 @@ namespace Talifun.Web.Crusher
             }
             finally
             {
-                _lock.ExitUpgradeableReadLock();
+                _contentsLock.ExitUpgradeableReadLock();
             }
         }
 
-        private DateTime? _lastModified;
-        /// <summary>
-        /// The time the file was last modified in Utc time.
-        /// </summary>
-        /// <returns>Last modifed time.</returns>
-        public DateTime GetLastModified()
-        {
-            if (!_lastModified.HasValue)
-            {
-                _lastModified = FileInfo.LastWriteTimeUtc;
-            }
-            return _lastModified.Value;
-        }
+        private IEnumerable<CssAsset> _localCssAssetFilesThatExist;
 
-        private List<FileInfo> _localCssAssetFilesThatExist;
         /// <summary>
         /// Gets local css assets that exist.
         /// </summary>
         /// <returns>A list of FileInfo of css assets that exist.</returns>
-        public List<FileInfo> GetLocalCssAssetFilesThatExist()
+        public IEnumerable<CssAsset> GetLocalCssAssetFilesThatExist()
         {
-            if (_localCssAssetFilesThatExist == null)
-            {
-                GetContents();
+            _assetsLock.EnterUpgradeableReadLock();
 
+            try
+            {
                 if (_localCssAssetFilesThatExist == null)
                 {
-                    _localCssAssetFilesThatExist = new List<FileInfo>();
+                    _assetsLock.EnterWriteLock();
+                    try
+                    {
+                        if (_localCssAssetFilesThatExist == null)
+                        {
+                            var contents = GetContents();
+                            var cssRootPathUri = _pathProvider.GetRootPathUri(_cssRootUri);
+                            _localCssAssetFilesThatExist = GetCssAssets(cssRootPathUri, contents);
+                        }
+                    }
+                    finally
+                    {
+                        _assetsLock.ExitWriteLock();
+                    }
                 }
-            }
 
-            return _localCssAssetFilesThatExist;
+                return _localCssAssetFilesThatExist;
+            }
+            finally
+            {
+                _assetsLock.ExitUpgradeableReadLock();
+            }
         }
 
-        /// <summary>
-        /// Compiles dot less css file contents.
-        /// </summary>
-        /// <param name="fileContents">Uncompiled css file contents.</param>
-        /// <returns>Compiled css file contents.</returns>
-        protected virtual string ProcessDotLess(string fileContents)
+        private IEnumerable<CssAsset> GetCssAssets(Uri cssRootPathUri, string fileContents)
         {
-            return dotless.Core.Less.Parse(fileContents);
-        }
+            var distinctLocalPaths = _cssPathRewriter.FindDistinctLocalPaths(fileContents);
 
-        protected string ProcessAppendHash(Uri cssRootPathUri, string fileContents)
-        {
-            if (_localCssAssetFilesThatExist == null)
-            {
-                _localCssAssetFilesThatExist = new List<FileInfo>();
-            }
-
-            var distinctLocalPaths = CssPathRewriter.FindDistinctLocalPaths(fileContents);
-            var distinctLocalPathsThatExist = new List<Uri>();
-
-            foreach (var distinctLocalPath in distinctLocalPaths)
-            {
-                var cssAssetFileInfo = new FileInfo(PathProvider.MapPath(cssRootPathUri, distinctLocalPath));
-
-                if (!cssAssetFileInfo.Exists)
+            return distinctLocalPaths
+                .Select(distinctLocalPath => new CssAsset
                 {
-                    continue;
-                }
-
-                distinctLocalPathsThatExist.Add(distinctLocalPath);
-                _localCssAssetFilesThatExist.Add(cssAssetFileInfo);
-            }
-
-            return CssPathRewriter.RewriteCssPathsToAppendHash(distinctLocalPathsThatExist, cssRootPathUri, fileContents);
+                    File = new FileInfo(_pathProvider.MapPath(cssRootPathUri, distinctLocalPath)),
+                    Url = distinctLocalPath
+                })
+                .Where(cssAssetFileInfo => cssAssetFileInfo.File.Exists);
         }
+
     }
 }

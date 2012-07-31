@@ -99,6 +99,11 @@
     <Compile Include="Crusher\Config\CssDirectoryElementCollection.cs" />
     <Compile Include="Crusher\Config\CssDirectoryElement.cs" />
     <Compile Include="Crusher\CsFileToWatchComparer.cs" />
+    <Compile Include="Crusher\CssAsset.cs" />
+    <Compile Include="Crusher\CssModule\CssAssetsHashModule.cs" />
+    <Compile Include="Crusher\CssModule\DotLessModule.cs" />
+    <Compile Include="Crusher\CssModule\ICssModule.cs" />
+    <Compile Include="Crusher\CssModule\RelativePathModule.cs" />
     <Compile Include="Crusher\JsDirectory.cs" />
     <Compile Include="Crusher\CssDirectory.cs" />
     <Compile Include="Crusher\CrusherHelper.cs" />
@@ -292,6 +297,9 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Crusher\JsModule\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

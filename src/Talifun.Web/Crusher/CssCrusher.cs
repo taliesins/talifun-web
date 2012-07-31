@@ -121,7 +121,7 @@ namespace Talifun.Web.Crusher
                 		break;
                 }
 
-                var cssAssets = fileToProcess.GetLocalCssAssetFilesThatExist();
+                var cssAssets = fileToProcess.GetLocalCssAssetFilesThatExist().Select(x=>x.File);
                 localCssAssetFilesThatExist.AddRange(cssAssets);
             }
 

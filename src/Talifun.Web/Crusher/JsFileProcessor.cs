@@ -1,21 +1,26 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using Talifun.Web.Crusher.JsModule;
 
 namespace Talifun.Web.Crusher
 {
     public class JsFileProcessor
     {
-        protected readonly IRetryableFileOpener RetryableFileOpener;
-        protected readonly IPathProvider PathProvider;
-        protected readonly FileInfo FileInfo;
+        private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
+        private readonly IRetryableFileOpener _retryableFileOpener;
+        private readonly IPathProvider _pathProvider;
+        private readonly FileInfo _fileInfo;
+        private readonly List<IJsModule> _modules;
 
         public JsFileProcessor(IRetryableFileOpener retryableFileOpener, IPathProvider pathProvider, string filePath, JsCompressionType compressionType)
         {
-            RetryableFileOpener = retryableFileOpener;
-            PathProvider = pathProvider;
+            _retryableFileOpener = retryableFileOpener;
+            _pathProvider = pathProvider;
             CompressionType = compressionType;
-            var resolvedFilePath = PathProvider.MapPath(filePath);
-            FileInfo = new FileInfo(resolvedFilePath);
+            var resolvedFilePath = _pathProvider.MapPath(filePath);
+            _fileInfo = new FileInfo(resolvedFilePath);
+            _modules = new List<IJsModule>();
         }
 
         public JsCompressionType CompressionType { get; protected set; }
@@ -23,17 +28,33 @@ namespace Talifun.Web.Crusher
         private string _contents;
         public string GetContents()
         {
-            return _contents ?? (_contents = RetryableFileOpener.ReadAllText(FileInfo));
-        }
-
-        private DateTime? _lastModified;
-        public DateTime GetLastModified()
-        {
-            if (!_lastModified.HasValue)
+             _lock.EnterUpgradeableReadLock();
+            try
             {
-                _lastModified = FileInfo.LastWriteTimeUtc;
+                if (_contents == null)
+                {
+                    _lock.EnterWriteLock();
+                    try
+                    {
+                        _contents = _retryableFileOpener.ReadAllText(_fileInfo);
+
+                        foreach (var module in _modules)
+                        {
+                            _contents = module.Process(_fileInfo, _contents);
+                        }
+                    }
+                    finally
+                    {
+                        _lock.ExitWriteLock();
+                    }
+                }
+
+                return _contents;
             }
-            return _lastModified.Value;
+            finally
+            {
+                _lock.ExitUpgradeableReadLock();
+            }
         }
     }
 }
