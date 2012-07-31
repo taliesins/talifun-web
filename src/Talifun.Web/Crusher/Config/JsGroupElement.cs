@@ -13,6 +13,7 @@ namespace Talifun.Web.Crusher.Config
         private static readonly ConfigurationProperty name = new ConfigurationProperty("name", typeof(string), null, ConfigurationPropertyOptions.IsRequired);
         private static readonly ConfigurationProperty outputFilePath = new ConfigurationProperty("outputFilePath", typeof(string), null, ConfigurationPropertyOptions.IsRequired);
         private static readonly ConfigurationProperty url = new ConfigurationProperty("url", typeof(string), null, ConfigurationPropertyOptions.None);
+        private static readonly ConfigurationProperty fallbackCondition = new ConfigurationProperty("fallbackCondition", typeof(string), null, ConfigurationPropertyOptions.None);
         private static readonly ConfigurationProperty debug = new ConfigurationProperty("debug", typeof(bool), null, ConfigurationPropertyOptions.IsRequired);
         private static readonly ConfigurationProperty files = new ConfigurationProperty("files", typeof(JsFileElementCollection), null, ConfigurationPropertyOptions.None | ConfigurationPropertyOptions.IsDefaultCollection);
 		private static readonly ConfigurationProperty directories = new ConfigurationProperty("directories", typeof(JsDirectoryElementCollection), null, ConfigurationPropertyOptions.None | ConfigurationPropertyOptions.IsDefaultCollection);
@@ -26,6 +27,7 @@ namespace Talifun.Web.Crusher.Config
             properties.Add(name);
             properties.Add(outputFilePath);
             properties.Add(url);
+            properties.Add(fallbackCondition);
             properties.Add(debug);
             properties.Add(files);
 			properties.Add(directories);
@@ -66,6 +68,19 @@ namespace Talifun.Web.Crusher.Config
         {
             get { return ((string)base[url]); }
             set { base[url] = value; }
+        }
+
+        /// <summary>
+        /// The fallback condition to use when checking if retrieving from CDN has failed.
+        /// </summary>
+        /// <remarks>
+        /// Use this to set the condition to use local when CDN fails.
+        /// </remarks>
+        [ConfigurationProperty("fallbackCondition", DefaultValue = null, IsRequired = false)]
+        public string FallbackCondition
+        {
+            get { return ((string)base[fallbackCondition]); }
+            set { base[fallbackCondition] = value; }
         }
 
         /// <summary>

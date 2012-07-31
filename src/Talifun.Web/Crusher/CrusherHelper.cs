@@ -169,6 +169,15 @@ namespace Talifun.Web.Crusher
 					}
 
                     scriptLinks = "<script language=\"javascript\" type=\"text/javascript\" src=\"" + url + "?" + QuerystringKeyName + "=" + etag + "\"></script>";
+
+                    if (!string.IsNullOrEmpty(url) && !string.IsNullOrEmpty(jsGroup.FallbackCondition))
+                    {
+                        var fallbackUrl = this.ResolveUrl(outputFilePath);
+                        if (fallbackUrl != url)
+                        {
+                            scriptLinks += "<script language=\"javascript\" type=\"text/javascript\">if (" + jsGroup.FallbackCondition + "){document.write(unescape('%3Cscript language=\"javascript\" type=\"text/javascript\" src=\"" + fallbackUrl + "?" + QuerystringKeyName + "=" + etag + "\"%3E%3C/script%3E'));}</script>";
+                        }
+                    }
                 }
                 else
                 {

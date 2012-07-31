@@ -54,8 +54,9 @@ namespace Talifun.Web.Crusher
             return MapPath(rootPath, url.OriginalString);
         }
 
-        public virtual string MapPath(Uri rootPath, string url)
+        public virtual string MapPath(Uri rootUri, string url)
         {
+            rootUri = !rootUri.IsAbsoluteUri ? new Uri(MapPath(rootUri)) : rootUri;
             var queryStringPosition = url.IndexOf('?');
 
             if (queryStringPosition > -1)
@@ -70,7 +71,7 @@ namespace Talifun.Web.Crusher
                 var resolvedUrl = string.Empty;
                 if (!url.StartsWith("/"))
                 {
-                    var resolvedSourcePath = new Uri(rootPath, urlUri);
+                    var resolvedSourcePath = new Uri(rootUri, urlUri);
                     resolvedUrl = resolvedSourcePath.LocalPath;
                 }
                 else

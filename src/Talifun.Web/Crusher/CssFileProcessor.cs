@@ -28,12 +28,13 @@ namespace Talifun.Web.Crusher
             var resolvedFilePath = _pathProvider.MapPath(filePath);
             _fileInfo = new FileInfo(resolvedFilePath);
             _cssRootUri = cssRootUri;
-            _pathProvider.GetRelativeRootUri(filePath);
+            var relativeRootUri = _pathProvider.GetRelativeRootUri(filePath);
+
 
             _modules = new List<ICssModule>()
             {
                 new DotLessModule(),
-                new RelativePathModule(cssPathRewriter, pathProvider),
+                new RelativePathModule(relativeRootUri, cssPathRewriter),
                 new CssAssetsHashModule(appendHashToAssets, cssPathRewriter, pathProvider)
             };
         }

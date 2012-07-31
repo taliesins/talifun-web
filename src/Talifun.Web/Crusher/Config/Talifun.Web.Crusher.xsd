@@ -190,6 +190,7 @@
   </xs:complexType>
   
 	<xs:complexType name="jsGroup">
+
 		<xs:all>
 			<xs:element name="files" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
@@ -209,6 +210,13 @@
       </xs:element>
 		</xs:all>
 		<xs:attributeGroup ref="typeGroup"></xs:attributeGroup>
+    <xs:attribute name="fallbackCondition" type="xs:string" use="optional">
+      <xs:annotation>
+        <xs:documentation>
+          The fallback condition to use when checking if retrieving from CDN has failed.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
 	</xs:complexType>
 
 	<xs:simpleType name="jsCompressionType" >

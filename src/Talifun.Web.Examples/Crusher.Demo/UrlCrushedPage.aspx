@@ -18,6 +18,8 @@
             <li>Updating any css or js file will result in the crushed file being regenerated and a new hash being created.</li>
             <li>You need to manually copy any newly created local crushed files to the remote location.</li>
             <li>Use the url property to host content on CDN. e.g. "http://cdn.net/1234/site.css" or "http://cdn.net/1234/site.js" the hash is appended to the end of the url, the hash is based off the local crushed file.</li>
+            <li>"//cdn.net/1234/site.css" or "//cdn.net/1234/site.js" will use the current pages scheme.</li>
+            <li>Specifying fallback condition will allow local content to be loaded when CDN is down for js files.</li>
         </ul>
     </div>
     

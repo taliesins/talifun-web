@@ -110,6 +110,7 @@
     <Compile Include="Crusher\CssFileToWatch.cs" />
     <Compile Include="Crusher\JsFileToWatch.cs" />
     <Compile Include="Crusher\JsFileToWatchEqualityComparer.cs" />
+    <Compile Include="Crusher\JsModule\IJsModule.cs" />
     <Compile Include="CssSprite\Config\ImageDirectoryElement.cs" />
     <Compile Include="CssSprite\Config\ImageDirectoryElementCollection.cs" />
     <Compile Include="CssSprite\ImageDirectory.cs" />
@@ -298,9 +299,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Crusher\JsModule\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
