@@ -1,10 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talifun.Web", "src\Talifun.Web\Talifun.Web.csproj", "{FB8D10A5-40A2-44B0-A30F-1B316B5AFC34}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talifun.Web.Mvc", "src\Talifun.Web.Mvc\Talifun.Web.Mvc.csproj", "{5DF03ED5-2C45-4F23-A1E3-248383803D11}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talifun.Web.UrlRewriter", "src\Talifun.Web.UrlRewriter\Talifun.Web.UrlRewriter.csproj", "{43D2AC34-0EEA-4A82-B907-80D4CBDD63A1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Talifun.Web Examples", "Talifun.Web Examples", "{E40C6C03-83CA-4590-84EF-90FCB8253463}"
@@ -35,10 +31,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UrlReWriter.Demo.CustomUrlR
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UrlRewriter.Demo", "src\Talifun.Web.UrlRewriter.Examples\UrlRewriter.Demo\UrlRewriter.Demo.csproj", "{EB258590-626C-4F1D-ABEE-E863551BB5EC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talifun.Web.Tests", "src\Talifun.Web.Tests\Talifun.Web.Tests.csproj", "{7C661FBC-E6BE-4C1B-9002-E17CEA4531F9}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talifun.Crusher", "src\Talifun.Crusher\Talifun.Crusher.csproj", "{3DADA59F-3E27-44F5-93A5-F3D4C0C77D9B}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{F6495657-21D5-4190-8509-4187C032367F}"
 	ProjectSection(SolutionItems) = preProject
 		build\assemblyinfo.ps1 = build\assemblyinfo.ps1
@@ -59,20 +51,28 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{C2294A
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talifun.Web.3.5", "src\Talifun.Web\Talifun.Web.3.5.csproj", "{FB8D10A5-40A2-44B0-A30F-1B316B5AFC34}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talifun.Web.4.0", "src\Talifun.Web\Talifun.Web.4.0.csproj", "{2C8DE86F-8F4B-430E-88B2-0DB2725AA90F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talifun.Crusher.3.5", "src\Talifun.Crusher\Talifun.Crusher.3.5.csproj", "{3DADA59F-3E27-44F5-93A5-F3D4C0C77D9B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talifun.Crusher.4.0", "src\Talifun.Crusher\Talifun.Crusher.4.0.csproj", "{F194B169-856D-46A2-925A-0A794544AB2A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talifun.Web.Tests.3.5", "src\Talifun.Web.Tests\Talifun.Web.Tests.3.5.csproj", "{7C661FBC-E6BE-4C1B-9002-E17CEA4531F9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talifun.Web.Tests.4.0", "src\Talifun.Web.Tests\Talifun.Web.Tests.4.0.csproj", "{F26B4898-ACE8-4DFC-AF4F-E012965A85FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talifun.Web.Mvc.3.5", "src\Talifun.Web.Mvc\Talifun.Web.Mvc.3.5.csproj", "{5DF03ED5-2C45-4F23-A1E3-248383803D11}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talifun.Web.Mvc.4.0", "src\Talifun.Web.Mvc\Talifun.Web.Mvc.4.0.csproj", "{4EA7C697-84F1-4B4E-8C2D-00EA864F0D56}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{FB8D10A5-40A2-44B0-A30F-1B316B5AFC34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FB8D10A5-40A2-44B0-A30F-1B316B5AFC34}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FB8D10A5-40A2-44B0-A30F-1B316B5AFC34}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FB8D10A5-40A2-44B0-A30F-1B316B5AFC34}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5DF03ED5-2C45-4F23-A1E3-248383803D11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5DF03ED5-2C45-4F23-A1E3-248383803D11}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5DF03ED5-2C45-4F23-A1E3-248383803D11}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5DF03ED5-2C45-4F23-A1E3-248383803D11}.Release|Any CPU.Build.0 = Release|Any CPU
 		{43D2AC34-0EEA-4A82-B907-80D4CBDD63A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{43D2AC34-0EEA-4A82-B907-80D4CBDD63A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43D2AC34-0EEA-4A82-B907-80D4CBDD63A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -112,14 +112,38 @@ Global
 		{EB258590-626C-4F1D-ABEE-E863551BB5EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EB258590-626C-4F1D-ABEE-E863551BB5EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB258590-626C-4F1D-ABEE-E863551BB5EC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7C661FBC-E6BE-4C1B-9002-E17CEA4531F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7C661FBC-E6BE-4C1B-9002-E17CEA4531F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7C661FBC-E6BE-4C1B-9002-E17CEA4531F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7C661FBC-E6BE-4C1B-9002-E17CEA4531F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB8D10A5-40A2-44B0-A30F-1B316B5AFC34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB8D10A5-40A2-44B0-A30F-1B316B5AFC34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB8D10A5-40A2-44B0-A30F-1B316B5AFC34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB8D10A5-40A2-44B0-A30F-1B316B5AFC34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C8DE86F-8F4B-430E-88B2-0DB2725AA90F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C8DE86F-8F4B-430E-88B2-0DB2725AA90F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C8DE86F-8F4B-430E-88B2-0DB2725AA90F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C8DE86F-8F4B-430E-88B2-0DB2725AA90F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3DADA59F-3E27-44F5-93A5-F3D4C0C77D9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3DADA59F-3E27-44F5-93A5-F3D4C0C77D9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3DADA59F-3E27-44F5-93A5-F3D4C0C77D9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3DADA59F-3E27-44F5-93A5-F3D4C0C77D9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F194B169-856D-46A2-925A-0A794544AB2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F194B169-856D-46A2-925A-0A794544AB2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F194B169-856D-46A2-925A-0A794544AB2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F194B169-856D-46A2-925A-0A794544AB2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C661FBC-E6BE-4C1B-9002-E17CEA4531F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C661FBC-E6BE-4C1B-9002-E17CEA4531F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C661FBC-E6BE-4C1B-9002-E17CEA4531F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C661FBC-E6BE-4C1B-9002-E17CEA4531F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F26B4898-ACE8-4DFC-AF4F-E012965A85FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F26B4898-ACE8-4DFC-AF4F-E012965A85FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F26B4898-ACE8-4DFC-AF4F-E012965A85FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F26B4898-ACE8-4DFC-AF4F-E012965A85FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DF03ED5-2C45-4F23-A1E3-248383803D11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DF03ED5-2C45-4F23-A1E3-248383803D11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DF03ED5-2C45-4F23-A1E3-248383803D11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DF03ED5-2C45-4F23-A1E3-248383803D11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4EA7C697-84F1-4B4E-8C2D-00EA864F0D56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4EA7C697-84F1-4B4E-8C2D-00EA864F0D56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4EA7C697-84F1-4B4E-8C2D-00EA864F0D56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4EA7C697-84F1-4B4E-8C2D-00EA864F0D56}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

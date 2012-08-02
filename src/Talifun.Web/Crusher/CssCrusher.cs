@@ -21,8 +21,27 @@ namespace Talifun.Web.Crusher
         protected readonly IRetryableFileWriter RetryableFileWriter;
         protected readonly ICssPathRewriter CssPathRewriter;
         protected static string CssCrusherType = typeof(CssCrusher).ToString();
-		protected readonly Lazy<Yahoo.Yui.Compressor.CssCompressor> YahooYuiCssCompressor;
-		protected readonly Lazy<Microsoft.Ajax.Utilities.Minifier> MicrosoftAjaxMinCssCompressor;
+
+
+        private Yahoo.Yui.Compressor.CssCompressor _yahooYuiCssCompressor;
+        private Yahoo.Yui.Compressor.CssCompressor YahooYuiCssCompressor
+        {
+            get
+            {
+                return _yahooYuiCssCompressor ??
+                       (_yahooYuiCssCompressor = new Yahoo.Yui.Compressor.CssCompressor());
+            }
+        }
+
+        private Microsoft.Ajax.Utilities.Minifier _microsoftAjaxMinCssCompressor;
+        private Microsoft.Ajax.Utilities.Minifier MicrosoftAjaxMinCssCompressor
+        {
+            get
+            {
+                return _microsoftAjaxMinCssCompressor ??
+                       (_microsoftAjaxMinCssCompressor = new Microsoft.Ajax.Utilities.Minifier());
+            }
+        }
 
         public CssCrusher(ICacheManager cacheManager, IPathProvider pathProvider, IRetryableFileOpener retryableFileOpener, IRetryableFileWriter retryableFileWriter, ICssPathRewriter cssPathRewriter)
         {
@@ -31,8 +50,6 @@ namespace Talifun.Web.Crusher
             RetryableFileOpener = retryableFileOpener;
             RetryableFileWriter = retryableFileWriter;
             CssPathRewriter = cssPathRewriter;
-			YahooYuiCssCompressor = new Lazy<Yahoo.Yui.Compressor.CssCompressor>();
-			MicrosoftAjaxMinCssCompressor = new Lazy<Microsoft.Ajax.Utilities.Minifier>();
         }
 
     	/// <summary>
@@ -128,14 +145,14 @@ namespace Talifun.Web.Crusher
 			if (yahooYuiToBeCompressedContents.Length > 0)
 			{
 				{
-					uncompressedContents.Append(YahooYuiCssCompressor.Value.Compress(yahooYuiToBeCompressedContents.ToString()));
+					uncompressedContents.Append(YahooYuiCssCompressor.Compress(yahooYuiToBeCompressedContents.ToString()));
 				}
 			}
 
 			if (microsoftAjaxMintoBeCompressedContents.Length > 0)
 			{
 				{
-					uncompressedContents.Append(MicrosoftAjaxMinCssCompressor.Value.MinifyStyleSheet(microsoftAjaxMintoBeCompressedContents.ToString()));
+					uncompressedContents.Append(MicrosoftAjaxMinCssCompressor.MinifyStyleSheet(microsoftAjaxMintoBeCompressedContents.ToString()));
 				}
 			}
 
