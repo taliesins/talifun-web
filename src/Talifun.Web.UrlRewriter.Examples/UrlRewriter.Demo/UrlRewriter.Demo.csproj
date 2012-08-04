@@ -20,11 +20,11 @@
     <UseIISExpress>false</UseIISExpress>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v4.0' ">
-	<TargetFrameworkConstant>NET40</TargetFrameworkConstant>
+    <TargetFrameworkConstant>NET40</TargetFrameworkConstant>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v3.5' ">
-	<TargetFrameworkConstant>NET35</TargetFrameworkConstant>
-  </PropertyGroup>   
+    <TargetFrameworkConstant>NET35</TargetFrameworkConstant>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -71,6 +71,10 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Talifun.Web.UrlRewriter\Talifun.Web.UrlRewriter.csproj">
+      <Project>{43D2AC34-0EEA-4A82-B907-80D4CBDD63A1}</Project>
+      <Name>Talifun.Web.UrlRewriter</Name>
+    </ProjectReference>
     <ProjectReference Include="..\UrlReWriter.Demo.CustomUrlRewriter\UrlReWriter.Demo.CustomUrlRewriter.csproj">
       <Project>{3E797996-D4C7-45D1-8B5F-B3C87FC4F886}</Project>
       <Name>UrlReWriter.Demo.CustomUrlRewriter</Name>
