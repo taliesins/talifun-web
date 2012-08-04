@@ -21,8 +21,8 @@
     </dependencies>
   </metadata>
   <files>
-	<file src="bin\Talifun.Web.dll" target="lib/net40" />
-	<file src="bin\Talifun.Crusher.exe" target="tools" />
-	<file src="bin\Talifun.Crusher.exe.config" target="tools" />
+	<file src="bin\4.0\Talifun.Web.dll" target="lib/net40" />
+	<file src="bin\4.0\Talifun.Crusher.exe" target="tools" />
+	<file src="bin\4.0\Talifun.Crusher.exe.config" target="tools" />
   </files>  
 </package>

@@ -20,7 +20,7 @@ properties {
   if(!(Test-Path($source.dir))) { $source.dir = "$($base.dir)" }
   
   $build = @{}
-  $build.dir = "$($base.dir)\bin"
+  $build.dir = "$($base.dir)\bin\$framework"
   $build.configuration = "Release"
 
   # BUILD_NUMBER is defined during CI builds. Make sure that this value
