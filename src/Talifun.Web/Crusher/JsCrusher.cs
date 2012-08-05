@@ -5,8 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web.Caching;
+using Microsoft.Ajax.Utilities;
 using Talifun.FileWatcher;
 using Talifun.Web.Helper;
+using Yahoo.Yui.Compressor;
 
 namespace Talifun.Web.Crusher
 {
@@ -22,24 +24,9 @@ namespace Talifun.Web.Crusher
         
         protected static string JsCrusherType = typeof(JsCrusher).ToString();
 
-        private Yahoo.Yui.Compressor.JavaScriptCompressor _yahooYuiJavaScriptCompressor;
-        private Yahoo.Yui.Compressor.JavaScriptCompressor YahooYuiJavaScriptCompressor
-        {
-            get {
-                return _yahooYuiJavaScriptCompressor ??
-                       (_yahooYuiJavaScriptCompressor = new Yahoo.Yui.Compressor.JavaScriptCompressor());
-            }
-        }
+        protected readonly Lazy<Yahoo.Yui.Compressor.JavaScriptCompressor> YahooYuiJavaScriptCompressor;
+        protected readonly Lazy<Microsoft.Ajax.Utilities.Minifier> MicrosoftAjaxMinJavaScriptCompressor;
 
-        private Microsoft.Ajax.Utilities.Minifier _microsoftAjaxMinJavaScriptCompressor;
-        private Microsoft.Ajax.Utilities.Minifier MicrosoftAjaxMinJavaScriptCompressor
-        {
-            get
-            {
-                return _microsoftAjaxMinJavaScriptCompressor ??
-                       (_microsoftAjaxMinJavaScriptCompressor = new Microsoft.Ajax.Utilities.Minifier());
-            }
-        }
 
         public JsCrusher(ICacheManager cacheManager, IPathProvider pathProvider, IRetryableFileOpener retryableFileOpener, IRetryableFileWriter retryableFileWriter)
         {
@@ -47,6 +34,8 @@ namespace Talifun.Web.Crusher
             PathProvider = pathProvider;
             RetryableFileOpener = retryableFileOpener;
             RetryableFileWriter = retryableFileWriter;
+            YahooYuiJavaScriptCompressor = new Lazy<JavaScriptCompressor>();
+            MicrosoftAjaxMinJavaScriptCompressor = new Lazy<Minifier>();
         }
 
     	/// <summary>
@@ -130,12 +119,12 @@ namespace Talifun.Web.Crusher
 
             if (yahooYuiToBeCompressedContents.Length > 0)
             {
-                uncompressedContents.Append(YahooYuiJavaScriptCompressor.Compress(yahooYuiToBeCompressedContents.ToString()));
+                uncompressedContents.Append(YahooYuiJavaScriptCompressor.Value.Compress(yahooYuiToBeCompressedContents.ToString()));
             }
 
 			if (microsoftAjaxMinToBeCompressedContents.Length > 0)
 			{
-				uncompressedContents.Append(MicrosoftAjaxMinJavaScriptCompressor.MinifyJavaScript(microsoftAjaxMinToBeCompressedContents.ToString()));
+				uncompressedContents.Append(MicrosoftAjaxMinJavaScriptCompressor.Value.MinifyJavaScript(microsoftAjaxMinToBeCompressedContents.ToString()));
 			}
 
            
