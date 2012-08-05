@@ -30,7 +30,6 @@ namespace Talifun.Web.Crusher
             _cssRootUri = cssRootUri;
             var relativeRootUri = _pathProvider.GetRelativeRootUri(filePath);
 
-
             _modules = new List<ICssModule>()
             {
                 new DotLessModule(),
