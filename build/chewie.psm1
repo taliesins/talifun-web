@@ -78,14 +78,14 @@ function chew
   if($nuGetIsInPath) 
   {
     $command += "NuGet install" 
-    if($script:version_packages -ne $true){$command += " -x"}
+    if($script:version_packages -ne $true){$command += " -ExcludeVersion"}
     
   } else { $command += "install-package"  }
   $command += " $name"
   
-  if($version -ne "") { $command += " -v $version" }
+  if($version -ne "") { $command += " -Version $version" }
   if($source -eq "" -and $script:default_source -ne "") { $source = $script:default_source }
-  if($source -ne "") { $command += " -s $source" }
+  if($source -ne "") { $command += " -Source $source" }
     
   invoke-expression $command
 }
