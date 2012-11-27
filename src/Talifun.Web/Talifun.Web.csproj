@@ -84,13 +84,11 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Abstractions" />
+    <Reference Include="Talifun.FileWatcher, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Talifun.FileWatcher.1.7.0.0\lib\net40\Talifun.FileWatcher.dll</HintPath>
+    </Reference>
     <Reference Include="Yahoo.Yui.Compressor">
       <HintPath>..\..\packages\YUICompressor.NET.2.1.1.0\lib\NET20\Yahoo.Yui.Compressor.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFrameworkConstant)' == 'NET35' ">
-    <Reference Include="Talifun.FileWatcher">
-      <HintPath>..\..\packages\Talifun.FileWatcher.1.5.0.0\lib\net35\Talifun.FileWatcher.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFrameworkConstant)' == 'NET40' ">

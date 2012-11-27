@@ -24,7 +24,10 @@ namespace Talifun.Web.Crusher
         
         protected static string JsCrusherType = typeof(JsCrusher).ToString();
 
+        protected readonly object YahooYuiJavaScriptCompressorLock = new object();
         protected readonly Lazy<Yahoo.Yui.Compressor.JavaScriptCompressor> YahooYuiJavaScriptCompressor;
+
+        protected readonly object MicrosoftAjaxMinJavaScriptCompressorLock = new object();
         protected readonly Lazy<Microsoft.Ajax.Utilities.Minifier> MicrosoftAjaxMinJavaScriptCompressor;
 
 
@@ -119,12 +122,18 @@ namespace Talifun.Web.Crusher
 
             if (yahooYuiToBeCompressedContents.Length > 0)
             {
-                uncompressedContents.Append(YahooYuiJavaScriptCompressor.Value.Compress(yahooYuiToBeCompressedContents.ToString()));
+                lock (YahooYuiJavaScriptCompressorLock)
+                {
+                    uncompressedContents.Append(YahooYuiJavaScriptCompressor.Value.Compress(yahooYuiToBeCompressedContents.ToString()));
+                }
             }
 
 			if (microsoftAjaxMinToBeCompressedContents.Length > 0)
 			{
-				uncompressedContents.Append(MicrosoftAjaxMinJavaScriptCompressor.Value.MinifyJavaScript(microsoftAjaxMinToBeCompressedContents.ToString()));
+                lock (MicrosoftAjaxMinJavaScriptCompressorLock)
+                {
+				    uncompressedContents.Append(MicrosoftAjaxMinJavaScriptCompressor.Value.MinifyJavaScript(microsoftAjaxMinToBeCompressedContents.ToString()));
+                }
 			}
 
            
