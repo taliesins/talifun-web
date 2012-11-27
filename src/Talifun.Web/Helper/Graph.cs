@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 #if NET35
+using System.Collections.ObjectModel;
 using Iesi.Collections.Generic;
 #endif
 
-
 namespace Talifun.Web
 {
-    class Graph<T>
+    public class Graph<T>
     {
         [System.Diagnostics.DebuggerDisplay("{Value}")]
         class Node
@@ -21,17 +21,17 @@ namespace Talifun.Web
             public readonly ISet<Node> Outgoing = new HashedSet<Node>();
         }
 
-        readonly Node[] nodes;
+        private readonly Node[] _nodes;
 
         public Graph(IEnumerable<T> values, Func<T, IEnumerable<T>> getDependencies)
         {
-            nodes = values.Select(value => new Node { Value = value }).ToArray();
+            _nodes = values.Select(value => new Node { Value = value }).ToArray();
             // Create the Incoming edge sets for each node.
-            foreach (var fromNode in nodes)
+            foreach (var fromNode in _nodes)
             {
                 foreach (var dependency in getDependencies(fromNode.Value))
                 {
-                    var toNode = nodes.First(n => n.Value.Equals(dependency));
+                    var toNode = _nodes.First(n => n.Value.Equals(dependency));
                     toNode.Incoming.Add(fromNode);
                     fromNode.Outgoing.Add(toNode);
                 }
@@ -43,7 +43,7 @@ namespace Talifun.Web
             UnVisitAllNodes();
 
             var results = new List<T>();
-            var initial = nodes.Where(n => n.Incoming.Count == 0);
+            var initial = _nodes.Where(n => n.Incoming.Count == 0);
             foreach (var node in initial)
             {
                 Visit(node, results);
@@ -57,7 +57,7 @@ namespace Talifun.Web
 
             node.Visited = true;
 
-            foreach (var next in nodes.Where(n => n.Incoming.Contains(node)))
+            foreach (var next in _nodes.Where(n => n.Incoming.Contains(node)))
             {
                 Visit(next, results);
             }
@@ -74,12 +74,12 @@ namespace Talifun.Web
             var stack = new Stack<Node>();
             var cycles = new HashedSet<ISet<T>>();
 
-            foreach (var node in nodes)
+            foreach (var node in _nodes)
             {
                 node.Index = -1;
             }
 
-            foreach (var node in nodes)
+            foreach (var node in _nodes)
             {
                 if (node.Index == -1)
                 {
@@ -125,10 +125,20 @@ namespace Talifun.Web
 
         void UnVisitAllNodes()
         {
-            foreach (var node in nodes)
+            foreach (var node in _nodes)
             {
                 node.Visited = false;
             }
         }
     }
+
+#if NET35
+    public static class SetExtensions
+    {
+        public static bool SetEquals<T>(this Iesi.Collections.Generic.ISet<T> set, IEnumerable<T> otherSet)
+        {
+            return set.ContainsAll(new Collection<T>(new List<T>(otherSet)));
+        }
+    }
+#endif
 }

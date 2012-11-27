@@ -15,15 +15,15 @@ namespace Talifun.Web.Crusher
         {
         }
 
-        private static string GetPhysicalApplicationPath()
-        {
-            return !string.IsNullOrEmpty(HostingEnvironment.ApplicationPhysicalPath) ? HostingEnvironment.ApplicationPhysicalPath : Environment.CurrentDirectory;
-        }
-
         public PathProvider(string applicationPath, string physicalApplicationPath)
         {
             ApplicationPath = applicationPath;
             PhysicalApplicationPath = physicalApplicationPath;
+        }
+
+        private static string GetPhysicalApplicationPath()
+        {
+            return !string.IsNullOrEmpty(HostingEnvironment.ApplicationPhysicalPath) ? HostingEnvironment.ApplicationPhysicalPath : Environment.CurrentDirectory;
         }
 
         public virtual string MapPath(Uri url)
@@ -145,7 +145,6 @@ namespace Talifun.Web.Crusher
 
             return relativeRootUri;
         }
-
 
         public virtual Uri ToRelative(string filePath)
         {

@@ -16,7 +16,7 @@ properties {
   
   # add either the project_name or nuspec file to use when packaging.
   $nuget.options = ""
-  $nuget.targets = @((Get-ChildItem -path "$($base.dir)\*" -recurse -include *.nuspec) | Select $_.FullName)
+  $nuget.targets = @((Get-ChildItem -path "$($base.dir)\*" -recurse -include *.nuspec) |  Where-Object {$_.FullName -notlike "$($base.dir)\packages\*"} | Select-Object $_.FullName)
 
   if ($nuget.targets.length -lt 1 ){
     if(!(Test-Path("$($source.dir)\$($solution.name)\$($solution.name).csproj"))) {  
