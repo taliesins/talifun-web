@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 using System.Web;
 using Talifun.Web.Crusher.Config;
@@ -14,6 +15,7 @@ namespace Talifun.Web.Crusher
     public sealed class CrusherManager : IDisposable
     {
         private const int BufferSize = 32768;
+		private readonly Encoding _encoding = Encoding.UTF8;
         private readonly string _hashQueryStringKeyName;
         private readonly CssGroupElementCollection _cssGroups;
         private readonly JsGroupElementCollection _jsGroups;
@@ -31,7 +33,7 @@ namespace Talifun.Web.Crusher
 
             var retryableFileOpener = new RetryableFileOpener();
             var hasher = new Hasher(retryableFileOpener);
-            var retryableFileWriter = new RetryableFileWriter(BufferSize, retryableFileOpener, hasher);
+			var retryableFileWriter = new RetryableFileWriter(BufferSize, _encoding, retryableFileOpener, hasher);
             _pathProvider = new PathProvider();
             var cssAssetsFileHasher = new CssAssetsFileHasher(_hashQueryStringKeyName, hasher, _pathProvider);
             var cssPathRewriter = new CssPathRewriter(cssAssetsFileHasher, _pathProvider);

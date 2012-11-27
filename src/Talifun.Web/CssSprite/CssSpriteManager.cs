@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Web;
 using Talifun.Web.Crusher;
@@ -16,16 +17,17 @@ namespace Talifun.Web.CssSprite
     public sealed class CssSpriteManager : IDisposable
     {
         private const int BufferSize = 32768;
+		private readonly Encoding _encoding = Encoding.UTF8;
         private readonly CssSpriteGroupElementCollection _cssSpriteGroups = CurrentCssSpriteConfiguration.Current.CssSpriteGroups;
         private readonly ICacheManager _cacheManager;
         private readonly ICssSpriteCreator _cssSpriteCreator;
         private readonly IPathProvider _pathProvider;
-
+    	
         private CssSpriteManager()
         {
             var retryableFileOpener = new RetryableFileOpener();
             var hasher = new Hasher(retryableFileOpener);
-            var retryableFileWriter = new RetryableFileWriter(BufferSize, retryableFileOpener, hasher);
+			var retryableFileWriter = new RetryableFileWriter(BufferSize, _encoding, retryableFileOpener, hasher);
 
             _cacheManager = new HttpCacheManager();
 			_pathProvider = new PathProvider();

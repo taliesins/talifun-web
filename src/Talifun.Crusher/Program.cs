@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using System.Text;
 using Talifun.Crusher.Options;
 using Talifun.Web;
 using Talifun.Web.Crusher;
@@ -18,6 +19,7 @@ namespace Talifun.Crusher
     	private const int ErrorExitCode = 1;
     	private const int DisplayHelpScreenExitCode = 2;
         private const int BufferSize = 32768;
+		private static readonly Encoding Encoding = Encoding.UTF8;
 
         private const string HeaderMessage = "Talifun.Crusher:";
 
@@ -112,7 +114,7 @@ namespace Talifun.Crusher
 				var physicalApplicationPath = new FileInfo(configPath).DirectoryName;
 				var retryableFileOpener = new RetryableFileOpener();
 				var hasher = new Hasher(retryableFileOpener);
-				var retryableFileWriter = new RetryableFileWriter(BufferSize, retryableFileOpener, hasher);
+				var retryableFileWriter = new RetryableFileWriter(BufferSize, Encoding, retryableFileOpener, hasher);
 				var pathProvider = new PathProvider(applicationPath, physicalApplicationPath);
 				var cacheManager = new HttpCacheManager();
 

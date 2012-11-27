@@ -9,14 +9,14 @@ namespace Talifun.Web.Helper
         protected readonly int BufferSize;
         protected readonly IRetryableFileOpener RetryableFileOpener;
         protected readonly IHasher Hasher;
-        private readonly Encoding _encoding;
+		protected readonly Encoding Encoding;
 
-        public RetryableFileWriter(int bufferSize, IRetryableFileOpener retryableFileOpener, IHasher hasher)
+        public RetryableFileWriter(int bufferSize, Encoding encoding, IRetryableFileOpener retryableFileOpener, IHasher hasher)
         {
             BufferSize = bufferSize;
+			Encoding = encoding;
             RetryableFileOpener = retryableFileOpener;
             Hasher = hasher;
-            _encoding = Encoding.UTF8;
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Talifun.Web.Helper
         {
             using (var outputStream = new MemoryStream())
             {
-                outputStream.Write(_encoding.GetBytes(output), 0, _encoding.GetByteCount(output));
+                outputStream.Write(Encoding.GetBytes(output), 0, Encoding.GetByteCount(output));
 
                 return SaveContentsToFile(outputStream, outputPath);
             }
@@ -45,7 +45,7 @@ namespace Talifun.Web.Helper
             {
                 var uncompressedContent = output.ToString();
 
-                outputStream.Write(_encoding.GetBytes(uncompressedContent), 0, _encoding.GetByteCount(uncompressedContent));
+                outputStream.Write(Encoding.GetBytes(uncompressedContent), 0, Encoding.GetByteCount(uncompressedContent));
 
                 return SaveContentsToFile(outputStream, outputPath);
             }
