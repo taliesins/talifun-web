@@ -25,6 +25,12 @@ namespace Talifun.Web.Crusher
         protected readonly ICssPathRewriter CssPathRewriter;
         protected static string CssCrusherType = typeof(CssCrusher).ToString();
 
+		protected readonly object YahooYuiCssCompressorLock = new object();
+		protected readonly Lazy<Yahoo.Yui.Compressor.CssCompressor> YahooYuiCssCompressor;
+
+		protected readonly object MicrosoftAjaxMinCssCompressorLock = new object();
+		protected readonly Lazy<Microsoft.Ajax.Utilities.Minifier> MicrosoftAjaxMinCssCompressor;
+
         protected readonly object YahooYuiCssCompressorLock = new object();
         protected readonly Lazy<Yahoo.Yui.Compressor.CssCompressor> YahooYuiCssCompressor;
 
@@ -136,7 +142,7 @@ namespace Talifun.Web.Crusher
 
 			if (yahooYuiToBeCompressedContents.Length > 0)
 			{
-                lock (YahooYuiCssCompressorLock)
+				lock (YahooYuiCssCompressorLock)
 				{
 					uncompressedContents.Append(YahooYuiCssCompressor.Value.Compress(yahooYuiToBeCompressedContents.ToString()));
 				}
@@ -144,7 +150,7 @@ namespace Talifun.Web.Crusher
 
 			if (microsoftAjaxMintoBeCompressedContents.Length > 0)
 			{
-                lock (MicrosoftAjaxMinCssCompressorLock)
+				lock (MicrosoftAjaxMinCssCompressorLock)
 				{
 					uncompressedContents.Append(MicrosoftAjaxMinCssCompressor.Value.MinifyStyleSheet(microsoftAjaxMintoBeCompressedContents.ToString()));
 				}
