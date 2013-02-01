@@ -158,6 +158,8 @@ namespace Talifun.Web.UrlRewriter
             return url.ToString();
         }
 
+        private static readonly Regex UrlRegex = new Regex(@"^/([^?#/]+/)*([^/?#]*(?=\.)|[^/?#.]*)?([^/?#]*)?(\?)?([^#]*)?(\#)?(.*)$", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
         /// <summary>
         /// Try parse a url string into its parts.
         /// </summary>
@@ -170,8 +172,7 @@ namespace Talifun.Web.UrlRewriter
         /// <returns>True if successful parse; else false</returns>
         protected static bool TryParseUrl(string input, out List<string> filePath, out string fileName, out string fileExtension, out NameValueCollection queryString, out string bookMark)
         {
-            var regexForUrl = new Regex(@"^/([^?#/]+/)*([^/?#]*(?=\.)|[^/?#.]*)?([^/?#]*)?(\?)?([^#]*)?(\#)?(.*)$", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
-            var matchForUrl = regexForUrl.Match(input);
+            var matchForUrl = UrlRegex.Match(input);
 
             filePath = null;
             fileName = null;

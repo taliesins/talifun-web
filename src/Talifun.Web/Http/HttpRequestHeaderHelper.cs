@@ -77,6 +77,13 @@ namespace Talifun.Web
             return GetHttpHeaderValues(request, httpRequestHeaderString);
         }
 
+
+        private static readonly Regex GetHttpHeaderValuesRegex = new Regex(",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))",
+                      RegexOptions.Compiled
+                      | RegexOptions.Singleline
+                      | RegexOptions.ExplicitCapture
+                      | RegexOptions.IgnorePatternWhitespace);
+
         /// <summary>
         /// Get the identites for an http header.
         /// </summary>
@@ -93,13 +100,7 @@ namespace Talifun.Web
                 return new List<string>();
             }
 
-            var regex = new Regex(",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))",
-                                  RegexOptions.Compiled
-                                  | RegexOptions.Singleline
-                                  | RegexOptions.ExplicitCapture
-                                  | RegexOptions.IgnorePatternWhitespace);
-
-            var quotedHeaders = regex.Split(httpRequestHeaderValues);
+            var quotedHeaders = GetHttpHeaderValuesRegex.Split(httpRequestHeaderValues);
             var headers = quotedHeaders.Select(x => x.Replace("\"", "").Trim()).Where(x=>!string.IsNullOrEmpty(x));
 
             return headers.ToList();
@@ -118,6 +119,12 @@ namespace Talifun.Web
             return GetHttpHeaderWithQValues(request, httpRequestHeaderString);
         }
 
+        private static readonly Regex GetHttpHeaderWithQValuesRegex = new Regex(@"\s*(\""(?<identity>[^\""]+|\""\"")*\""|(?<identity>[^;,]*))\s*((\;\s*[q|Q]\s*=\s*(?<qValue>[1|0](\.\d)?))?)\s*",
+                      RegexOptions.Compiled
+                      | RegexOptions.Singleline
+                      | RegexOptions.ExplicitCapture
+                      | RegexOptions.IgnorePatternWhitespace);
+
         /// <summary>
         /// Get the value and q values for an http header.
         /// </summary>
@@ -134,13 +141,7 @@ namespace Talifun.Web
                 return new List<HttpHeaderValue>();
             }
 
-            var regex = new Regex(@"\s*(\""(?<identity>[^\""]+|\""\"")*\""|(?<identity>[^;,]*))\s*((\;\s*[q|Q]\s*=\s*(?<qValue>[1|0](\.\d)?))?)\s*",
-                                  RegexOptions.Compiled
-                                  | RegexOptions.Singleline
-                                  | RegexOptions.ExplicitCapture
-                                  | RegexOptions.IgnorePatternWhitespace);
-
-            var matches = regex.Matches(httpRequestHeaderValues);
+            var matches = GetHttpHeaderWithQValuesRegex.Matches(httpRequestHeaderValues);
 
             var tempQValue = default(Single);
             return (from Match match in matches

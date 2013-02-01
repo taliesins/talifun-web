@@ -42,9 +42,10 @@ namespace Talifun.Web.Crusher
             return css;
         }
 
+        private static readonly Regex FindDistinctRelativePathsRegex = new Regex(@"url\([""']{0,1}(.+?)[""']{0,1}\)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
         public virtual IEnumerable<Uri> FindDistinctRelativePaths(string css)
         {
-            var matches = Regex.Matches(css, @"url\([""']{0,1}(.+?)[""']{0,1}\)", RegexOptions.IgnoreCase);
+            var matches = FindDistinctRelativePathsRegex.Matches(css);
             var matchesHash = new HashSet<Uri>();
             
             foreach (Match match in matches)
@@ -82,7 +83,7 @@ namespace Talifun.Web.Crusher
 
         public virtual IEnumerable<Uri> FindDistinctLocalPaths(string css)
         {
-            var matches = Regex.Matches(css, @"url\([""']{0,1}(.+?)[""']{0,1}\)", RegexOptions.IgnoreCase);
+            var matches = FindDistinctRelativePathsRegex.Matches(css);
             var matchesHash = new HashSet<Uri>();
             foreach (Match match in matches)
             {

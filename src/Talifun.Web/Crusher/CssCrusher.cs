@@ -31,12 +31,6 @@ namespace Talifun.Web.Crusher
 		protected readonly object MicrosoftAjaxMinCssCompressorLock = new object();
 		protected readonly Lazy<Microsoft.Ajax.Utilities.Minifier> MicrosoftAjaxMinCssCompressor;
 
-        protected readonly object YahooYuiCssCompressorLock = new object();
-        protected readonly Lazy<Yahoo.Yui.Compressor.CssCompressor> YahooYuiCssCompressor;
-
-        protected readonly object MicrosoftAjaxMinCssCompressorLock = new object();
-        protected readonly Lazy<Microsoft.Ajax.Utilities.Minifier> MicrosoftAjaxMinCssCompressor;
-
         public CssCrusher(ICacheManager cacheManager, IPathProvider pathProvider, IRetryableFileOpener retryableFileOpener, IRetryableFileWriter retryableFileWriter, ICssPathRewriter cssPathRewriter)
         {
             CacheManager = cacheManager;

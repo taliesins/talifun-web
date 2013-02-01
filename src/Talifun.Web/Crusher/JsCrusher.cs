@@ -30,13 +30,6 @@ namespace Talifun.Web.Crusher
         
         protected static string JsCrusherType = typeof(JsCrusher).ToString();
 
-        protected readonly object YahooYuiJavaScriptCompressorLock = new object();
-        protected readonly Lazy<Yahoo.Yui.Compressor.JavaScriptCompressor> YahooYuiJavaScriptCompressor;
-
-        protected readonly object MicrosoftAjaxMinJavaScriptCompressorLock = new object();
-        protected readonly Lazy<Microsoft.Ajax.Utilities.Minifier> MicrosoftAjaxMinJavaScriptCompressor;
-
-
         public JsCrusher(ICacheManager cacheManager, IPathProvider pathProvider, IRetryableFileOpener retryableFileOpener, IRetryableFileWriter retryableFileWriter)
         {
             CacheManager = cacheManager;

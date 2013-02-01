@@ -9,6 +9,8 @@ namespace Talifun.Web
 {
     public static class UrlHelper
     {
+        private static readonly Regex UrlRegex = new Regex(@"^/([^?#/]+/)*([^/?#]*(?=\.)|[^/?#.]*)?([^/?#]*)?(\?)?([^#]*)?(\#)?(.*)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
         /// <summary>
         /// Try parse a url string into its parts.
         /// </summary>
@@ -21,8 +23,7 @@ namespace Talifun.Web
         /// <returns>True if successful parse; else false</returns>
         public static bool TryParseUrl(string input, out List<string> filePath, out string fileName, out string fileExtension, out NameValueCollection queryString, out string bookMark)
         {
-            var regexForUrl = new Regex(@"^/([^?#/]+/)*([^/?#]*(?=\.)|[^/?#.]*)?([^/?#]*)?(\?)?([^#]*)?(\#)?(.*)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-            var matchForUrl = regexForUrl.Match(input);
+            var matchForUrl = UrlRegex.Match(input);
 
             filePath = null;
             fileName = null;
