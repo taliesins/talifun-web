@@ -4,12 +4,12 @@ namespace Talifun.Web.Crusher.CssModule
 {
     public class RelativePathModule : ICssModule
     {
-        private readonly Uri _relativeRootUri;
+        private readonly Uri _absoluteUriDirectory;
         private readonly ICssPathRewriter _cssPathRewriter;
 
-        public RelativePathModule(Uri relativeRootUri, ICssPathRewriter cssPathRewriter)
+        public RelativePathModule(Uri absoluteUriDirectory, ICssPathRewriter cssPathRewriter)
         {
-            _relativeRootUri = relativeRootUri;
+            _absoluteUriDirectory = absoluteUriDirectory;
             _cssPathRewriter = cssPathRewriter;
         }
 
@@ -18,7 +18,7 @@ namespace Talifun.Web.Crusher.CssModule
             var distinctRelativePaths = _cssPathRewriter.FindDistinctRelativePaths(fileContents);
             return _cssPathRewriter.RewriteCssPathsToBeRelativeToPath(distinctRelativePaths,
                                                                           cssRootPathUri,
-                                                                          _relativeRootUri, fileContents);
+                                                                          _absoluteUriDirectory, fileContents);
         }
     }
 }

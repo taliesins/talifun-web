@@ -467,6 +467,54 @@ namespace Talifun.Web.Tests.Http
             Assert.AreEqual(headerValue, headerValueWithQValues[0].Identity);
             Assert.IsNull(headerValueWithQValues[0].QValue);
         }
+
+        [Test]
+        public void GetHttpHeaderWithQValues_InvalidQValueDoubleEquals_List()
+        {
+            //Arrange
+            var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
+            var headerValue = "gzip, deflate, x-gzip, identity; q==0.5";
+            var headerType = HttpRequestHeader.AcceptEncoding;
+            var headerName = (string)headerType;
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
+
+            //Act
+            var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
+            var headerValueWithQValues = httpRequestHeaderHelper.GetHttpHeaderWithQValues(httpRequest, headerType);
+
+            //Assert
+            httpRequest.VerifyAllExpectations();
+            Assert.AreEqual(5, headerValueWithQValues.Count);
+            Assert.AreEqual("identity", headerValueWithQValues[3].Identity);
+            Assert.IsNull(headerValueWithQValues[3].QValue);
+            Assert.AreEqual("q==0.5", headerValueWithQValues[4].Identity);
+            Assert.IsNull(headerValueWithQValues[4].QValue);
+        }
+
+        [Test]
+        public void GetHttpHeaderWithQValues_InvalidQValueNotANumber_List()
+        {
+            //Arrange
+            var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
+            var headerValue = "gzip, deflate, x-gzip, identity; q=moo";
+            var headerType = HttpRequestHeader.AcceptEncoding;
+            var headerName = (string)headerType;
+
+            httpRequest.Expect(x => x.Headers[headerName]).Return(headerValue);
+
+            //Act
+            var httpRequestHeaderHelper = new HttpRequestHeaderHelper();
+            var headerValueWithQValues = httpRequestHeaderHelper.GetHttpHeaderWithQValues(httpRequest, headerType);
+
+            //Assert
+            httpRequest.VerifyAllExpectations();
+            Assert.AreEqual(5, headerValueWithQValues.Count);
+            Assert.AreEqual("identity", headerValueWithQValues[3].Identity);
+            Assert.IsNull(headerValueWithQValues[3].QValue);
+            Assert.AreEqual("q=moo", headerValueWithQValues[4].Identity);
+            Assert.IsNull(headerValueWithQValues[4].QValue);
+        }
         #endregion
 
         #region GetCompressionMode

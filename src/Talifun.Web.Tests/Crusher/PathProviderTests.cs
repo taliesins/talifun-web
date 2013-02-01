@@ -8,7 +8,7 @@ namespace Talifun.Web.Tests.Crusher
     public class PathProviderTests
     {
         [Test]
-        public void ToRelativeReturnsRelativePathWhenUsedOnRoot()
+        public void ToRelativeReturnsRelativePathWhenApplicationPathIsRoot()
         {
             var applicationPath = @"/";
             var physicalApplicationPath = @"c:\inetpub\wwwroot\";
@@ -22,13 +22,13 @@ namespace Talifun.Web.Tests.Crusher
         }
 
         [Test]
-        public void ToRelativeReturnsRelativePathWhenUsedOnVirtualDirectory()
+        public void ToRelativeReturnsRelativePathWhenApplicationPathIsNotRoot()
         {
             var applicationPath = @"/TestApp/";
             var physicalApplicationPath = @"c:\inetpub\wwwroot\";
             var pathProvider = new PathProvider(applicationPath, physicalApplicationPath);
             var filePath = @"c:\inetpub\wwwroot\TestApp\js\jquery.js";
-            var expectedResult = new Uri("~/TestApp/js/jquery.js", UriKind.Relative);
+            var expectedResult = new Uri("~/js/jquery.js", UriKind.Relative);
 
             var relativePath = pathProvider.ToRelative(filePath);
 
@@ -36,30 +36,29 @@ namespace Talifun.Web.Tests.Crusher
         }
 
         [Test]
-        public void GetRelativeRootUriReturnsRelativePathWhenUsedOnRoot()
+        public void GetAbsoluteUriDirectoryReturnsRelativePathWhenApplicationPathIsRoot()
         {
             var applicationPath = @"/";
             var physicalApplicationPath = @"c:\inetpub\wwwroot\";
             var pathProvider = new PathProvider(applicationPath, physicalApplicationPath);
-            var uri = @"~/TestApp/js/jquery.js";
-            var expectedResult = new Uri("~/js/jquery.js", UriKind.Relative);
+            var uri = @"~/js/jquery.js";
+            var expectedResult = new Uri("c:/inetpub/wwwroot/js/", UriKind.Absolute);
 
-            var relativePath = pathProvider.GetRelativeRootUri(uri);
+            var relativePath = pathProvider.GetAbsoluteUriDirectory(uri);
 
             Assert.AreEqual(relativePath, expectedResult);
         }
 
         [Test]
-        public void GetRelativeRootUriReturnsRelativePathWhenUsedOnVirtualDirectory()
+        public void GetAbsoluteUriDirectoryReturnsRelativePathWhenApplicationPathIsNotRoot()
         {
             var applicationPath = @"/TestApp/";
             var physicalApplicationPath = @"c:\inetpub\wwwroot\";
             var pathProvider = new PathProvider(applicationPath, physicalApplicationPath);
-            //var uri = @"~/TestApp/js/jquery.js";
-            var uri = @"~/TestApp/js/jquery.js";
-            var expectedResult = new Uri("~/TestApp/js/jquery.js", UriKind.Relative);
+            var uri = @"~/js/jquery.js";
+            var expectedResult = new Uri("c:/inetpub/wwwroot/TestApp/js/", UriKind.Absolute);
 
-            var relativePath = pathProvider.GetRelativeRootUri(uri);
+            var relativePath = pathProvider.GetAbsoluteUriDirectory(uri);
 
             Assert.AreEqual(relativePath, expectedResult);
         }

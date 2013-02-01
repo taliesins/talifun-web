@@ -26,27 +26,28 @@ namespace Talifun.Web.Crusher
             return !string.IsNullOrEmpty(HostingEnvironment.ApplicationPhysicalPath) ? HostingEnvironment.ApplicationPhysicalPath : Environment.CurrentDirectory;
         }
 
-        public virtual string MapPath(Uri url)
+        public virtual string MapPath(Uri uri)
         {
-            return MapPath(url.OriginalString);
+            return MapPath(uri.OriginalString);
         }
 
-        public virtual string MapPath(string url)
+        public virtual string MapPath(string uri)
         {
-            var queryStringPosition = url.IndexOf('?');
+            var queryStringPosition = uri.IndexOf('?');
 
             if (queryStringPosition > -1)
             {
-                url = url.Substring(0, queryStringPosition);
+                uri = uri.Substring(0, queryStringPosition);
             }
 
             if (HttpContext.Current == null)
             {
-                url = url.Replace("/", "\\").TrimStart('~').TrimStart('\\');
-                return Path.Combine(PhysicalApplicationPath, url.Replace("/", "\\"));
+                uri = uri.TrimStart('~').TrimStart('/', '\\');
+                var applicationUri = GetApplicationAbsoluteUri().ToString();
+                return Path.Combine(applicationUri, uri).Replace("/", "\\");
             }
 
-            return HostingEnvironment.MapPath(url);
+            return HostingEnvironment.MapPath(uri);
         }
 
         public virtual string MapPath(Uri rootPath, Uri url)
@@ -87,18 +88,11 @@ namespace Talifun.Web.Crusher
 
         public virtual string ToAbsolute(string virtualPath)
         {
-            try
+            if (HttpContext.Current == null)
             {
-                return VirtualPathUtility.ToAbsolute(virtualPath);
+                return ToAbsolute(virtualPath, GetApplicationAbsoluteUri().ToString());
             }
-            catch (Exception)
-            {
-                if (HttpContext.Current == null)
-                {
-                    return ToAbsolute(virtualPath, ApplicationPath);
-                }
-                throw;
-            }
+            return VirtualPathUtility.ToAbsolute(virtualPath);
         }
 
         public virtual string ToAbsolute(string virtualPath, string applicationPath)
@@ -106,6 +100,11 @@ namespace Talifun.Web.Crusher
             return VirtualPathUtility.ToAbsolute(virtualPath, applicationPath);
         }
 
+        /// <summary>
+        /// Get directory uri for uri
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
         public virtual Uri GetUriDirectory(Uri uri)
         {
             var path = uri.OriginalString;
@@ -124,36 +123,59 @@ namespace Talifun.Web.Crusher
             return new Uri(path, UriKind.RelativeOrAbsolute);
         }
 
-        public virtual Uri GetRootPathUri(Uri rootUri)
+        /// <summary>
+        /// Get the absolute directory for the uri
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
+        public virtual Uri GetAbsoluteUriDirectory(Uri uri)
         {
-            var cssRootPathUri = GetUriDirectory(rootUri);
-            cssRootPathUri = !rootUri.IsAbsoluteUri
-                                       ? new Uri(MapPath(rootUri))
-                                       : cssRootPathUri;
+            var uriDirectory = GetUriDirectory(uri);
+            uriDirectory = !uriDirectory.IsAbsoluteUri
+                                       ? new Uri(MapPath(uriDirectory), UriKind.Absolute)
+                                       : uriDirectory;
 
-            return cssRootPathUri;
+            return uriDirectory;
         }
 
-        public virtual Uri GetRelativeRootUri(string filePath)
+        /// <summary>
+        /// Get the absolute directory for the string uri
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
+        public virtual Uri GetAbsoluteUriDirectory(string uri)
         {
-            var cssFilePath = ToAbsolute(filePath);
+            var absoluteFileUri = new Uri(uri, UriKind.RelativeOrAbsolute);
 
-            var relativeRootUri = GetUriDirectory(new Uri(cssFilePath, UriKind.RelativeOrAbsolute));
-            relativeRootUri = !relativeRootUri.IsAbsoluteUri
-                                  ? new Uri(MapPath(relativeRootUri))
-                                  : relativeRootUri;
-
-            return relativeRootUri;
+            return GetAbsoluteUriDirectory(absoluteFileUri);
         }
 
+        /// <summary>
+        /// Get the relative path to application path
+        /// </summary>
+        /// <param name="filePath">path relative to application path</param>
+        /// <returns></returns>
         public virtual Uri ToRelative(string filePath)
         {
-            var absolutePathUri = new Uri(filePath);
-            var rootUri = new Uri(PhysicalApplicationPath);
-
-            var relativeUri = new Uri("~/" + rootUri.MakeRelativeUri(absolutePathUri), UriKind.Relative);
-
+            var absolutePathUri = new Uri(filePath, UriKind.RelativeOrAbsolute);
+            var applicationPathAbsoluteUri = GetApplicationAbsoluteUri();
+            var relativeUri = new Uri("~/" + applicationPathAbsoluteUri.MakeRelativeUri(absolutePathUri), UriKind.Relative);
             return relativeUri;
+        }
+
+        /// <summary>
+        /// Get the absolute application path
+        /// </summary>
+        /// <returns></returns>
+        public Uri GetApplicationAbsoluteUri()
+        {
+            var rootUri = new Uri(ApplicationPath, UriKind.RelativeOrAbsolute);
+            if (!rootUri.IsAbsoluteUri)
+            {
+                var path = Path.Combine(PhysicalApplicationPath, rootUri.ToString().TrimStart('~').TrimStart('/', '\\'));
+                rootUri = new Uri(path, UriKind.Absolute);
+            }
+            return rootUri;
         }
     }
 }

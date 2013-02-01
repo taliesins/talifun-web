@@ -56,7 +56,7 @@ namespace Talifun.Web
         {
             var result = request.Headers[httpRequestHeader];
 
-            if (String.IsNullOrEmpty(result))
+            if (string.IsNullOrEmpty(result))
             {
                 return defaultValue;
             }
@@ -88,7 +88,7 @@ namespace Talifun.Web
         {
             var httpRequestHeaderValues = request.Headers[httpRequestHeader];
 
-            if (httpRequestHeaderValues == null)
+            if (string.IsNullOrEmpty(httpRequestHeaderValues))
             {
                 return new List<string>();
             }
@@ -129,7 +129,7 @@ namespace Talifun.Web
         {
             var httpRequestHeaderValues = request.Headers[httpRequestHeader];
 
-            if (httpRequestHeaderValues == null)
+            if (string.IsNullOrEmpty(httpRequestHeaderValues))
             {
                 return new List<HttpHeaderValue>();
             }
@@ -142,13 +142,18 @@ namespace Talifun.Web
 
             var matches = regex.Matches(httpRequestHeaderValues);
 
+            var tempQValue = default(Single);
             return (from Match match in matches
                     let identity = match.Groups["identity"].Value.Trim()
                     let qValue = match.Groups["qValue"].Value.Trim()
                     where !string.IsNullOrEmpty(identity)
                     select new HttpHeaderValue
                                {
-                                   Identity = identity, QValue = string.IsNullOrEmpty(qValue) ? null : (float?) Convert.ToSingle(qValue)
+                                   Identity = identity,
+                                   QValue = string.IsNullOrEmpty(qValue) 
+                                    ? null : Single.TryParse(qValue, out tempQValue) 
+                                        ? (float?)Convert.ToSingle(qValue)
+                                        : null
                                }).ToList();
         }
 

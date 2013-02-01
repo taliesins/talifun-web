@@ -28,12 +28,12 @@ namespace Talifun.Web.Crusher
             var resolvedFilePath = _pathProvider.MapPath(filePath);
             _fileInfo = new FileInfo(resolvedFilePath);
             _cssRootUri = cssRootUri;
-            var relativeRootUri = _pathProvider.GetRelativeRootUri(filePath);
+            var absoluteUriDirectory = _pathProvider.GetAbsoluteUriDirectory(filePath);
 
             _modules = new List<ICssModule>()
             {
                 new DotLessModule(),
-                new RelativePathModule(relativeRootUri, cssPathRewriter),
+                new RelativePathModule(absoluteUriDirectory, cssPathRewriter),
                 new CssAssetsHashModule(appendHashToAssets, cssPathRewriter, pathProvider)
             };
         }
@@ -103,8 +103,8 @@ namespace Talifun.Web.Crusher
                         if (_localCssAssetFilesThatExist == null)
                         {
                             var contents = GetContents();
-                            var cssRootPathUri = _pathProvider.GetRootPathUri(_cssRootUri);
-                            _localCssAssetFilesThatExist = GetCssAssets(cssRootPathUri, contents);
+                            var cssAbsoluteUriDirectory = _pathProvider.GetAbsoluteUriDirectory(_cssRootUri);
+                            _localCssAssetFilesThatExist = GetCssAssets(cssAbsoluteUriDirectory, contents);
                         }
                     }
                     finally
@@ -121,14 +121,14 @@ namespace Talifun.Web.Crusher
             }
         }
 
-        private IEnumerable<CssAsset> GetCssAssets(Uri cssRootPathUri, string fileContents)
+        private IEnumerable<CssAsset> GetCssAssets(Uri cssAbsoluteUriDirectory, string fileContents)
         {
             var distinctLocalPaths = _cssPathRewriter.FindDistinctLocalPaths(fileContents);
 
             return distinctLocalPaths
                 .Select(distinctLocalPath => new CssAsset
                 {
-                    File = new FileInfo(_pathProvider.MapPath(cssRootPathUri, distinctLocalPath)),
+                    File = new FileInfo(_pathProvider.MapPath(cssAbsoluteUriDirectory, distinctLocalPath)),
                     Url = distinctLocalPath
                 })
                 .Where(cssAssetFileInfo => cssAssetFileInfo.File.Exists);

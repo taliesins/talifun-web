@@ -14,23 +14,23 @@ namespace Talifun.Web.Crusher
             PathProvider = pathProvider;
         }
 
-        public virtual string RewriteCssPathsToBeRelativeToPath(IEnumerable<Uri> relativePaths, Uri cssRootUri, Uri relativeRootUri, string css)
+        public virtual string RewriteCssPathsToBeRelativeToPath(IEnumerable<Uri> relativePaths, Uri cssRootUri, Uri absoluteUriDirectory, string css)
         {
             if (!cssRootUri.IsAbsoluteUri)
             {
                 cssRootUri = new Uri(PathProvider.MapPath(cssRootUri));
             }
 
-            if (!relativeRootUri.IsAbsoluteUri)
+            if (!absoluteUriDirectory.IsAbsoluteUri)
             {
-                relativeRootUri = new Uri(PathProvider.MapPath(relativeRootUri));
+                absoluteUriDirectory = new Uri(PathProvider.MapPath(absoluteUriDirectory));
             }
 
             foreach (var relativePath in relativePaths)
             {
                 var absoluteUri = relativePath.IsAbsoluteUri
                                       ? relativePath
-                                      : new Uri(PathProvider.MapPath(relativeRootUri, relativePath));
+                                      : new Uri(PathProvider.MapPath(absoluteUriDirectory, relativePath));
 
                 var resolvedOutput = cssRootUri.MakeRelativeUri(absoluteUri);
 
