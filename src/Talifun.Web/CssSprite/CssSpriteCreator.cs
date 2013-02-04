@@ -49,7 +49,7 @@ namespace Talifun.Web.CssSprite
 
             var foldersToWatch = directories
                 .Select(x => Talifun.FileWatcher.EnhancedFileSystemWatcherFactory.Instance
-                .CreateEnhancedFileSystemWatcher(PathProvider.MapPath(x.DirectoryPath), x.IncludeFilter, x.ExcludeFilter, x.PollTime, x.IncludeSubDirectories));
+                .CreateEnhancedFileSystemWatcher(new Uri(PathProvider.MapPath(x.DirectoryPath)).LocalPath, x.IncludeFilter, x.ExcludeFilter, x.PollTime, x.IncludeSubDirectories));
 
             var spriteElements = ProcessFiles(filesToWatch);
             spriteElements = CalculatePositions(spriteElements);
@@ -65,7 +65,7 @@ namespace Talifun.Web.CssSprite
         private IEnumerable<ImageFile> GetFilesToWatch(IEnumerable<ImageFile> files, IEnumerable<ImageDirectory> directories)
         {
             var filesInDirectoriesToWatch = directories
-                .SelectMany(x => new DirectoryInfo(PathProvider.MapPath(x.DirectoryPath))
+                .SelectMany(x => new DirectoryInfo(new Uri(PathProvider.MapPath(x.DirectoryPath)).LocalPath)
                     .GetFiles("*", SearchOption.AllDirectories)
                     .Where(y => (string.IsNullOrEmpty(x.IncludeFilter) || Regex.IsMatch(y.Name, x.IncludeFilter, RegexOptions.Compiled | RegexOptions.IgnoreCase))
                     && (string.IsNullOrEmpty(x.ExcludeFilter) || !Regex.IsMatch(y.Name, x.ExcludeFilter, RegexOptions.Compiled | RegexOptions.IgnoreCase)))
@@ -89,7 +89,7 @@ namespace Talifun.Web.CssSprite
             var spriteElements = new List<SpriteElement>();
             foreach (var file in files)
             {
-				var filePath = PathProvider.MapPath(file.FilePath);
+				var filePath = new Uri(PathProvider.MapPath(file.FilePath)).LocalPath;
                 var fileInfo = new FileInfo(filePath);
                 using (var reader = RetryableFileOpener.OpenFileStream(fileInfo, 5, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
@@ -212,7 +212,7 @@ namespace Talifun.Web.CssSprite
                 imageOutputPath.FullName,
                 cssOutputPath.FullName
             };
-            fileNames.AddRange(filesToWatch.Select(fileToWatch => PathProvider.MapPath(fileToWatch.FilePath)));
+            fileNames.AddRange(filesToWatch.Select(fileToWatch => new Uri(PathProvider.MapPath(fileToWatch.FilePath)).LocalPath));
 
             var cssSpriteCacheItem = new CssSpriteCacheItem()
             {

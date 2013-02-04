@@ -21,7 +21,7 @@ namespace Talifun.Web.Crusher
         {
             if (url.IsAbsoluteUri) return url;
 
-            var fileInfo = new FileInfo(PathProvider.MapPath(cssRootPath, url));
+            var fileInfo = new FileInfo(new Uri(PathProvider.MapPath(cssRootPath, url)).LocalPath);
 
             if (!fileInfo.Exists)
             {

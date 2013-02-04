@@ -80,7 +80,7 @@ namespace Talifun.Web.Crusher
             {
                 if (!cssGroup.Debug)
                 {
-                    var fileInfo = new FileInfo(MapPath(outputFilePath));
+                    var fileInfo = new FileInfo(new Uri(MapPath(outputFilePath)).LocalPath);
                     var etag = Hasher.CalculateMd5Etag(fileInfo);
 					var url = cssGroup.Url;
 
@@ -103,10 +103,10 @@ namespace Talifun.Web.Crusher
                     var scriptLinksBuilder = new StringBuilder();
 
                     var files = cssGroup.Files.Cast<CssFileElement>()
-                        .Select(file => new FileInfo(MapPath(file.FilePath)));
+                        .Select(file => new FileInfo(new Uri(MapPath(file.FilePath)).LocalPath));
 
                     var filesInDirectory = cssGroup.Directories.Cast<CssDirectoryElement>()
-                        .SelectMany(x => new DirectoryInfo(MapPath((x).DirectoryPath))
+                        .SelectMany(x => new DirectoryInfo(new Uri(MapPath((x).DirectoryPath)).LocalPath)
                             .GetFiles("*", SearchOption.AllDirectories)
                             .Where(y => (string.IsNullOrEmpty(x.IncludeFilter) || Regex.IsMatch(y.Name, x.IncludeFilter, RegexOptions.Compiled | RegexOptions.IgnoreCase))
                             && (string.IsNullOrEmpty(x.ExcludeFilter) || !Regex.IsMatch(y.Name, x.ExcludeFilter, RegexOptions.Compiled | RegexOptions.IgnoreCase))));
@@ -152,7 +152,7 @@ namespace Talifun.Web.Crusher
             {
                 if (!jsGroup.Debug)
                 {
-                    var fileInfo = new FileInfo(MapPath(outputFilePath));
+                    var fileInfo = new FileInfo(new Uri(MapPath(outputFilePath)).LocalPath);
                     var etag = Hasher.CalculateMd5Etag(fileInfo);
                     var url = string.IsNullOrEmpty(jsGroup.Url) ? this.ResolveUrl(outputFilePath) : jsGroup.Url;
 
@@ -184,10 +184,10 @@ namespace Talifun.Web.Crusher
                     var scriptLinksBuilder = new StringBuilder();
 
                     var files = jsGroup.Files.Cast<JsFileElement>()
-                        .Select(file => new FileInfo(MapPath(file.FilePath)));
+                        .Select(file => new FileInfo(new Uri(MapPath(file.FilePath)).LocalPath));
 
                     var filesInDirectory = jsGroup.Directories.Cast<JsDirectoryElement>()
-                        .SelectMany(x => new DirectoryInfo(MapPath((x).DirectoryPath))
+                        .SelectMany(x => new DirectoryInfo(new Uri(MapPath((x).DirectoryPath)).LocalPath)
                             .GetFiles("*", SearchOption.AllDirectories)
                             .Where(y => (string.IsNullOrEmpty(x.IncludeFilter) || Regex.IsMatch(y.Name, x.IncludeFilter, RegexOptions.Compiled | RegexOptions.IgnoreCase))
                             && (string.IsNullOrEmpty(x.ExcludeFilter) || !Regex.IsMatch(y.Name, x.ExcludeFilter, RegexOptions.Compiled | RegexOptions.IgnoreCase))));

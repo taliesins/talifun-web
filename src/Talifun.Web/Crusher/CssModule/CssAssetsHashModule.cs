@@ -25,7 +25,7 @@ namespace Talifun.Web.Crusher.CssModule
             return distinctLocalPaths
                 .Select(distinctLocalPath => new CssAsset
                 {
-                    File = new FileInfo(_pathProvider.MapPath(cssRootPathUri, distinctLocalPath)),
+                    File = new FileInfo(new Uri(_pathProvider.MapPath(cssRootPathUri, distinctLocalPath)).LocalPath),
                     Url = distinctLocalPath
                 })
                 .Where(cssAssetFileInfo => cssAssetFileInfo.File.Exists);

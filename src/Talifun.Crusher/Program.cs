@@ -111,7 +111,14 @@ namespace Talifun.Crusher
 				Console.WriteLine("cssSpriteSectionName = " + cssSpriteSectionName);
 				Console.WriteLine("applicationPath = " + applicationPath);
 
-				var physicalApplicationPath = new FileInfo(configPath).DirectoryName;
+        	    var configUri = new Uri(configPath, UriKind.RelativeOrAbsolute);
+                if (!configUri.IsAbsoluteUri)
+                {
+                    configUri = new Uri(Path.Combine(Environment.CurrentDirectory, configUri.ToString()));
+                }
+
+                var physicalApplicationPath = new FileInfo(configUri.LocalPath).DirectoryName;
+
 				var retryableFileOpener = new RetryableFileOpener();
 				var hasher = new Hasher(retryableFileOpener);
 				var retryableFileWriter = new RetryableFileWriter(BufferSize, Encoding, retryableFileOpener, hasher);
@@ -178,7 +185,7 @@ namespace Talifun.Crusher
             Console.WriteLine(UsageMessage);
         }
 
-        private static CrusherSection GetCrusherSection(string configPath, string sectionName)
+        private static Talifun.Web.Crusher.Config.CrusherSection GetCrusherSection(string configPath, string sectionName)
         {
             var map = new ExeConfigurationFileMap
             {
@@ -237,20 +244,20 @@ namespace Talifun.Crusher
                     directories.Add(directory);
                 }
 
-                var outputUri = new Uri(pathProvider.ToAbsolute(group.OutputFilePath), UriKind.Relative);
+                var outputUri = new Uri(pathProvider.ToAbsolute(group.OutputFilePath), UriKind.Absolute);
                 var output = cssCrusher.CreateGroup(outputUri, files, directories, group.AppendHashToCssAsset);
                 
                 _cssOutput += outputUri + " (" + group.Name + ")\r\n";
                 _cssOutput += outputUri + "   (Css)\r\n";
                 foreach (var cssFile in output.FilesToWatch)
                 {
-                    outputUri = new Uri(pathProvider.ToAbsolute(cssFile.FilePath), UriKind.Relative);
+                    outputUri = new Uri(pathProvider.ToAbsolute(cssFile.FilePath), UriKind.Absolute);
                     _cssOutput += "      " + outputUri + "\r\n";
                 }
                 _cssOutput += outputUri + "   (Css Assets)\r\n";
                 foreach (var cssAssetFile in output.CssAssetFilePaths)
                 {
-                    outputUri = new Uri(pathProvider.ToAbsolute(cssAssetFile.FullName), UriKind.Relative);
+                    outputUri = new Uri(pathProvider.ToAbsolute(cssAssetFile.FullName), UriKind.Absolute);
                     _cssOutput += "      " + outputUri + "\r\n";
                 }
             }
@@ -286,13 +293,13 @@ namespace Talifun.Crusher
                     directories.Add(directory);
                 }
 
-                var outputUri = new Uri(pathProvider.ToAbsolute(group.OutputFilePath), UriKind.Relative);
+                var outputUri = new Uri(pathProvider.ToAbsolute(group.OutputFilePath), UriKind.Absolute);
                 var output = jsCrusher.AddGroup(outputUri, files, directories);
 
                 _jsOutput += outputUri + " (" + group.Name + ")\r\n";
                 foreach (var jsFile in output.FilesToWatch)
                 {
-                    outputUri = new Uri(pathProvider.ToAbsolute(jsFile.FilePath), UriKind.Relative);
+                    outputUri = new Uri(pathProvider.ToAbsolute(jsFile.FilePath), UriKind.Absolute);
                     _jsOutput += "    " + outputUri + "\r\n";
                 }
             }
@@ -332,11 +339,11 @@ namespace Talifun.Crusher
                     directories.Add(directory);
                 }
 
-				var cssOutPutUri = string.IsNullOrEmpty(group.CssUrl) ? new Uri(pathProvider.ToAbsolute(group.CssOutputFilePath), UriKind.Relative) : new Uri(group.CssUrl, UriKind.RelativeOrAbsolute);
-				var cssOutputPath = new FileInfo(pathProvider.MapPath(group.CssOutputFilePath));
+				var cssOutPutUri = string.IsNullOrEmpty(group.CssUrl) ? new Uri(pathProvider.ToAbsolute(group.CssOutputFilePath), UriKind.Absolute) : new Uri(group.CssUrl, UriKind.RelativeOrAbsolute);
+				var cssOutputPath = new FileInfo(new Uri(pathProvider.MapPath(group.CssOutputFilePath)).LocalPath);
 
-				var imageOutputUri = string.IsNullOrEmpty(group.ImageUrl) ? new Uri(pathProvider.ToAbsolute(group.ImageOutputFilePath), UriKind.Relative) : new Uri(group.ImageUrl, UriKind.RelativeOrAbsolute);
-				var imageOutputPath = new FileInfo(pathProvider.MapPath(group.ImageOutputFilePath));
+				var imageOutputUri = string.IsNullOrEmpty(group.ImageUrl) ? new Uri(pathProvider.ToAbsolute(group.ImageOutputFilePath), UriKind.Absolute) : new Uri(group.ImageUrl, UriKind.RelativeOrAbsolute);
+				var imageOutputPath = new FileInfo(new Uri(pathProvider.MapPath(group.ImageOutputFilePath)).LocalPath);
 
                 var output = cssSpriteCreator.AddFiles(imageOutputPath, imageOutputUri, cssOutputPath, files, directories);
 
@@ -344,7 +351,7 @@ namespace Talifun.Crusher
 				_cssSpriteOutput += imageOutputUri + "(" + group.Name + ")\r\n";
                 foreach (var filesToWatch in output)
 				{
-                    imageOutputUri = new Uri(pathProvider.ToAbsolute(filesToWatch.FilePath), UriKind.Relative);
+                    imageOutputUri = new Uri(pathProvider.ToAbsolute(filesToWatch.FilePath), UriKind.Absolute);
 					_cssSpriteOutput += "    " + imageOutputUri + "\r\n";
 				}
 			}

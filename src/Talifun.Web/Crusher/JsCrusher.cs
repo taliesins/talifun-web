@@ -48,7 +48,7 @@ namespace Talifun.Web.Crusher
     	/// <param name="directories">The js directories to be crushed. </param>
     	public virtual JsCrushedOutput AddGroup(Uri outputUri, IEnumerable<JsFile> files, IEnumerable<JsDirectory> directories)
         {
-            var outputFileInfo = new FileInfo(PathProvider.MapPath(outputUri));
+            var outputFileInfo = new FileInfo(new Uri(PathProvider.MapPath(outputUri)).LocalPath);
 			var crushedContent = ProcessGroup(outputFileInfo, files, directories);            
             RetryableFileWriter.SaveContentsToFile(crushedContent.Output, outputFileInfo);
             AddGroupToCache(outputUri, crushedContent.FilesToWatch, files, crushedContent.FoldersToWatch, directories);
@@ -71,7 +71,7 @@ namespace Talifun.Web.Crusher
             });
 
             var filesInDirectoriesToWatch = directories
-                .SelectMany(x => new DirectoryInfo(PathProvider.MapPath(x.DirectoryPath))
+                .SelectMany(x => new DirectoryInfo(new Uri(PathProvider.MapPath(x.DirectoryPath)).LocalPath)
                     .GetFiles("*", SearchOption.AllDirectories)
                     .Where(y => (string.IsNullOrEmpty(x.IncludeFilter) || Regex.IsMatch(y.Name, x.IncludeFilter, RegexOptions.Compiled | RegexOptions.IgnoreCase))
                     && (string.IsNullOrEmpty(x.ExcludeFilter) || !Regex.IsMatch(y.Name, x.ExcludeFilter, RegexOptions.Compiled | RegexOptions.IgnoreCase)))
@@ -100,7 +100,7 @@ namespace Talifun.Web.Crusher
     	    var foldersToWatch = directories
                 .Select( x =>
     	            Talifun.FileWatcher.EnhancedFileSystemWatcherFactory.Instance
-                    .CreateEnhancedFileSystemWatcher(PathProvider.MapPath(x.DirectoryPath), x.IncludeFilter, x.ExcludeFilter, x.PollTime, x.IncludeSubDirectories));
+                    .CreateEnhancedFileSystemWatcher(new Uri(PathProvider.MapPath(x.DirectoryPath)).LocalPath, x.IncludeFilter, x.ExcludeFilter, x.PollTime, x.IncludeSubDirectories));
 
             var filesToProcess = filesToWatch.Select(jsFile => new JsFileProcessor(RetryableFileOpener, PathProvider, jsFile.FilePath, jsFile.CompressionType));
             foreach (var fileToProcess in filesToProcess)
@@ -170,7 +170,7 @@ namespace Talifun.Web.Crusher
                     PathProvider.MapPath(outputUri)
             };
 
-			fileNames.AddRange(filesToWatch.Select(file => PathProvider.MapPath(file.FilePath)));
+			fileNames.AddRange(filesToWatch.Select(file => new Uri(PathProvider.MapPath(file.FilePath)).LocalPath));
 
             var cacheItem = new JsCacheItem()
             {

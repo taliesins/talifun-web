@@ -82,12 +82,12 @@ namespace Talifun.Web.CssSprite
             foreach (CssSpriteGroupElement group in _cssSpriteGroups)
             {
                 var files = new List<ImageFile>();
-                var imageOutputPath = new FileInfo(_pathProvider.MapPath(group.ImageOutputFilePath));                
+                var imageOutputPath = new FileInfo(new Uri(_pathProvider.MapPath(group.ImageOutputFilePath)).LocalPath);                
                 var imageUrl = string.IsNullOrEmpty(group.ImageUrl)
                                    ? VirtualPathUtility.ToAbsolute(group.ImageOutputFilePath)
                                    : group.ImageUrl;
                 var imageUri = new Uri(imageUrl, UriKind.RelativeOrAbsolute);
-                var cssOutputPath = new FileInfo(_pathProvider.MapPath(group.CssOutputFilePath));
+                var cssOutputPath = new FileInfo(new Uri(_pathProvider.MapPath(group.CssOutputFilePath)).LocalPath);
 
                 foreach (ImageFileElement imageFile in group.Files)
                 {

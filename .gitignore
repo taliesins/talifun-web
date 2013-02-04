@@ -20,3 +20,6 @@ bin/
 /src/Talifun.Web.Examples/Crusher.Demo/Static/site.js
 /src/Talifun.Web.Examples/Crusher.Demo/Static/url-site.css
 /src/Talifun.Web.Examples/Crusher.Demo/Static/url-site.js
+/src/Talifun.Web.Examples/CssSprite.Demo/Static/Image/crushed.bad-css-sprite.png
+/src/Talifun.Web.Examples/CssSprite.Demo/Static/Image/crushed.css-sprite.png
+/src/Talifun.Web.Examples/CssSprite.Demo/Static/Image/crushed.good-css-sprite.png

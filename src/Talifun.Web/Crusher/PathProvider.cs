@@ -40,7 +40,7 @@ namespace Talifun.Web.Crusher
                 uri = uri.Substring(0, queryStringPosition);
             }
 
-            if (HttpContext.Current == null)
+            if (string.IsNullOrEmpty(HostingEnvironment.ApplicationPhysicalPath))
             {
                 uri = uri.TrimStart('~').TrimStart('/', '\\');
                 var applicationUri = GetApplicationAbsoluteUri().ToString();
@@ -88,6 +88,12 @@ namespace Talifun.Web.Crusher
 
         public virtual string ToAbsolute(string virtualPath)
         {
+            var uri = new Uri(virtualPath, UriKind.RelativeOrAbsolute);
+            if (uri.IsAbsoluteUri)
+            {
+                return uri.ToString();
+            }
+
             if (HttpContext.Current == null)
             {
                 return ToAbsolute(virtualPath, GetApplicationAbsoluteUri().ToString());
@@ -97,6 +103,18 @@ namespace Talifun.Web.Crusher
 
         public virtual string ToAbsolute(string virtualPath, string applicationPath)
         {
+            var uri = new Uri(virtualPath, UriKind.RelativeOrAbsolute);
+            if (uri.IsAbsoluteUri)
+            {
+                return uri.ToString();
+            }
+
+            if (string.IsNullOrEmpty(HostingEnvironment.ApplicationPhysicalPath))
+            {
+                var path = Path.Combine(applicationPath, virtualPath.TrimStart('~').TrimStart('/', '\\'));
+                return new Uri(path, UriKind.Absolute).AbsolutePath;
+            }
+
             return VirtualPathUtility.ToAbsolute(virtualPath, applicationPath);
         }
 
@@ -153,11 +171,16 @@ namespace Talifun.Web.Crusher
         /// <summary>
         /// Get the relative path to application path
         /// </summary>
-        /// <param name="filePath">path relative to application path</param>
+        /// <param name="uri">path relative to application path</param>
         /// <returns></returns>
-        public virtual Uri ToRelative(string filePath)
+        public virtual Uri ToRelative(string uri)
         {
-            var absolutePathUri = new Uri(filePath, UriKind.RelativeOrAbsolute);
+            var absolutePathUri = new Uri(uri, UriKind.RelativeOrAbsolute);
+            if (!absolutePathUri.IsAbsoluteUri)
+            {
+                return absolutePathUri;
+            }
+
             var applicationPathAbsoluteUri = GetApplicationAbsoluteUri();
             var relativeUri = new Uri("~/" + applicationPathAbsoluteUri.MakeRelativeUri(absolutePathUri), UriKind.Relative);
             return relativeUri;
@@ -167,12 +190,17 @@ namespace Talifun.Web.Crusher
         /// Get the absolute application path
         /// </summary>
         /// <returns></returns>
-        public Uri GetApplicationAbsoluteUri()
+        private Uri GetApplicationAbsoluteUri()
         {
             var rootUri = new Uri(ApplicationPath, UriKind.RelativeOrAbsolute);
             if (!rootUri.IsAbsoluteUri)
             {
                 var path = Path.Combine(PhysicalApplicationPath, rootUri.ToString().TrimStart('~').TrimStart('/', '\\'));
+                if (!(path.EndsWith("/") || path.EndsWith("\\")))
+                {
+                    path += "\\";
+                }
+                
                 rootUri = new Uri(path, UriKind.Absolute);
             }
             return rootUri;

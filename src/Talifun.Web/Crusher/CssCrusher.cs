@@ -51,7 +51,7 @@ namespace Talifun.Web.Crusher
     	/// <param name="appendHashToAssets">Should css assets have a hash appended to them.</param>
     	public virtual CssCrushedOutput CreateGroup(Uri outputUri, IEnumerable<CssFile> files, IEnumerable<CssDirectory> directories, bool appendHashToAssets)
         {
-            var outputFileInfo = new FileInfo(PathProvider.MapPath(outputUri));
+            var outputFileInfo = new FileInfo(new Uri(PathProvider.MapPath(outputUri)).LocalPath);
             var crushedContent = ProcessGroup(outputFileInfo, outputUri, files, directories, appendHashToAssets);
             
             RetryableFileWriter.SaveContentsToFile(crushedContent.Output, outputFileInfo);
@@ -75,7 +75,7 @@ namespace Talifun.Web.Crusher
             });
 
             var filesInDirectoriesToWatch = directories
-                .SelectMany(x => new DirectoryInfo(PathProvider.MapPath(x.DirectoryPath))
+                .SelectMany(x => new DirectoryInfo(new Uri(PathProvider.MapPath(x.DirectoryPath)).LocalPath)
                     .GetFiles( "*", SearchOption.AllDirectories)
                     .Where(y => (string.IsNullOrEmpty(x.IncludeFilter) || Regex.IsMatch(y.Name, x.IncludeFilter, RegexOptions.Compiled | RegexOptions.IgnoreCase))
                     && (string.IsNullOrEmpty(x.ExcludeFilter) || !Regex.IsMatch(y.Name, x.ExcludeFilter, RegexOptions.Compiled | RegexOptions.IgnoreCase)))
@@ -113,7 +113,7 @@ namespace Talifun.Web.Crusher
             var foldersToWatch = directories
                 .Select(x =>
                     Talifun.FileWatcher.EnhancedFileSystemWatcherFactory.Instance
-                    .CreateEnhancedFileSystemWatcher(PathProvider.MapPath(x.DirectoryPath), x.IncludeFilter, x.ExcludeFilter, x.PollTime, x.IncludeSubDirectories));
+                    .CreateEnhancedFileSystemWatcher(new Uri(PathProvider.MapPath(x.DirectoryPath)).LocalPath, x.IncludeFilter, x.ExcludeFilter, x.PollTime, x.IncludeSubDirectories));
 
             foreach (var fileToProcess in filesToProcess)
             {
@@ -185,7 +185,7 @@ namespace Talifun.Web.Crusher
             {
                 PathProvider.MapPath(outputUri)
             };
-			fileNames.AddRange(filesToWatch.Select(cssFile => PathProvider.MapPath(cssFile.FilePath)));
+			fileNames.AddRange(filesToWatch.Select(cssFile => new Uri(PathProvider.MapPath(cssFile.FilePath)).LocalPath));
             fileNames.AddRange(assetFilesToWatch.Select(cssAssetFilePath => cssAssetFilePath.FullName));
 
             var cacheItem = new CssCacheItem()

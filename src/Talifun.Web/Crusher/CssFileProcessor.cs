@@ -25,8 +25,7 @@ namespace Talifun.Web.Crusher
             _cssPathRewriter = cssPathRewriter;
             CompressionType = compressionType;
 
-            var resolvedFilePath = _pathProvider.MapPath(filePath);
-            _fileInfo = new FileInfo(resolvedFilePath);
+            _fileInfo = new FileInfo(new Uri(_pathProvider.MapPath(filePath)).LocalPath);
             _cssRootUri = cssRootUri;
             var absoluteUriDirectory = _pathProvider.GetAbsoluteUriDirectory(filePath);
 
@@ -128,7 +127,7 @@ namespace Talifun.Web.Crusher
             return distinctLocalPaths
                 .Select(distinctLocalPath => new CssAsset
                 {
-                    File = new FileInfo(_pathProvider.MapPath(cssAbsoluteUriDirectory, distinctLocalPath)),
+                    File = new FileInfo(new Uri(_pathProvider.MapPath(cssAbsoluteUriDirectory, distinctLocalPath)).LocalPath),
                     Url = distinctLocalPath
                 })
                 .Where(cssAssetFileInfo => cssAssetFileInfo.File.Exists);

@@ -18,7 +18,7 @@ namespace Talifun.Web.Tests.Crusher
 
             var relativePath = pathProvider.ToRelative(filePath);
 
-            Assert.AreEqual(relativePath, expectedResult);
+            Assert.AreEqual(expectedResult, relativePath);
         }
 
         [Test]
@@ -32,7 +32,7 @@ namespace Talifun.Web.Tests.Crusher
 
             var relativePath = pathProvider.ToRelative(filePath);
 
-            Assert.AreEqual(relativePath, expectedResult);
+            Assert.AreEqual(expectedResult, relativePath);
         }
 
         [Test]
@@ -46,7 +46,7 @@ namespace Talifun.Web.Tests.Crusher
 
             var relativePath = pathProvider.GetAbsoluteUriDirectory(uri);
 
-            Assert.AreEqual(relativePath, expectedResult);
+            Assert.AreEqual(expectedResult, relativePath);
         }
 
         [Test]
@@ -60,7 +60,49 @@ namespace Talifun.Web.Tests.Crusher
 
             var relativePath = pathProvider.GetAbsoluteUriDirectory(uri);
 
-            Assert.AreEqual(relativePath, expectedResult);
+            Assert.AreEqual(expectedResult, relativePath);
+        }
+
+        [Test]
+        public void MapPathReturnsAbsolutePathWhenApplicationPathIsRoot()
+        {
+            var applicationPath = @"/";
+            var physicalApplicationPath = @"c:\inetpub\wwwroot\";
+            var pathProvider = new PathProvider(applicationPath, physicalApplicationPath);
+            var uri = @"~/js/jquery.js";
+            var expectedResult = new Uri("c:/inetpub/wwwroot/js/jquery.js", UriKind.Absolute).LocalPath;
+
+            var relativePath = new Uri(pathProvider.MapPath(uri)).LocalPath;
+
+            Assert.AreEqual(expectedResult, relativePath);
+        }
+
+        [Test]
+        public void MapPathReturnsAbsolutePathWhenApplicationPathIsNotRoot()
+        {
+            var applicationPath = @"/TestApp/";
+            var physicalApplicationPath = @"c:\inetpub\wwwroot\";
+            var pathProvider = new PathProvider(applicationPath, physicalApplicationPath);
+            var uri = @"~/js/jquery.js";
+            var expectedResult = new Uri("c:/inetpub/wwwroot/TestApp/js/jquery.js", UriKind.Absolute).LocalPath;
+
+            var relativePath = new Uri(pathProvider.MapPath(uri)).LocalPath;
+
+            Assert.AreEqual(expectedResult, relativePath);
+        }
+
+                [Test]
+        public void MapPathReturnsAbsoluteDirectoryWhenApplicationPathIsNotRoot()
+        {
+            var applicationPath = @"/TestApp/";
+            var physicalApplicationPath = @"c:\inetpub\wwwroot";
+            var pathProvider = new PathProvider(applicationPath, physicalApplicationPath);
+            var uri = @"~/js";
+            var expectedResult = new Uri("c:/inetpub/wwwroot/TestApp/js", UriKind.Absolute).LocalPath;
+
+            var relativePath = new Uri(pathProvider.MapPath(uri)).LocalPath;
+
+            Assert.AreEqual(expectedResult, relativePath);
         }
     }
 }

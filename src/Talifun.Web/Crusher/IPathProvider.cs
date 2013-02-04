@@ -14,8 +14,8 @@ namespace Talifun.Web.Crusher
         Uri GetUriDirectory(Uri uri);
         //Uri GetRootPathUri(Uri rootUri);
         Uri GetAbsoluteUriDirectory(Uri uri);
-        //Uri GetRelativeRootUri(string filePath);
+        //Uri GetRelativeRootUri(string uri);
         Uri GetAbsoluteUriDirectory(string uri);
-        Uri ToRelative(string filePath);
+        Uri ToRelative(string uri);
     }
 }

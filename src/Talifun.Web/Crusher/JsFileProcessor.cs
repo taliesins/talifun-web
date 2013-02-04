@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using Talifun.Web.Crusher.JsModule;
@@ -18,8 +19,7 @@ namespace Talifun.Web.Crusher
             _retryableFileOpener = retryableFileOpener;
             _pathProvider = pathProvider;
             CompressionType = compressionType;
-            var resolvedFilePath = _pathProvider.MapPath(filePath);
-            _fileInfo = new FileInfo(resolvedFilePath);
+            _fileInfo = new FileInfo(new Uri(_pathProvider.MapPath(filePath)).LocalPath);
             _modules = new List<IJsModule>();
         }
 
