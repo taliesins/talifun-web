@@ -25,6 +25,8 @@ param(
     [string]$scriptPath = $(Split-Path -parent $MyInvocation.MyCommand.path)
 )
 
+$scriptPath = $(Split-Path -parent $MyInvocation.MyCommand.path)
+
 # '[p]sake' is the same as 'psake' but $Error is not polluted
 remove-module [p]sake
 import-module (join-path $scriptPath psake.psm1)
