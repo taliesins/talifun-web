@@ -232,7 +232,7 @@ namespace Talifun.Web.Tests.Http
             httpResponse.Cache.Expect(x => x.SetCacheability(cachability));
             httpResponse.Cache.Expect(x => x.AppendCacheExtension(cacheExtensions));
             httpResponse.Cache.Expect(x => x.SetLastModified(lastModified));
-            httpResponse.Cache.Expect(x => x.SetETag(etag));
+            httpResponse.Cache.Expect(x => x.SetETag("\""+etag+"\""));
             httpResponse.Cache.Expect(x => x.SetMaxAge(maxAge));
 
             //Act
