@@ -125,7 +125,7 @@ namespace Talifun.Web.StaticFile
                     LastModified = lastModified,
                     ContentLength = contentLength,
                     ContentType = contentType,
-                    CompressionType = entityStoredWithCompressionType
+                    CompressionType = ResponseCompressionType.None
                 };
 
                 if (FileEntitySetting.ServeFromMemory
@@ -147,6 +147,7 @@ namespace Talifun.Web.StaticFile
 
                         fileEntityCacheItem.EntityData = entityData;
                         fileEntityCacheItem.ContentLength = entityDataLength;
+                        fileEntityCacheItem.CompressionType = entityStoredWithCompressionType;
                     }
                 }
 

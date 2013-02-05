@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Security.Permissions;
 using System.Web;
@@ -24,7 +25,7 @@ namespace Talifun.Web.StaticFile
         /// <param name="request"></param>
         /// <returns></returns>
         [ReflectionPermission(SecurityAction.Assert, RestrictedMemberAccess = true)]
-        private static HttpWorkerRequest GetWorkerRequestViaReflection(HttpRequestBase request)
+        public static HttpWorkerRequest GetWorkerRequestViaReflection(HttpRequestBase request)
         {
             const BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic;
 
@@ -50,7 +51,7 @@ namespace Talifun.Web.StaticFile
 
             var provider = (IServiceProvider)context;
             var worker = (HttpWorkerRequest)provider.GetService(HttpWorkerRequestType) ?? GetWorkerRequestViaReflection(context.Request);
-
+     
             if (worker != null)
             {
                 var workerType = worker.GetType();
@@ -63,16 +64,39 @@ namespace Talifun.Web.StaticFile
                             WebServerType = WebServerType.IIS6orIIS7ClassicMode;
                             break;
                         case "Microsoft.VisualStudio.WebHost.Request":
+                            {
+                                var version = workerType.Assembly.GetName().Version.Major;
+                                if (version >= 11)
+                                {
+                                    WebServerType = WebServerType.VisualStudio2012;
+                                }
+                                else if (version > 10)
+                                {
+                                    WebServerType = WebServerType.VisualStudio2010;
+                                }
+                                else if (version > 9)
+                                {
+                                    WebServerType = WebServerType.VisualStudio2008;
+                                }
+                                else
+                                {
+                                    WebServerType = WebServerType.Cassini;
+                                }
+                                break;
+                            }
                         case "Cassini.Request":
-                            if (workerType.Assembly.GetName().Version.Major > 9)
                             {
-                                WebServerType = WebServerType.IIS7;
+                                var version = workerType.Assembly.GetName().Version.Major;
+                                if (version > 9)
+                                {
+                                    WebServerType = WebServerType.IIS7;
+                                }
+                                else
+                                {
+                                    WebServerType = WebServerType.Cassini;
+                                }
+                                break;
                             }
-                            else
-                            {
-                                WebServerType = WebServerType.Cassini;
-                            }
-                            break;
                         case "System.Web.Hosting.IIS7WorkerRequest":
                             WebServerType = WebServerType.IIS7;
                             break;

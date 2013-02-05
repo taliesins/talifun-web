@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 using System.Web;
 
 namespace Talifun.Web.StaticFile
@@ -53,7 +54,7 @@ namespace Talifun.Web.StaticFile
         /// </summary>
         /// <param name="context"></param>
         private void Initialize(HttpContextBase context)
-        {
+        {   
             if (_webServerType == WebServerType.NotSet)
             {
                 _webServerType = WebServerDetector.DetectWebServerType(context);

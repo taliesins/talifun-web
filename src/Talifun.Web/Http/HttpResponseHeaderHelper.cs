@@ -52,6 +52,9 @@ namespace Talifun.Web
         {
             switch (WebServerType)
             {
+                case WebServerType.VisualStudio2012:
+                case WebServerType.VisualStudio2010:
+                case WebServerType.VisualStudio2008:
                 case WebServerType.IIS7:
                     response.AppendHeader(httpResponseHeader, headerValue);
                     break;
@@ -107,7 +110,7 @@ namespace Talifun.Web
             response.Cache.SetLastModified(lastModified);
 
             //The unique identifier for the entity
-            response.Cache.SetETag(etag);
+            response.Cache.SetETag("\"" + etag + "\"");
 
             //How often the browser should check that it has the latest version
             response.Cache.SetMaxAge(maxAge);

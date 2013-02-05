@@ -43,10 +43,12 @@ namespace Talifun.Web
                     HttpResponseHeaderHelper.AppendHeader(response, HttpHeaderContentLength, partialContentLength.ToString());
                     break;
                 case ResponseCompressionType.GZip:
+                    response.BufferOutput = true;
                     response.Filter = new GZipStream(response.Filter, CompressionMode.Compress);
                     //This means that the output stream will be chunked, so we don't have to worry about content length
                     break;
                 case ResponseCompressionType.Deflate:
+                    response.BufferOutput = true;
                     response.Filter = new DeflateStream(response.Filter, CompressionMode.Compress);
                     //This means that the output stream will be chunked, so we don't have to worry about content length
                     break;

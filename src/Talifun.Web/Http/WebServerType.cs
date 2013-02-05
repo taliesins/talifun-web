@@ -6,6 +6,9 @@
         Unknown,
         IIS7,
         IIS6orIIS7ClassicMode,
+        VisualStudio2008,
+        VisualStudio2010,
+        VisualStudio2012,
         Cassini
     }
 }
