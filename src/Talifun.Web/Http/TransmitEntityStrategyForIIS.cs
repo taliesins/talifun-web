@@ -32,7 +32,7 @@ namespace Talifun.Web
         {
             //TransmitFile is asynchronous make it syncronous
             //http://stackoverflow.com/questions/2275894/calling-response-transmitfile-from-static-method
-            //response.Flush();
+            response.Flush();
         }
 
         #endregion
