@@ -57,19 +57,22 @@ namespace Talifun.Web.Crusher
 
         private StringBuilder CreateLogEntries(CssGroupToProcess cssGroupToProcess, Uri outputUri, CssCrushedOutput crushedOutput)
         {
+            outputUri = new Uri(cssGroupToProcess.PathProvider.ToAbsolute(outputUri.ToString()), UriKind.Absolute);
+            var rootPath = cssGroupToProcess.PathProvider.GetAbsoluteUriDirectory("~/");
+
             var output = new StringBuilder();
-            output.AppendFormat("{0} ({1})\r\n", outputUri, cssGroupToProcess.Group.Name);
-            output.AppendFormat("{0}   (Css)\r\n", outputUri);
+            output.AppendFormat("{0} ({1})\r\n", rootPath.MakeRelativeUri(outputUri), cssGroupToProcess.Group.Name);
+            output.AppendFormat("{0}   (Css)\r\n", rootPath.MakeRelativeUri(outputUri));
             foreach (var cssFile in crushedOutput.FilesToWatch)
             {
                 outputUri = new Uri(cssGroupToProcess.PathProvider.ToAbsolute(cssFile.FilePath), UriKind.Absolute);
-                output.AppendFormat("      {0}\r\n", outputUri);
+                output.AppendFormat("      {0}\r\n", rootPath.MakeRelativeUri(outputUri));
             }
-            output.AppendFormat("{0}   (Css Assets)\r\n", outputUri);
+            output.AppendFormat("{0}   (Css Assets)\r\n", rootPath.MakeRelativeUri(outputUri));
             foreach (var cssAssetFile in crushedOutput.CssAssetFilePaths)
             {
                 outputUri = new Uri(cssGroupToProcess.PathProvider.ToAbsolute(cssAssetFile.FullName), UriKind.Absolute);
-                output.AppendFormat("      {0}\r\n", outputUri);
+                output.AppendFormat("      {0}\r\n", rootPath.MakeRelativeUri(outputUri));
             }
             return output;
         }

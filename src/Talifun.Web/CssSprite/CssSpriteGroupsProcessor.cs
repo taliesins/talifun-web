@@ -67,14 +67,18 @@ namespace Talifun.Web.CssSprite
 
         private StringBuilder CreateLogEntries(CssSpriteGroupToProcess cssSpriteGroupToProcess, Uri cssOutPutUri, Uri imageOutputUri, IEnumerable<ImageFile> filesToWatch)
         {
+            cssOutPutUri = new Uri(cssSpriteGroupToProcess.PathProvider.ToAbsolute(cssOutPutUri.ToString()), UriKind.Absolute);
+            imageOutputUri = new Uri(cssSpriteGroupToProcess.PathProvider.ToAbsolute(imageOutputUri.ToString()), UriKind.Absolute);
+            var rootPath = cssSpriteGroupToProcess.PathProvider.GetAbsoluteUriDirectory("~/");
+
             var output = new StringBuilder();
 
-            output.AppendFormat("{0}({1})\r\n", cssOutPutUri, cssSpriteGroupToProcess.Group.Name);
-            output.AppendFormat("{0}({1})\r\n", imageOutputUri, cssSpriteGroupToProcess.Group.Name);
+            output.AppendFormat("{0}({1})\r\n", rootPath.MakeRelativeUri(cssOutPutUri), cssSpriteGroupToProcess.Group.Name);
+            output.AppendFormat("{0}({1})\r\n", rootPath.MakeRelativeUri(imageOutputUri), cssSpriteGroupToProcess.Group.Name);
             foreach (var fileToWatch in filesToWatch)
             {
                 var imageProcessedOutputUri = new Uri(cssSpriteGroupToProcess.PathProvider.ToAbsolute(fileToWatch.FilePath), UriKind.Absolute);
-                output.AppendFormat("    {0}\r\n", imageProcessedOutputUri);
+                output.AppendFormat("    {0}\r\n", rootPath.MakeRelativeUri(imageProcessedOutputUri));
             }
 
             return output;

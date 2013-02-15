@@ -58,12 +58,15 @@ namespace Talifun.Web.Crusher
 
         private StringBuilder CreateLogEntries(JsGroupToProcess jsGroupToProcess, Uri outputUri, JsCrushedOutput crushedOutput)
         {
+            outputUri = new Uri(jsGroupToProcess.PathProvider.ToAbsolute(outputUri.ToString()), UriKind.Absolute);
+            var rootPath = jsGroupToProcess.PathProvider.GetAbsoluteUriDirectory("~/");
+
             var output = new StringBuilder();
-            output.AppendFormat("{0} ({1})\r\n", outputUri, jsGroupToProcess.Group.Name);
+            output.AppendFormat("{0} ({1})\r\n", rootPath.MakeRelativeUri(outputUri), jsGroupToProcess.Group.Name);
             foreach (var jsFile in crushedOutput.FilesToWatch)
             {
                 outputUri = new Uri(jsGroupToProcess.PathProvider.ToAbsolute(jsFile.FilePath), UriKind.Absolute);
-                output.AppendFormat("    {0}\r\n", outputUri);
+                output.AppendFormat("    {0}\r\n", rootPath.MakeRelativeUri(outputUri));
             }
 
             return output;

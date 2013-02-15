@@ -134,6 +134,11 @@ namespace Talifun.Web.Crusher
                 path = path.Substring(0, queryStringPosition);
             }
 
+            if (path.EndsWith("/"))
+            {
+                return new Uri(path, UriKind.RelativeOrAbsolute);
+            }
+
             var startIndex = path.Length - Path.GetFileName(path).Length;
 
             path = path.Remove(startIndex);
