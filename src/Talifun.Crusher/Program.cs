@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Text;
+using System.Threading;
 using Talifun.Crusher.Options;
 using Talifun.Web;
 using Talifun.Web.Crusher;
@@ -13,7 +13,7 @@ using Talifun.Web.Helper;
 
 namespace Talifun.Crusher
 {
-    class Program
+    public class Program
     {
 		private const int SuccessExitCode = 0;
     	private const int ErrorExitCode = 1;
@@ -125,42 +125,85 @@ namespace Talifun.Crusher
 				var pathProvider = new PathProvider(applicationPath, physicalApplicationPath);
 				var cacheManager = new HttpCacheManager();
 
-				if (crusherConfiguration == null)
-				{
-					Console.WriteLine();
-					Console.WriteLine("Skipping css/js crushed content creation. \"{0}\" section name not found in \"{1}\"", crusherSectionName, configPath);
-				}
-				else
-				{
-					var hashQueryStringKeyName = crusherConfiguration.QuerystringKeyName;
-					var cssAssetsFileHasher = new CssAssetsFileHasher(hashQueryStringKeyName, hasher, pathProvider);
-					var cssPathRewriter = new CssPathRewriter(cssAssetsFileHasher, pathProvider);
-					var cssCrusher = new CssCrusher(cacheManager, pathProvider, retryableFileOpener, retryableFileWriter, cssPathRewriter);
-					var jsCrusher = new JsCrusher(cacheManager, pathProvider, retryableFileOpener, retryableFileWriter);
+        	    var jsOutput = string.Empty;
+        	    var cssOutput = string.Empty;
+                var cssSpriteOutput = string.Empty;
 
-					var cssGroups = crusherConfiguration.CssGroups;
-					var jsGroups = crusherConfiguration.JsGroups;
-					CreateCrushedFiles(pathProvider, cssGroups, jsGroups, cssCrusher, jsCrusher);
+                var resetEvents = new WaitHandle[3]
+                {
+                    new ManualResetEvent(false),
+                    new ManualResetEvent(false),
+                    new ManualResetEvent(false)
+                };
 
-					Console.WriteLine();
-					Console.WriteLine(_cssOutput);
-					Console.WriteLine();
-					Console.WriteLine(_jsOutput);
-				}
+                ThreadPool.QueueUserWorkItem(data =>
+                {
+                    var manualResetEvent = (ManualResetEvent)data;
+                    if (crusherConfiguration != null)
+                    {
+                        var jsCrusher = new JsCrusher(cacheManager, pathProvider, retryableFileOpener, retryableFileWriter);
+                        var jsGroups = crusherConfiguration.JsGroups;
+                        var jsGroupsProcessor = new JsGroupsProcessor();
 
-				if (cssSpriteConfiguration == null)
+                        jsOutput = jsGroupsProcessor.ProcessGroups(pathProvider, jsCrusher, jsGroups).ToString();
+                    }
+                    manualResetEvent.Set();
+                }, resetEvents[0]);
+
+                ThreadPool.QueueUserWorkItem(data =>
+                {
+                    var manualResetEvent = (ManualResetEvent)data;
+                    if (crusherConfiguration != null)
+                    {
+                        var hashQueryStringKeyName = crusherConfiguration.QuerystringKeyName;
+                        var cssAssetsFileHasher = new CssAssetsFileHasher(hashQueryStringKeyName, hasher, pathProvider);
+                        var cssPathRewriter = new CssPathRewriter(cssAssetsFileHasher, pathProvider);
+                        var cssCrusher = new CssCrusher(cacheManager, pathProvider, retryableFileOpener, retryableFileWriter, cssPathRewriter);
+                        var cssGroups = crusherConfiguration.CssGroups;
+                        var cssGroupsCrusher = new CssGroupsProcessor();
+                        cssOutput = cssGroupsCrusher.ProcessGroups(pathProvider, cssCrusher, cssGroups).ToString();
+                    }
+                    manualResetEvent.Set();
+                }, resetEvents[1]);
+
+                ThreadPool.QueueUserWorkItem(data =>
+                {
+                    var manualResetEvent = (ManualResetEvent)data;
+                    if (cssSpriteConfiguration != null)
+                    {
+                        var cssSpriteGroups = cssSpriteConfiguration.CssSpriteGroups;
+                        var cssSpriteCreator = new CssSpriteCreator(cacheManager, retryableFileOpener, pathProvider, retryableFileWriter);
+                        var cssSpriteGroupsProcessor = new CssSpriteGroupsProcessor();
+
+                        cssSpriteOutput = cssSpriteGroupsProcessor.ProcessGroups(pathProvider, cssSpriteCreator, cssSpriteGroups).ToString();
+                    }
+                    manualResetEvent.Set();
+                }, resetEvents[2]);
+
+                WaitHandle.WaitAll(resetEvents);
+
+        	    if (string.IsNullOrEmpty(jsOutput) && string.IsNullOrEmpty(cssOutput))
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("Skipping css/js crushed content creation. \"{0}\" section name not found in \"{1}\"", crusherSectionName, configPath);
+                }
+                else
+                {
+                    Console.WriteLine();
+                    Console.WriteLine(cssOutput);
+                    Console.WriteLine();
+                    Console.WriteLine(jsOutput);
+                }
+
+                if (string.IsNullOrEmpty(cssSpriteOutput))
 				{
 					Console.WriteLine();
 					Console.WriteLine("Skipping css sprite creation. \"{0}\" section name not found in \"{1}\"", cssSpriteSectionName, configPath);
 				}
 				else
 				{
-					var cssSpriteGroups = cssSpriteConfiguration.CssSpriteGroups;
-					var cssSpriteCreator = new CssSpriteCreator(cacheManager, retryableFileOpener, pathProvider, retryableFileWriter);
-					CreateCssSpriteFiles(pathProvider, cssSpriteGroups, cssSpriteCreator);
-
 					Console.WriteLine();
-					Console.WriteLine(_cssSpriteOutput);
+					Console.WriteLine(cssSpriteOutput);
 				}
 			}
 			catch (Exception exception)
@@ -209,152 +252,5 @@ namespace Talifun.Crusher
 			return cssSpriteSection;
 		}
 
-        private static string _cssOutput;
-        private static string _jsOutput;
-        private static void CreateCrushedFiles(IPathProvider pathProvider, CssGroupElementCollection cssGroups, JsGroupElementCollection jsGroups, CssCrusher cssCrusher, JsCrusher jsCrusher)
-        {
-            _cssOutput = "Css Files created:\r\n";
-            foreach (CssGroupElement group in cssGroups)
-            {
-                var files = new List<CssFile>();
-
-                foreach (CssFileElement cssFile in group.Files)
-                {
-                    var file = new CssFile()
-                    {
-                        CompressionType = cssFile.CompressionType,
-                        FilePath = cssFile.FilePath
-                    };
-                    files.Add(file);
-                }
-
-                var directories = new List<CssDirectory>();
-
-                foreach (CssDirectoryElement cssDirectory in group.Directories)
-                {
-                    var directory = new CssDirectory()
-                    {
-                        CompressionType = cssDirectory.CompressionType,
-                        DirectoryPath = cssDirectory.DirectoryPath,
-                        IncludeSubDirectories = cssDirectory.IncludeSubDirectories,
-                        PollTime = cssDirectory.PollTime,
-                        IncludeFilter = cssDirectory.IncludeFilter,
-                        ExcludeFilter = cssDirectory.ExcludeFilter
-                    };
-                    directories.Add(directory);
-                }
-
-                var outputUri = new Uri(pathProvider.ToAbsolute(group.OutputFilePath), UriKind.Absolute);
-                var output = cssCrusher.CreateGroup(outputUri, files, directories, group.AppendHashToCssAsset);
-                
-                _cssOutput += outputUri + " (" + group.Name + ")\r\n";
-                _cssOutput += outputUri + "   (Css)\r\n";
-                foreach (var cssFile in output.FilesToWatch)
-                {
-                    outputUri = new Uri(pathProvider.ToAbsolute(cssFile.FilePath), UriKind.Absolute);
-                    _cssOutput += "      " + outputUri + "\r\n";
-                }
-                _cssOutput += outputUri + "   (Css Assets)\r\n";
-                foreach (var cssAssetFile in output.CssAssetFilePaths)
-                {
-                    outputUri = new Uri(pathProvider.ToAbsolute(cssAssetFile.FullName), UriKind.Absolute);
-                    _cssOutput += "      " + outputUri + "\r\n";
-                }
-            }
-
-            _jsOutput = "Js Files created:\r\n";
-            foreach (JsGroupElement group in jsGroups)
-            {
-                var files = new List<JsFile>();
-
-                foreach (JsFileElement jsFile in group.Files)
-                {
-                    var file = new JsFile()
-                    {
-                        CompressionType = jsFile.CompressionType,
-                        FilePath = jsFile.FilePath
-                    };
-                    files.Add(file);
-                }
-
-                var directories = new List<JsDirectory>();
-
-                foreach (JsDirectoryElement jsDirectory in group.Directories)
-                {
-                    var directory = new JsDirectory()
-                    {
-                        CompressionType = jsDirectory.CompressionType,
-                        DirectoryPath = jsDirectory.DirectoryPath,
-                        IncludeSubDirectories = jsDirectory.IncludeSubDirectories,
-                        PollTime = jsDirectory.PollTime,
-                        IncludeFilter = jsDirectory.IncludeFilter,
-                        ExcludeFilter = jsDirectory.ExcludeFilter
-                    };
-                    directories.Add(directory);
-                }
-
-                var outputUri = new Uri(pathProvider.ToAbsolute(group.OutputFilePath), UriKind.Absolute);
-                var output = jsCrusher.AddGroup(outputUri, files, directories);
-
-                _jsOutput += outputUri + " (" + group.Name + ")\r\n";
-                foreach (var jsFile in output.FilesToWatch)
-                {
-                    outputUri = new Uri(pathProvider.ToAbsolute(jsFile.FilePath), UriKind.Absolute);
-                    _jsOutput += "    " + outputUri + "\r\n";
-                }
-            }
-        }
-
-		private static string _cssSpriteOutput;
-		private static void CreateCssSpriteFiles(IPathProvider pathProvider, CssSpriteGroupElementCollection cssSpriteGroups, CssSpriteCreator cssSpriteCreator)
-		{
-			_cssSpriteOutput = "Css Sprite Files created:\r\n";
-			foreach (CssSpriteGroupElement group in cssSpriteGroups)
-			{
-				var files = new List<ImageFile>();
-
-				foreach (ImageFileElement imageFile in group.Files)
-				{
-					var file = new ImageFile()
-					{
-						FilePath = imageFile.FilePath,
-						Name = imageFile.Name
-					};
-					files.Add(file);
-				}
-
-                var directories = new List<ImageDirectory>();
-
-                foreach (ImageDirectoryElement imageDirectory in group.Directories)
-                {
-                    var directory = new ImageDirectory()
-                    {
-                        DirectoryPath = imageDirectory.DirectoryPath,
-                        ExcludeFilter = imageDirectory.ExcludeFilter,
-                        IncludeFilter = imageDirectory.IncludeFilter,
-                        IncludeSubDirectories = imageDirectory.IncludeSubDirectories,
-                        PollTime = imageDirectory.PollTime
-                    };
-
-                    directories.Add(directory);
-                }
-
-				var cssOutPutUri = string.IsNullOrEmpty(group.CssUrl) ? new Uri(pathProvider.ToAbsolute(group.CssOutputFilePath), UriKind.Absolute) : new Uri(group.CssUrl, UriKind.RelativeOrAbsolute);
-				var cssOutputPath = new FileInfo(new Uri(pathProvider.MapPath(group.CssOutputFilePath)).LocalPath);
-
-				var imageOutputUri = string.IsNullOrEmpty(group.ImageUrl) ? new Uri(pathProvider.ToAbsolute(group.ImageOutputFilePath), UriKind.Absolute) : new Uri(group.ImageUrl, UriKind.RelativeOrAbsolute);
-				var imageOutputPath = new FileInfo(new Uri(pathProvider.MapPath(group.ImageOutputFilePath)).LocalPath);
-
-                var output = cssSpriteCreator.AddFiles(imageOutputPath, imageOutputUri, cssOutputPath, files, directories);
-
-				_cssSpriteOutput += cssOutPutUri + "(" + group.Name + ")\r\n";
-				_cssSpriteOutput += imageOutputUri + "(" + group.Name + ")\r\n";
-                foreach (var filesToWatch in output)
-				{
-                    imageOutputUri = new Uri(pathProvider.ToAbsolute(filesToWatch.FilePath), UriKind.Absolute);
-					_cssSpriteOutput += "    " + imageOutputUri + "\r\n";
-				}
-			}
-		}
     }
 }

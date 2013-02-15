@@ -7,6 +7,8 @@ using System.Text.RegularExpressions;
 using System.Web.Caching;
 using Talifun.FileWatcher;
 using Talifun.Web.Helper;
+using Talifun.Web.Helper.Pooling;
+
 #if NET35
 using Talifun.Web;
 #endif
@@ -25,11 +27,9 @@ namespace Talifun.Web.Crusher
         protected readonly ICssPathRewriter CssPathRewriter;
         protected static string CssCrusherType = typeof(CssCrusher).ToString();
 
-		protected readonly object YahooYuiCssCompressorLock = new object();
-		protected readonly Lazy<Yahoo.Yui.Compressor.CssCompressor> YahooYuiCssCompressor;
+		protected readonly Pool<Yahoo.Yui.Compressor.CssCompressor> YahooYuiCssCompressorPool;
 
-		protected readonly object MicrosoftAjaxMinCssCompressorLock = new object();
-		protected readonly Lazy<Microsoft.Ajax.Utilities.Minifier> MicrosoftAjaxMinCssCompressor;
+		protected readonly Pool<Microsoft.Ajax.Utilities.Minifier> MicrosoftAjaxMinCssCompressorPool;
 
         public CssCrusher(ICacheManager cacheManager, IPathProvider pathProvider, IRetryableFileOpener retryableFileOpener, IRetryableFileWriter retryableFileWriter, ICssPathRewriter cssPathRewriter)
         {
@@ -38,8 +38,8 @@ namespace Talifun.Web.Crusher
             RetryableFileOpener = retryableFileOpener;
             RetryableFileWriter = retryableFileWriter;
             CssPathRewriter = cssPathRewriter;
-            YahooYuiCssCompressor = new Lazy<Yahoo.Yui.Compressor.CssCompressor>();
-            MicrosoftAjaxMinCssCompressor = new Lazy<Microsoft.Ajax.Utilities.Minifier>();
+            YahooYuiCssCompressorPool = new Pool<Yahoo.Yui.Compressor.CssCompressor>(64, pool => new Yahoo.Yui.Compressor.CssCompressor(), LoadingMode.LazyExpanding, AccessMode.Circular);
+            MicrosoftAjaxMinCssCompressorPool = new Pool<Microsoft.Ajax.Utilities.Minifier>(64, pool => new Microsoft.Ajax.Utilities.Minifier(), LoadingMode.LazyExpanding, AccessMode.Circular);
         }
 
     	/// <summary>
@@ -136,17 +136,27 @@ namespace Talifun.Web.Crusher
 
 			if (yahooYuiToBeCompressedContents.Length > 0)
 			{
-				lock (YahooYuiCssCompressorLock)
+			    var yahooYuiCssCompressor = YahooYuiCssCompressorPool.Acquire();
+				try
 				{
-					uncompressedContents.Append(YahooYuiCssCompressor.Value.Compress(yahooYuiToBeCompressedContents.ToString()));
+				    uncompressedContents.Append(yahooYuiCssCompressor.Compress(yahooYuiToBeCompressedContents.ToString()));
+				}
+				finally
+				{
+				    YahooYuiCssCompressorPool.Release(yahooYuiCssCompressor);
 				}
 			}
 
 			if (microsoftAjaxMintoBeCompressedContents.Length > 0)
 			{
-				lock (MicrosoftAjaxMinCssCompressorLock)
+			    var microsoftAjaxMinCssCompressor = MicrosoftAjaxMinCssCompressorPool.Acquire();
+				try
 				{
-					uncompressedContents.Append(MicrosoftAjaxMinCssCompressor.Value.MinifyStyleSheet(microsoftAjaxMintoBeCompressedContents.ToString()));
+				    uncompressedContents.Append(microsoftAjaxMinCssCompressor.MinifyStyleSheet(microsoftAjaxMintoBeCompressedContents.ToString()));
+				}
+				finally
+				{
+                    MicrosoftAjaxMinCssCompressorPool.Release(microsoftAjaxMinCssCompressor);
 				}
 			}
 

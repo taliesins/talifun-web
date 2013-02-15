@@ -40,7 +40,7 @@ namespace Talifun.Web.Crusher
                 uri = uri.Substring(0, queryStringPosition);
             }
 
-            if (string.IsNullOrEmpty(HostingEnvironment.ApplicationPhysicalPath))
+            if (HttpContext.Current == null || string.IsNullOrEmpty(HostingEnvironment.ApplicationPhysicalPath))
             {
                 uri = uri.TrimStart('~').TrimStart('/', '\\');
                 var applicationUri = GetApplicationAbsoluteUri().ToString();
@@ -109,7 +109,7 @@ namespace Talifun.Web.Crusher
                 return uri.ToString();
             }
 
-            if (string.IsNullOrEmpty(HostingEnvironment.ApplicationPhysicalPath))
+            if (HttpContext.Current == null || string.IsNullOrEmpty(HostingEnvironment.ApplicationPhysicalPath))
             {
                 var path = Path.Combine(applicationPath, virtualPath.TrimStart('~').TrimStart('/', '\\'));
                 return new Uri(path, UriKind.Absolute).AbsolutePath;

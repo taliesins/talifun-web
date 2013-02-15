@@ -58,7 +58,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-
+    <Reference Include="AjaxMin, Version=4.84.4790.14405, Culture=neutral, PublicKeyToken=21ef50ce11b5d80f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\AjaxMin.4.84.4790.14417\lib\net40\AjaxMin.dll</HintPath>
+    </Reference>
     <Reference Include="dotless.Core">
       <HintPath>..\..\packages\dotless.1.3.1.0\lib\dotless.Core.dll</HintPath>
     </Reference>
@@ -90,17 +93,11 @@
     <Reference Include="Talifun.FileWatcher">
       <HintPath>..\..\packages\Talifun.FileWatcher.1.7.0.0\lib\net40\Talifun.FileWatcher.dll</HintPath>
     </Reference>
-    <Reference Include="AjaxMin, Version=4.81.4769.14854, Culture=neutral, PublicKeyToken=21ef50ce11b5d80f, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\AjaxMin.4.81.4769.14860\lib\net40\AjaxMin.dll</HintPath>
-    </Reference>
     <Reference Include="System.Web.ApplicationServices" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFrameworkConstant)' == 'NET35' ">
     <Reference Include="Talifun.FileWatcher">
       <HintPath>..\..\packages\Talifun.FileWatcher.1.7.0.0\lib\net35\Talifun.FileWatcher.dll</HintPath>
-    </Reference>
-    <Reference Include="AjaxMin, Version=4.81.4769.14856, Culture=neutral, PublicKeyToken=21ef50ce11b5d80f, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\AjaxMin.4.81.4769.14860\lib\net35\AjaxMin.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.ApplicationServices" />
   </ItemGroup>
@@ -114,23 +111,35 @@
     <Compile Include="Crusher\Config\CssDirectoryElement.cs" />
     <Compile Include="Crusher\CsFileToWatchComparer.cs" />
     <Compile Include="Crusher\CssAsset.cs" />
+    <Compile Include="Crusher\CssGroupsProcessor.cs" />
+    <Compile Include="Crusher\CssGroupToProcess.cs" />
     <Compile Include="Crusher\CssModule\CssAssetsHashModule.cs" />
     <Compile Include="Crusher\CssModule\DotLessModule.cs" />
     <Compile Include="Crusher\CssModule\ICssModule.cs" />
     <Compile Include="Crusher\CssModule\RelativePathModule.cs" />
+    <Compile Include="Crusher\ICssGroupsProcessor.cs" />
+    <Compile Include="Crusher\IJsGroupsProcessor.cs" />
     <Compile Include="Crusher\JsDirectory.cs" />
     <Compile Include="Crusher\CssDirectory.cs" />
     <Compile Include="Crusher\CrusherHelper.cs" />
     <Compile Include="Crusher\CssFileToWatch.cs" />
     <Compile Include="Crusher\JsFileToWatch.cs" />
     <Compile Include="Crusher\JsFileToWatchEqualityComparer.cs" />
+    <Compile Include="Crusher\JsGroupsProcessor.cs" />
+    <Compile Include="Crusher\JsGroupToProcess.cs" />
     <Compile Include="Crusher\JsModule\IJsModule.cs" />
     <Compile Include="CssSprite\Config\ImageDirectoryElement.cs" />
     <Compile Include="CssSprite\Config\ImageDirectoryElementCollection.cs" />
+    <Compile Include="CssSprite\CssSpriteGroupToProcess.cs" />
     <Compile Include="CssSprite\ImageDirectory.cs" />
+    <Compile Include="CssSprite\CssSpriteGroupsProcessor.cs" />
     <Compile Include="Helper\Graph.cs" />
     <Compile Include="Helper\HashedSet.cs" />
     <Compile Include="Helper\Lazy.cs" />
+    <Compile Include="Helper\ParallelExecute.cs" />
+    <Compile Include="Helper\Pooling\AccessMode.cs" />
+    <Compile Include="Helper\Pooling\LoadingMode.cs" />
+    <Compile Include="Helper\Pooling\Pool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Cache\HttpCacheManager.cs" />
     <Compile Include="Compress\CompressionModuleHelper.cs" />

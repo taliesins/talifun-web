@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using Talifun.Web.Crusher.Config;
@@ -87,84 +88,30 @@ namespace Talifun.Web.Crusher
         {
             AppDomain.CurrentDomain.DomainUnload += OnDomainUnload;
 
-        	ConfigureJs();
-        	ConfigureCss();
+            var resetEvents = new WaitHandle[2]
+                {
+                    new ManualResetEvent(false),
+                    new ManualResetEvent(false)
+                };
+
+            ThreadPool.QueueUserWorkItem(data =>
+                {
+                    var manualResetEvent = (ManualResetEvent)data;
+                    var groupsProcessor = new JsGroupsProcessor();
+                    groupsProcessor.ProcessGroups(_pathProvider, _jsCrusher, _jsGroups);
+                    manualResetEvent.Set();
+                }, resetEvents[0]);
+
+            ThreadPool.QueueUserWorkItem(data =>
+                {
+                    var manualResetEvent = (ManualResetEvent)data;
+                    var groupsProcessor = new CssGroupsProcessor();
+                    groupsProcessor.ProcessGroups(_pathProvider, _cssCrusher, _cssGroups);
+                    manualResetEvent.Set();
+                }, resetEvents[1]);
+
+            WaitHandle.WaitAll(resetEvents);
         }
-
-		private void ConfigureJs()
-		{
-			foreach (CssGroupElement group in _cssGroups)
-			{
-				var files = new List<CssFile>();
-
-				foreach (CssFileElement cssFile in group.Files)
-				{
-					var file = new CssFile()
-					{
-						CompressionType = cssFile.CompressionType,
-						FilePath = cssFile.FilePath
-					};
-					files.Add(file);
-				}
-
-				var directories = new List<CssDirectory>();
-
-				foreach (CssDirectoryElement cssDirectory in group.Directories)
-				{
-					var directory = new CssDirectory()
-					{
-						CompressionType = cssDirectory.CompressionType,
-						DirectoryPath = cssDirectory.DirectoryPath,
-                        IncludeSubDirectories = cssDirectory.IncludeSubDirectories,
-                        PollTime = cssDirectory.PollTime,
-                        IncludeFilter = cssDirectory.IncludeFilter,
-                        ExcludeFilter = cssDirectory.ExcludeFilter
-					};
-					directories.Add(directory);
-				}
-
-				var outputUri = new Uri(_pathProvider.ToAbsolute(group.OutputFilePath), UriKind.Relative);
-
-				_cssCrusher.CreateGroup(outputUri, files, directories, group.AppendHashToCssAsset);
-			}
-		}
-
-		private void ConfigureCss()
-		{
-			foreach (JsGroupElement group in _jsGroups)
-			{
-				var files = new List<JsFile>();
-
-				foreach (JsFileElement jsFile in group.Files)
-				{
-					var file = new JsFile()
-					{
-						CompressionType = jsFile.CompressionType,
-						FilePath = jsFile.FilePath
-					};
-					files.Add(file);
-				}
-
-				var directories = new List<JsDirectory>();
-
-				foreach (JsDirectoryElement jsDirectory in group.Directories)
-				{
-					var directory = new JsDirectory()
-					{
-						CompressionType = jsDirectory.CompressionType,
-						DirectoryPath = jsDirectory.DirectoryPath,
-                        IncludeSubDirectories = jsDirectory.IncludeSubDirectories,
-                        PollTime = jsDirectory.PollTime,
-                        IncludeFilter = jsDirectory.IncludeFilter,
-                        ExcludeFilter = jsDirectory.ExcludeFilter
-					};
-					directories.Add(directory);
-				}
-
-				var outputUri = new Uri(_pathProvider.ToAbsolute(group.OutputFilePath), UriKind.Relative);
-				_jsCrusher.AddGroup(outputUri, files, directories);
-			}
-		}
 
         private void DisposeManager()
         {
@@ -185,7 +132,7 @@ namespace Talifun.Web.Crusher
                 AppDomain.CurrentDomain.DomainUnload -= OnDomainUnload;
             }
         }
-
+       
         #region IDisposable Members
         private int alreadyDisposed = 0;
 
