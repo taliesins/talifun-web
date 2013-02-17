@@ -20,8 +20,9 @@
   </metadata>
   <files>
 	 <file src="Transforms\Talifun.Crusher.MsBuild.web.config.transform" target="content\web.config.transform" />
-   <file src="Transforms\talifun.crusher.msbuild.targets" target="content\talifun.crusher.msbuild.targets" />
-   <file src="tools\Install.ps1" target="tools\Install.ps1" />
-   <file src="tools\Uninstall.ps1" target="tools\Uninstall.ps1" />
+   <file src="tools\net35\Install.ps1" target="tools\net35\Install.ps1" />
+   <file src="tools\net35\Uninstall.ps1" target="tools\net35\Uninstall.ps1" />
+   <file src="tools\net40\Install.ps1" target="tools\net40\Install.ps1" />
+   <file src="tools\net40\Uninstall.ps1" target="tools\net40\Uninstall.ps1" />
   </files>
 </package>

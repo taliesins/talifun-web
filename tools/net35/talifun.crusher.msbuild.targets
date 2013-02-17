@@ -1,0 +1,4 @@
+<UsingTask TaskName="Talifun.Crusher.MsBuild.CrusherTask" AssemblyFile="$(MSBuildThisFileDirectory)\Talifun.Crusher.MsBuild.dll" />
+<Target Name="Crusher" AfterTargets="Build">
+	<CrusherTask />
+</Target>

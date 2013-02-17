@@ -2,7 +2,8 @@ param($installPath, $toolsPath, $package, $project)
 
 # This is the MSBuild targets file to add
 $targetsFileName = 'talifun.crusher.msbuild.targets'
-$targetsPath = [System.IO.Path]::Combine($toolsPath + '/net40', targetsFileName)
+$talifunToolsPath = $toolsPath + '\net35' -replace '\\Talifun.Crusher.MsBuild(.*)\\Tools', '\Talifun.Web$1\Tools'
+$targetsPath = [System.IO.Path]::Combine($talifunToolsPath, targetsFileName)
 
 # Need to load MSBuild assembly if it's not loaded yet.
 Add-Type -AssemblyName 'Microsoft.Build, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
