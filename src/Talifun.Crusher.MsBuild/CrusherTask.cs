@@ -100,8 +100,17 @@ namespace Talifun.Crusher.MsBuild
             var applicationPath = (string)AppDomain.CurrentDomain.GetData("applicationPath");
             var buildEngine = (IBuildEngine)AppDomain.CurrentDomain.GetData("buildEngine");
 
-            var crusherBuild = new CrusherBuild();
-            crusherBuild.Process(configPath, applicationPath, buildEngine);
+            try
+            {
+                var crusherBuild = new CrusherBuild();
+                crusherBuild.Process(configPath, applicationPath, buildEngine);
+            }
+            catch (Exception exception)
+            {
+                buildEngine.LogErrorEvent(new BuildErrorEventArgs("", "", "", 0, 0, 0, 0,
+                                                                  string.Format("{0}: {1}", SenderName, exception), "",
+                                                                  SenderName));
+            }
         }
     }
 }
