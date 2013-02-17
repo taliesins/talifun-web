@@ -96,8 +96,8 @@ namespace Talifun.Crusher
 			if (crusherConfiguration == null && cssSpriteConfiguration == null)
             {
                 Console.WriteLine(HeaderMessage);
+                Console.WriteLine("\"{0}\" section name not found in {1} ", cssSpriteSectionName, configPath);
 				Console.WriteLine("\"{0}\" section name not found in {1} ", crusherSectionName, configPath);
-				Console.WriteLine("\"{0}\" section name not found in {1} ", cssSpriteSectionName, configPath);
                 Console.WriteLine(HelpMessage);
 				return DisplayHelpScreenExitCode;
             }
@@ -107,8 +107,8 @@ namespace Talifun.Crusher
 				Console.WriteLine();
 				Console.WriteLine("Settings used:");
 				Console.WriteLine("configPath = " + configPath);
+                Console.WriteLine("cssSpriteSectionName = " + cssSpriteSectionName);
 				Console.WriteLine("crusherSectionName = " + crusherSectionName);
-				Console.WriteLine("cssSpriteSectionName = " + cssSpriteSectionName);
 				Console.WriteLine("applicationPath = " + applicationPath);
 
         	    var configUri = new Uri(configPath, UriKind.RelativeOrAbsolute);
@@ -129,9 +129,18 @@ namespace Talifun.Crusher
         	    var cssOutput = string.Empty;
                 var cssSpriteOutput = string.Empty;
 
-                var resetEvents = new WaitHandle[3]
+                //We want to be able to use output from css sprites in crushed content
+                if (cssSpriteConfiguration != null)
                 {
-                    new ManualResetEvent(false),
+                    var cssSpriteGroups = cssSpriteConfiguration.CssSpriteGroups;
+                    var cssSpriteCreator = new CssSpriteCreator(cacheManager, retryableFileOpener, pathProvider, retryableFileWriter);
+                    var cssSpriteGroupsProcessor = new CssSpriteGroupsProcessor();
+
+                    cssSpriteOutput = cssSpriteGroupsProcessor.ProcessGroups(pathProvider, cssSpriteCreator, cssSpriteGroups).ToString();
+                }
+
+                var resetEvents = new WaitHandle[2]
+                {
                     new ManualResetEvent(false),
                     new ManualResetEvent(false)
                 };
@@ -166,21 +175,18 @@ namespace Talifun.Crusher
                     manualResetEvent.Set();
                 }, resetEvents[1]);
 
-                ThreadPool.QueueUserWorkItem(data =>
-                {
-                    var manualResetEvent = (ManualResetEvent)data;
-                    if (cssSpriteConfiguration != null)
-                    {
-                        var cssSpriteGroups = cssSpriteConfiguration.CssSpriteGroups;
-                        var cssSpriteCreator = new CssSpriteCreator(cacheManager, retryableFileOpener, pathProvider, retryableFileWriter);
-                        var cssSpriteGroupsProcessor = new CssSpriteGroupsProcessor();
-
-                        cssSpriteOutput = cssSpriteGroupsProcessor.ProcessGroups(pathProvider, cssSpriteCreator, cssSpriteGroups).ToString();
-                    }
-                    manualResetEvent.Set();
-                }, resetEvents[2]);
-
                 WaitHandle.WaitAll(resetEvents);
+
+                if (string.IsNullOrEmpty(cssSpriteOutput))
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("Skipping css sprite creation. \"{0}\" section name not found in \"{1}\"", cssSpriteSectionName, configPath);
+                }
+                else
+                {
+                    Console.WriteLine();
+                    Console.WriteLine(cssSpriteOutput);
+                }
 
         	    if (string.IsNullOrEmpty(jsOutput) && string.IsNullOrEmpty(cssOutput))
                 {
@@ -194,17 +200,6 @@ namespace Talifun.Crusher
                     Console.WriteLine();
                     Console.WriteLine(jsOutput);
                 }
-
-                if (string.IsNullOrEmpty(cssSpriteOutput))
-				{
-					Console.WriteLine();
-					Console.WriteLine("Skipping css sprite creation. \"{0}\" section name not found in \"{1}\"", cssSpriteSectionName, configPath);
-				}
-				else
-				{
-					Console.WriteLine();
-					Console.WriteLine(cssSpriteOutput);
-				}
 			}
 			catch (Exception exception)
 			{

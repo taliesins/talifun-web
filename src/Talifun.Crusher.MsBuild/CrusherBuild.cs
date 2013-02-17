@@ -47,9 +47,9 @@ namespace Talifun.Crusher.MsBuild
 
         public void Process(string configPath, string applicationPath, IBuildEngine buildEngine)
         {
-            var crusherConfiguration = GetCrusherSection(configPath, CrusherSectionName);
             var cssSpriteConfiguration = GetCssSpriteSection(configPath, CssSpriteSectionName);
-
+            var crusherConfiguration = GetCrusherSection(configPath, CrusherSectionName);
+            
             var configUri = new Uri(configPath, UriKind.RelativeOrAbsolute);
             if (!configUri.IsAbsoluteUri)
             {
@@ -64,13 +64,30 @@ namespace Talifun.Crusher.MsBuild
             var pathProvider = new PathProvider(applicationPath, physicalApplicationPath);
             var cacheManager = new HttpCacheManager();
 
+            var cssSpriteOutput = string.Empty;
             var jsOutput = string.Empty;
             var cssOutput = string.Empty;
-            var cssSpriteOutput = string.Empty;
 
-            var resetEvents = new WaitHandle[3]
+            try
+            {
+                if (cssSpriteConfiguration != null)
+                {
+                    var cssSpriteGroups = cssSpriteConfiguration.CssSpriteGroups;
+                    var cssSpriteCreator = new CssSpriteCreator(cacheManager, retryableFileOpener, pathProvider, retryableFileWriter);
+                    var cssSpriteGroupsProcessor = new CssSpriteGroupsProcessor();
+
+                    cssSpriteOutput = cssSpriteGroupsProcessor.ProcessGroups(pathProvider, cssSpriteCreator, cssSpriteGroups).ToString();
+
+                    buildEngine.LogMessageEvent(new BuildMessageEventArgs(string.Format("{0}: {1}", SenderName, cssSpriteOutput), "", SenderName, MessageImportance.High));
+                }
+            }
+            catch (Exception exception)
+            {
+                buildEngine.LogErrorEvent(new BuildErrorEventArgs("", "", "", 0, 0, 0, 0, string.Format("{0}: {1}", SenderName, exception), "", SenderName));
+            }
+
+            var resetEvents = new WaitHandle[2]
                     {
-                        new ManualResetEvent(false),
                         new ManualResetEvent(false),
                         new ManualResetEvent(false),
                     };
@@ -127,28 +144,6 @@ namespace Talifun.Crusher.MsBuild
                 }
                 manualResetEvent.Set();
             }, resetEvents[1]);
-
-            ThreadPool.QueueUserWorkItem(data =>
-            {
-                var manualResetEvent = (ManualResetEvent)data;
-                try{
-                    if (cssSpriteConfiguration != null)
-                    {
-                        var cssSpriteGroups = cssSpriteConfiguration.CssSpriteGroups;
-                        var cssSpriteCreator = new CssSpriteCreator(cacheManager, retryableFileOpener, pathProvider, retryableFileWriter);
-                        var cssSpriteGroupsProcessor = new CssSpriteGroupsProcessor();
-
-                        cssSpriteOutput = cssSpriteGroupsProcessor.ProcessGroups(pathProvider, cssSpriteCreator, cssSpriteGroups).ToString();
-
-                        buildEngine.LogMessageEvent(new BuildMessageEventArgs(string.Format("{0}: {1}", SenderName, cssSpriteOutput), "", SenderName, MessageImportance.High));
-                    }
-                }
-                catch (Exception exception)
-                {
-                    buildEngine.LogErrorEvent(new BuildErrorEventArgs("", "", "", 0, 0, 0, 0, string.Format("{0}: {1}", SenderName, exception), "", SenderName));
-                }
-                manualResetEvent.Set();
-            }, resetEvents[2]);
 
             WaitHandle.WaitAll(resetEvents);
         }
