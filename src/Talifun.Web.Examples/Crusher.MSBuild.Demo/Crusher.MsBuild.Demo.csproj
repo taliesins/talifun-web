@@ -103,6 +103,7 @@
     <ProjectReference Include="..\..\Talifun.Crusher.MsBuild\Talifun.Crusher.MsBuild.csproj">
       <Project>{fb0b818d-1234-4825-84aa-56ff4265e39c}</Project>
       <Name>Talifun.Crusher.MsBuild</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Talifun.Web\Talifun.Web.csproj">
       <Project>{2C8DE86F-8F4B-430E-88B2-0DB2725AA90F}</Project>

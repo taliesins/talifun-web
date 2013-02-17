@@ -220,7 +220,6 @@ Global
 		{17CEABBE-2B7E-4358-B540-3979C32470B6}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
 		{17CEABBE-2B7E-4358-B540-3979C32470B6}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{17CEABBE-2B7E-4358-B540-3979C32470B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{17CEABBE-2B7E-4358-B540-3979C32470B6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{17CEABBE-2B7E-4358-B540-3979C32470B6}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{17CEABBE-2B7E-4358-B540-3979C32470B6}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{17CEABBE-2B7E-4358-B540-3979C32470B6}.Release|x86.ActiveCfg = Release|Any CPU

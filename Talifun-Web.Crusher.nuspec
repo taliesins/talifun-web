@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Talifun.Web.Crusher</id>
-    <version>2.6.0.0</version>
+    <version>2.6.5.0</version>
     <authors>Taliesin Sisson</authors>
     <owners>Talifun Ltd</owners>
 	<title>Talifun.Web.Crusher</title>
@@ -10,12 +10,12 @@
     <projectUrl>http://www.talifun.com/products/talifun-web/crusher-module</projectUrl>
     <iconUrl>http://code.google.com/p/talifun-web/logo</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>A module that compresses js into a single file, and css into a single file. </description>
+    <description>A module that compresses js into a single file, and css into a single file. More then likely you really want an msbuild task to do this. Get nuget package Talifun.Crusher.MsBuild if this is the case. </description>
 	<summary>A module that makes it easily to implemented best practices and increase performance of asp.net webforms and asp.net mvc websites.</summary>
     <language>en-GB</language>
 	<tags>talifun http module js css minify crush combine compress</tags>
     <dependencies>
-      <dependency id="Talifun.Web" version="2.5.0.1" />
+      <dependency id="Talifun.Web" version="2.6.5.0" />
     </dependencies>	
   </metadata>
   <files>

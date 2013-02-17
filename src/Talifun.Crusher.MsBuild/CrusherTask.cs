@@ -6,6 +6,8 @@ using Microsoft.Build.Framework;
 
 namespace Talifun.Crusher.MsBuild
 {
+    [LoadInSeparateAppDomain]
+    [Serializable]
     public class CrusherTask : ITask
     {
         private const string SenderName = "Crusher";

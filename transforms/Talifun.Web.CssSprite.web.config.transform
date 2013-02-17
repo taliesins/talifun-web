@@ -32,7 +32,7 @@
 	<system.web>
 		<httpModules>
 			<!-- Only recommended when doing local development or using a CMS thats allows people to change images
-			rather use Talifun.Crusher.exe as part of your build script -->
+			rather use Talifun.Crusher.MsBuild as part of your build -->
 			<!--
 			<add name="CssSpriteModule" type="Talifun.Web.CssSprite.CssSpriteModule, Talifun.Web"/>
 			-->
@@ -41,7 +41,7 @@
 	<system.webServer>
 		<modules>
 			<!-- Only recommended when doing local development or using a CMS thats allows people to change images
-			rather use Talifun.Crusher.exe as part of your build script -->
+			rather use Talifun.Crusher.MsBuild as part of your build script -->
 			<!--
 			<add name="CssSpriteModule" type="Talifun.Web.CssSprite.CssSpriteModule, Talifun.Web" />
 			-->
