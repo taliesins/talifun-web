@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Talifun.Web.Crusher.Config;
@@ -29,6 +30,7 @@ namespace Talifun.Web.Crusher
 
         private void ProcessGroup(CssGroupToProcess cssGroupToProcess)
         {
+            var stopwatch = Stopwatch.StartNew();
             var files = cssGroupToProcess.Group.Files.Cast<CssFileElement>()
                 .Select(cssFile => new CssFile
                 {
@@ -52,16 +54,18 @@ namespace Talifun.Web.Crusher
             var outputUri = new Uri(cssGroupToProcess.PathProvider.ToAbsolute(cssGroupToProcess.Group.OutputFilePath), UriKind.Relative);
             var output = cssGroupToProcess.Crusher.CreateGroup(outputUri, files, directories, cssGroupToProcess.Group.AppendHashToCssAsset);
 
-            cssGroupToProcess.Output.Append(CreateLogEntries(cssGroupToProcess, outputUri, output));
+            stopwatch.Stop();
+
+            cssGroupToProcess.Output.Append(CreateLogEntries(cssGroupToProcess, outputUri, output, stopwatch));
         }
 
-        private StringBuilder CreateLogEntries(CssGroupToProcess cssGroupToProcess, Uri outputUri, CssCrushedOutput crushedOutput)
+        private StringBuilder CreateLogEntries(CssGroupToProcess cssGroupToProcess, Uri outputUri, CssCrushedOutput crushedOutput, Stopwatch stopwatch)
         {
             outputUri = new Uri(cssGroupToProcess.PathProvider.ToAbsolute(outputUri.ToString()), UriKind.Absolute);
             var rootPath = cssGroupToProcess.PathProvider.GetAbsoluteUriDirectory("~/");
 
             var output = new StringBuilder();
-            output.AppendFormat("{0} ({1})\r\n", rootPath.MakeRelativeUri(outputUri), cssGroupToProcess.Group.Name);
+            output.AppendFormat("{0} ({1} - {2} ms)\r\n", rootPath.MakeRelativeUri(outputUri), cssGroupToProcess.Group.Name, stopwatch.ElapsedMilliseconds);
             output.AppendFormat("{0}   (Css)\r\n", rootPath.MakeRelativeUri(outputUri));
             foreach (var cssFile in crushedOutput.FilesToWatch)
             {

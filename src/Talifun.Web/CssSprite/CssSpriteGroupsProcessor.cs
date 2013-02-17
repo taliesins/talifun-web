@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -33,6 +34,7 @@ namespace Talifun.Web.CssSprite
 
         private void ProcessJsGroup(CssSpriteGroupToProcess cssSpriteGroupToProcess)
         {
+            var stopwatch = Stopwatch.StartNew();
             
             var files = cssSpriteGroupToProcess.Group.Files.Cast<ImageFileElement>()
                 .Select(imageFile => new ImageFile
@@ -62,10 +64,11 @@ namespace Talifun.Web.CssSprite
 
             var output = cssSpriteGroupToProcess.CssSpriteCreator.AddFiles(imageOutputPath, imageOutputUri, cssOutputPath, files, directories);
 
-            cssSpriteGroupToProcess.Output.Append(CreateLogEntries(cssSpriteGroupToProcess, cssOutPutUri, imageOutputUri, output));
+            stopwatch.Stop();
+            cssSpriteGroupToProcess.Output.Append(CreateLogEntries(cssSpriteGroupToProcess, cssOutPutUri, imageOutputUri, output, stopwatch));
         }
 
-        private StringBuilder CreateLogEntries(CssSpriteGroupToProcess cssSpriteGroupToProcess, Uri cssOutPutUri, Uri imageOutputUri, IEnumerable<ImageFile> filesToWatch)
+        private StringBuilder CreateLogEntries(CssSpriteGroupToProcess cssSpriteGroupToProcess, Uri cssOutPutUri, Uri imageOutputUri, IEnumerable<ImageFile> filesToWatch, Stopwatch stopwatch)
         {
             cssOutPutUri = new Uri(cssSpriteGroupToProcess.PathProvider.ToAbsolute(cssOutPutUri.ToString()), UriKind.Absolute);
             imageOutputUri = new Uri(cssSpriteGroupToProcess.PathProvider.ToAbsolute(imageOutputUri.ToString()), UriKind.Absolute);
@@ -73,8 +76,8 @@ namespace Talifun.Web.CssSprite
 
             var output = new StringBuilder();
 
-            output.AppendFormat("{0}({1})\r\n", rootPath.MakeRelativeUri(cssOutPutUri), cssSpriteGroupToProcess.Group.Name);
-            output.AppendFormat("{0}({1})\r\n", rootPath.MakeRelativeUri(imageOutputUri), cssSpriteGroupToProcess.Group.Name);
+            output.AppendFormat("{0}({1} - {2} ms)\r\n", rootPath.MakeRelativeUri(cssOutPutUri), cssSpriteGroupToProcess.Group.Name, stopwatch.ElapsedMilliseconds);
+            output.AppendFormat("{0}({1} - {2} ms)\r\n", rootPath.MakeRelativeUri(imageOutputUri), cssSpriteGroupToProcess.Group.Name, stopwatch.ElapsedMilliseconds);
             foreach (var fileToWatch in filesToWatch)
             {
                 var imageProcessedOutputUri = new Uri(cssSpriteGroupToProcess.PathProvider.ToAbsolute(fileToWatch.FilePath), UriKind.Absolute);
