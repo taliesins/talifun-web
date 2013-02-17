@@ -15,7 +15,6 @@ namespace Talifun.Crusher.MsBuild
 
         public bool Execute()
         {
-            System.Diagnostics.Debugger.Launch();
             var stopwatch = Stopwatch.StartNew();
             BuildEngine.LogMessageEvent(new BuildMessageEventArgs(string.Format("{0}: (version {1}) Starting", SenderName, GetType().Assembly.GetName().Version), "", SenderName, MessageImportance.High));
 

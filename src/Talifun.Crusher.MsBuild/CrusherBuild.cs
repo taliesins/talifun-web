@@ -17,6 +17,7 @@ namespace Talifun.Crusher.MsBuild
     {
         private const string SenderName = "Crusher";
         private const string CrusherSectionName = "Crusher";
+        private const string CssSpriteSectionName = "CssSprite";
         private const int BufferSize = 32768;
         private static readonly Encoding Encoding = Encoding.UTF8;
 
@@ -46,10 +47,8 @@ namespace Talifun.Crusher.MsBuild
 
         public void Process(string configPath, string applicationPath, IBuildEngine buildEngine)
         {
-            System.Diagnostics.Debugger.Launch();
-
             var crusherConfiguration = GetCrusherSection(configPath, CrusherSectionName);
-            var cssSpriteConfiguration = GetCssSpriteSection(configPath, CrusherSectionName);
+            var cssSpriteConfiguration = GetCssSpriteSection(configPath, CssSpriteSectionName);
 
             var configUri = new Uri(configPath, UriKind.RelativeOrAbsolute);
             if (!configUri.IsAbsoluteUri)
