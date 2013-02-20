@@ -3,23 +3,60 @@ using System.Configuration;
 using System.IO;
 using System.Text;
 using System.Threading;
-using Microsoft.Build.Framework;
-using Talifun.Web;
 using Talifun.Web.Crusher;
 using Talifun.Web.Crusher.Config;
 using Talifun.Web.CssSprite;
 using Talifun.Web.CssSprite.Config;
 using Talifun.Web.Helper;
 
-namespace Talifun.Crusher.MsBuild
+namespace Talifun.Web.MsBuild
 {
-    public class CrusherBuild
+    [Serializable]
+    public class CrusherMsBuildCommand : MarshalByRefObject, ICloneable //IClonable is marker interface
     {
-        private const string SenderName = "Crusher";
+        private readonly string _applicationPath;
+        private readonly string _binDirectoryPath;
+        private readonly string _configPath;
+        private readonly Action<string> _logMessage;
+        private readonly Action<string> _logError;
         private const string CrusherSectionName = "Crusher";
         private const string CssSpriteSectionName = "CssSprite";
         private const int BufferSize = 32768;
         private static readonly Encoding Encoding = Encoding.UTF8;
+
+        public CrusherMsBuildCommand(string applicationPath, string binDirectoryPath, string configPath, Action<string> logMessage, Action<string> logError)
+        {
+            if (string.IsNullOrEmpty(applicationPath))
+            {
+                throw new ArgumentNullException("applicationPath");
+            }
+
+            if (string.IsNullOrEmpty(binDirectoryPath))
+            {
+                throw new ArgumentNullException("binDirectoryPath");
+            }
+
+            if (string.IsNullOrEmpty(configPath))
+            {
+                throw new ArgumentNullException("configPath");
+            }
+
+            if (logMessage == null)
+            {
+                throw new ArgumentNullException("logMessage");
+            }
+
+            if (logError == null)
+            {
+                throw new ArgumentNullException("logError");
+            }
+
+            _applicationPath = applicationPath;
+            _binDirectoryPath = binDirectoryPath;
+            _configPath = configPath;
+            _logMessage = logMessage;
+            _logError = logError;
+        }
 
         private CrusherSection GetCrusherSection(string configPath, string sectionName)
         {
@@ -45,12 +82,12 @@ namespace Talifun.Crusher.MsBuild
             return cssSpriteSection;
         }
 
-        public void Process(string configPath, string applicationPath, IBuildEngine buildEngine)
+        public object Clone()
         {
-            var cssSpriteConfiguration = GetCssSpriteSection(configPath, CssSpriteSectionName);
-            var crusherConfiguration = GetCrusherSection(configPath, CrusherSectionName);
+            var cssSpriteConfiguration = GetCssSpriteSection(_configPath, CssSpriteSectionName);
+            var crusherConfiguration = GetCrusherSection(_configPath, CrusherSectionName);
             
-            var configUri = new Uri(configPath, UriKind.RelativeOrAbsolute);
+            var configUri = new Uri(_configPath, UriKind.RelativeOrAbsolute);
             if (!configUri.IsAbsoluteUri)
             {
                 configUri = new Uri(Path.Combine(Environment.CurrentDirectory, configUri.ToString()));
@@ -61,40 +98,46 @@ namespace Talifun.Crusher.MsBuild
             var retryableFileOpener = new RetryableFileOpener();
             var hasher = new Hasher(retryableFileOpener);
             var retryableFileWriter = new RetryableFileWriter(BufferSize, Encoding, retryableFileOpener, hasher);
-            var pathProvider = new PathProvider(applicationPath, physicalApplicationPath);
+            var pathProvider = new PathProvider(_applicationPath, physicalApplicationPath);
             var cacheManager = new HttpCacheManager();
 
             var cssSpriteOutput = string.Empty;
             var jsOutput = string.Empty;
             var cssOutput = string.Empty;
 
-            try
+            var countdownEvents = new CountdownEvent(1);
+
+                        ThreadPool.QueueUserWorkItem(data =>
             {
-                if (cssSpriteConfiguration != null)
+                var countdownEvent = (CountdownEvent)data;
+
+                try
                 {
-                    var cssSpriteGroups = cssSpriteConfiguration.CssSpriteGroups;
-                    var cssSpriteCreator = new CssSpriteCreator(cacheManager, retryableFileOpener, pathProvider, retryableFileWriter);
-                    var cssSpriteGroupsProcessor = new CssSpriteGroupsProcessor();
-
-                    cssSpriteOutput = cssSpriteGroupsProcessor.ProcessGroups(pathProvider, cssSpriteCreator, cssSpriteGroups).ToString();
-
-                    buildEngine.LogMessageEvent(new BuildMessageEventArgs(string.Format("{0}: {1}", SenderName, cssSpriteOutput), "", SenderName, MessageImportance.High));
-                }
-            }
-            catch (Exception exception)
-            {
-                buildEngine.LogErrorEvent(new BuildErrorEventArgs("", "", "", 0, 0, 0, 0, string.Format("{0}: {1}", SenderName, exception), "", SenderName));
-            }
-
-            var resetEvents = new WaitHandle[2]
+                    if (cssSpriteConfiguration != null)
                     {
-                        new ManualResetEvent(false),
-                        new ManualResetEvent(false),
-                    };
+                        var cssSpriteGroups = cssSpriteConfiguration.CssSpriteGroups;
+                        var cssSpriteCreator = new CssSpriteCreator(cacheManager, retryableFileOpener, pathProvider, retryableFileWriter);
+                        var cssSpriteGroupsProcessor = new CssSpriteGroupsProcessor();
+
+                        cssSpriteOutput = cssSpriteGroupsProcessor.ProcessGroups(pathProvider, cssSpriteCreator, cssSpriteGroups).ToString();
+
+                        _logMessage(cssSpriteOutput);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    _logError(exception.ToString());
+                }
+                countdownEvent.Signal();
+            }, countdownEvents);
+
+            countdownEvents.Wait();
+
+            countdownEvents = new CountdownEvent(2);
 
             ThreadPool.QueueUserWorkItem(data =>
             {
-                var manualResetEvent = (ManualResetEvent)data;
+                var countdownEvent = (CountdownEvent)data;
 
                 try
                 {
@@ -107,19 +150,19 @@ namespace Talifun.Crusher.MsBuild
 
                         jsOutput = jsGroupsProcessor.ProcessGroups(pathProvider, jsCrusher, jsGroups).ToString();
 
-                        buildEngine.LogMessageEvent(new BuildMessageEventArgs(string.Format("{0}: {1}", SenderName, jsOutput), "", SenderName, MessageImportance.High));
+                        _logMessage(jsOutput);
                     }
                 }            
                 catch (Exception exception)
                 {
-                    buildEngine.LogErrorEvent(new BuildErrorEventArgs("", "", "", 0, 0, 0, 0, string.Format("{0}: {1}", SenderName, exception), "", SenderName));
+                    _logError(exception.ToString());
                 }
-                manualResetEvent.Set();
-            }, resetEvents[0]);
+                countdownEvent.Signal();
+            }, countdownEvents);
 
             ThreadPool.QueueUserWorkItem(data =>
             {
-                var manualResetEvent = (ManualResetEvent)data;
+                var countdownEvent = (CountdownEvent)data;
 
                 try
                 {
@@ -135,17 +178,20 @@ namespace Talifun.Crusher.MsBuild
                         var cssGroupsCrusher = new CssGroupsProcessor();
                         cssOutput = cssGroupsCrusher.ProcessGroups(pathProvider, cssCrusher, cssGroups).ToString();
 
-                        buildEngine.LogMessageEvent(new BuildMessageEventArgs(string.Format("{0}: {1}", SenderName, cssOutput), "", SenderName, MessageImportance.High));
+                        _logMessage(cssOutput);
                     }
                 }
                 catch (Exception exception)
                 {
-                    buildEngine.LogErrorEvent(new BuildErrorEventArgs("", "", "", 0, 0, 0, 0, string.Format("{0}: {1}", SenderName, exception), "", SenderName));
+                    _logError(exception.ToString());
                 }
-                manualResetEvent.Set();
-            }, resetEvents[1]);
+                countdownEvent.Signal();
+            },
+            countdownEvents);
 
-            WaitHandle.WaitAll(resetEvents);
+            countdownEvents.Wait();
+
+            return null;
         }
     }
 }

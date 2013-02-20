@@ -1,24 +1,42 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.Remoting;
 using Microsoft.Build.Framework;
 
 namespace Talifun.Crusher.MsBuild
 {
     [LoadInSeparateAppDomain]
     [Serializable]
-    public class CrusherTask : ITask
+    public class CrusherTask : MarshalByRefObject, ITask
     {
         private const string SenderName = "Crusher";
+        private const string CrusherAssemblyName = "Talifun.Web";
+        private const string CrusherBuildFullName = "Talifun.Web.MsBuild.CrusherMsBuildCommand";
 
-        public IBuildEngine BuildEngine { get; set; }
-        public ITaskHost HostObject { get; set; }
+        [Required]
+        public string ConfigFilePath { get; set; }
+
+        [Required]
+        public string BinDirectoryPath { get; set; }
+
+        private void LogMessage(string message)
+        {
+            BuildEngine.LogMessageEvent(new BuildMessageEventArgs(string.Format("{0}: {1}", SenderName, message), "", SenderName, MessageImportance.High));
+        }
+
+        private void LogError(string message)
+        {
+            BuildEngine.LogErrorEvent(new BuildErrorEventArgs("", "", "", 0, 0, 0, 0, string.Format("{0}: {1}", SenderName, message), "", SenderName));
+        }
 
         public bool Execute()
         {
             var stopwatch = Stopwatch.StartNew();
-            BuildEngine.LogMessageEvent(new BuildMessageEventArgs(string.Format("{0}: (version {1}) Starting", SenderName, GetType().Assembly.GetName().Version), "", SenderName, MessageImportance.High));
+
+            LogMessage(string.Format("(version {0}) Starting", GetType().Assembly.GetName().Version));
+            LogMessage(string.Format("ConfigFilePath = {0}", ConfigFilePath));
+            LogMessage(string.Format("BinDirectoryPath = {0}", BinDirectoryPath));
 
             try
             {
@@ -26,7 +44,7 @@ namespace Talifun.Crusher.MsBuild
 
                 if (string.IsNullOrEmpty(configPath) || !File.Exists(configPath))
                 {
-                    BuildEngine.LogErrorEvent(new BuildErrorEventArgs("", "", "", 0, 0, 0, 0, string.Format("{0}: {1} not found", SenderName, configPath), "", SenderName));
+                    LogError(string.Format("{0} not found", configPath));
                     return false;
                 }
 
@@ -34,84 +52,176 @@ namespace Talifun.Crusher.MsBuild
 
                 if (string.IsNullOrEmpty(binPath) || !Directory.Exists(binPath))
                 {
-                    BuildEngine.LogErrorEvent(new BuildErrorEventArgs("", "", "", 0, 0, 0, 0, string.Format("{0}: {1} not found", SenderName, binPath), "", SenderName));
+                    LogError(string.Format("{0} not found", binPath));
                     return false;
                 }
 
                 var applicationPath = "/";
-                
-                var parameters = new Dictionary<string, object>()
-                    {
-                        {"configPath", configPath},
-                        {"applicationPath", applicationPath},
-                        {"buildEngine", BuildEngine},
-                    };
 
-                ExecuteInChildDomain(binPath, parameters, Crush);
-
-                return true;
+                ExecuteInChildDomain(applicationPath, binPath, configPath, BuildEngine);
+            }
+            catch (Exception exception)
+            {
+                LogError(exception.ToString());
             }
             finally
             {
                 stopwatch.Stop();
-                BuildEngine.LogMessageEvent(new BuildMessageEventArgs(string.Format("{0}: Finished ({1}ms)", SenderName, stopwatch.ElapsedMilliseconds), "", SenderName, MessageImportance.High));
+                LogMessage(string.Format("Finished ({0}ms)", stopwatch.ElapsedMilliseconds));
             }
+
+            return true;
         }
+
+
+        public IBuildEngine BuildEngine { get; set; }
+        public ITaskHost HostObject { get; set; }
 
         private string GetConfigPath()
         {
+            var configFilePath = ConfigFilePath;
+            if (File.Exists(configFilePath))
+            {
+                return configFilePath;
+            }
+
             var projectFilePath = Path.GetDirectoryName(BuildEngine.ProjectFileOfTaskNode);
-            var configFilePath = Path.Combine(projectFilePath, "web.config");
+            configFilePath = Path.Combine(projectFilePath, "web.config");
+
+            if (File.Exists(configFilePath))
+            {
+                return configFilePath;
+            }
+
+            projectFilePath = Environment.CurrentDirectory;
+            configFilePath = Path.Combine(projectFilePath, "web.config");
+
             return configFilePath;
         }
 
         private string GetBinPath()
         {
-            return Path.Combine(Path.GetDirectoryName(BuildEngine.ProjectFileOfTaskNode), "bin");
+            var binDirectoryPath = BinDirectoryPath;
+            if (Directory.Exists(binDirectoryPath))
+            {
+                return binDirectoryPath;
+            }
+
+            var projectFilePath = Path.GetDirectoryName(BuildEngine.ProjectFileOfTaskNode);
+            binDirectoryPath = Path.Combine(projectFilePath, "bin");
+            if (Directory.Exists(binDirectoryPath))
+            {
+                return binDirectoryPath;
+            }
+
+            projectFilePath = Environment.CurrentDirectory;
+            binDirectoryPath = Path.Combine(projectFilePath, "bin");
+
+            return binDirectoryPath;
         }
 
-        private static void ExecuteInChildDomain(string applicationPath, Dictionary<string, object> parameters, CrossAppDomainDelegate action)
+        private void ExecuteInChildDomain(string applicationPath, string binDirectoryPath, string configPath, IBuildEngine buildEngine)
         {
+            if (string.IsNullOrEmpty(applicationPath))
+            {
+                throw new ArgumentNullException("applicationPath");
+            }
+
+            if (string.IsNullOrEmpty(binDirectoryPath))
+            {
+                throw new ArgumentNullException("binDirectoryPath");
+            }
+
+            if (string.IsNullOrEmpty(configPath))
+            {
+                throw new ArgumentNullException("configPath");
+            }
+
+            if (buildEngine == null)
+            {
+                throw new ArgumentNullException("buildEngine");
+            }
+
+            var crusherAssemblyPath = Path.Combine(binDirectoryPath, CrusherAssemblyName + ".dll");
+            Action<string> logMessage = LogMessage;
+            Action<string> logError = LogError;
+            var constructorArguments = new object[] { applicationPath, binDirectoryPath, configPath, logMessage, logError };
+
             var setup = new AppDomainSetup
             {
-                ApplicationBase = applicationPath,
+                ApplicationBase = binDirectoryPath,
                 ShadowCopyFiles = "true"
             };
 
             var childDomain = AppDomain.CreateDomain(SenderName, null, setup);
-
-            foreach (var parameter in parameters)
-            {
-                childDomain.SetData(parameter.Key, parameter.Value);
-            }
+            childDomain.UnhandledException += childDomain_UnhandledException;
 
             try
             {
-                childDomain.DoCallBack(action);
+                var crusherMsBuildCommandHandle = CreateInstance(childDomain, crusherAssemblyPath, CrusherBuildFullName, constructorArguments);
+
+                if (crusherMsBuildCommandHandle == null)
+                {
+                    throw new Exception("Cannot resolve crusherMsBuildCommandHandle");
+                }
+
+                LogMessage("CreateInstance");
+
+                var crusherMsBuildCommand = (ICloneable)crusherMsBuildCommandHandle.Unwrap();
+
+                if (crusherMsBuildCommand == null)
+                {
+                    throw new Exception("Cannot unwrap crusherMsBuildCommand");
+                }
+
+                LogMessage("Unwrapped");
+
+                crusherMsBuildCommand.Clone();
+              
+                LogMessage("Invoked");
             }
             finally
             {
+                childDomain.UnhandledException -= childDomain_UnhandledException;
                 AppDomain.Unload(childDomain);
             }
         }
 
-        private static void Crush()
+        private ObjectHandle CreateInstance(AppDomain childDomain, string assemblyFilePath, string typeName, object[] constructorArguments)
         {
-            var configPath = (string)AppDomain.CurrentDomain.GetData("configPath");
-            var applicationPath = (string)AppDomain.CurrentDomain.GetData("applicationPath");
-            var buildEngine = (IBuildEngine)AppDomain.CurrentDomain.GetData("buildEngine");
+#if NET35
+            var crusherMsBuildCommandHandle = Activator.CreateInstanceFrom(
+                childDomain,
+                assemblyFilePath,
+                typeName,
+                false,
+                0,
+                null,
+                constructorArguments,
+                null,
+                null,
+                null
+            );
+#else
+            var crusherMsBuildCommandHandle = Activator.CreateInstanceFrom(
+                childDomain,
+                assemblyFilePath,
+                typeName,
+                false,
+                0,
+                null,
+                constructorArguments,
+                null,
+                null
+            );
+#endif
 
-            try
-            {
-                var crusherBuild = new CrusherBuild();
-                crusherBuild.Process(configPath, applicationPath, buildEngine);
-            }
-            catch (Exception exception)
-            {
-                buildEngine.LogErrorEvent(new BuildErrorEventArgs("", "", "", 0, 0, 0, 0,
-                                                                  string.Format("{0}: {1}", SenderName, exception), "",
-                                                                  SenderName));
-            }
+            return crusherMsBuildCommandHandle;
+        }
+
+        private void childDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            LogError(e.ExceptionObject.ToString());
         }
     }
 }

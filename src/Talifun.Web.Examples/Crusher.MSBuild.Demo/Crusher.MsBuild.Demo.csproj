@@ -125,7 +125,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>4162</DevelopmentServerPort>
+          <DevelopmentServerPort>30273</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>
           </IISUrl>
@@ -138,14 +138,14 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
-  <UsingTask TaskName="Talifun.Crusher.MsBuild.CrusherTask" AssemblyFile="$(TargetDir)\Talifun.Crusher.MsBuild.dll" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
 
   -->
+  <UsingTask TaskName="Talifun.Crusher.MsBuild.CrusherTask" AssemblyFile="$(TargetDir)\Talifun.Crusher.MsBuild.dll" />
   <Target Name="AfterBuild">
-    <CrusherTask />
+    <CrusherTask ConfigFilePath="$(ProjectDir)web.config" BinDirectoryPath="$(TargetDir)" />
   </Target>
 </Project>

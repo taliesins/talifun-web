@@ -130,24 +130,29 @@ namespace Talifun.Crusher
                 var cssSpriteOutput = string.Empty;
 
                 //We want to be able to use output from css sprites in crushed content
-                if (cssSpriteConfiguration != null)
-                {
-                    var cssSpriteGroups = cssSpriteConfiguration.CssSpriteGroups;
-                    var cssSpriteCreator = new CssSpriteCreator(cacheManager, retryableFileOpener, pathProvider, retryableFileWriter);
-                    var cssSpriteGroupsProcessor = new CssSpriteGroupsProcessor();
-
-                    cssSpriteOutput = cssSpriteGroupsProcessor.ProcessGroups(pathProvider, cssSpriteCreator, cssSpriteGroups).ToString();
-                }
-
-                var resetEvents = new WaitHandle[2]
-                {
-                    new ManualResetEvent(false),
-                    new ManualResetEvent(false)
-                };
+                var countdownEvents = new CountdownEvent(1);
 
                 ThreadPool.QueueUserWorkItem(data =>
                 {
-                    var manualResetEvent = (ManualResetEvent)data;
+                    var manualResetEvent = (CountdownEvent)data;
+                    if (cssSpriteConfiguration != null)
+                    {
+                        var cssSpriteGroups = cssSpriteConfiguration.CssSpriteGroups;
+                        var cssSpriteCreator = new CssSpriteCreator(cacheManager, retryableFileOpener, pathProvider, retryableFileWriter);
+                        var cssSpriteGroupsProcessor = new CssSpriteGroupsProcessor();
+
+                        cssSpriteOutput = cssSpriteGroupsProcessor.ProcessGroups(pathProvider, cssSpriteCreator, cssSpriteGroups).ToString();
+                    }
+                    manualResetEvent.Signal();
+                }, countdownEvents);
+
+        	    countdownEvents.Wait();
+
+                countdownEvents = new CountdownEvent(2);
+
+                ThreadPool.QueueUserWorkItem(data =>
+                {
+                    var manualResetEvent = (CountdownEvent)data;
                     if (crusherConfiguration != null)
                     {
                         var jsCrusher = new JsCrusher(cacheManager, pathProvider, retryableFileOpener, retryableFileWriter);
@@ -156,12 +161,12 @@ namespace Talifun.Crusher
 
                         jsOutput = jsGroupsProcessor.ProcessGroups(pathProvider, jsCrusher, jsGroups).ToString();
                     }
-                    manualResetEvent.Set();
-                }, resetEvents[0]);
+                    manualResetEvent.Signal();
+                }, countdownEvents);
 
                 ThreadPool.QueueUserWorkItem(data =>
                 {
-                    var manualResetEvent = (ManualResetEvent)data;
+                    var manualResetEvent = (CountdownEvent)data;
                     if (crusherConfiguration != null)
                     {
                         var hashQueryStringKeyName = crusherConfiguration.QuerystringKeyName;
@@ -172,10 +177,10 @@ namespace Talifun.Crusher
                         var cssGroupsCrusher = new CssGroupsProcessor();
                         cssOutput = cssGroupsCrusher.ProcessGroups(pathProvider, cssCrusher, cssGroups).ToString();
                     }
-                    manualResetEvent.Set();
-                }, resetEvents[1]);
+                    manualResetEvent.Signal();
+                }, countdownEvents);
 
-                WaitHandle.WaitAll(resetEvents);
+        	    countdownEvents.Wait();
 
                 if (string.IsNullOrEmpty(cssSpriteOutput))
                 {

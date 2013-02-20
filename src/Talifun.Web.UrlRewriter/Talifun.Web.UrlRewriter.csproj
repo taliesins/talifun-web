@@ -10,19 +10,15 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Talifun.Web.UrlRewriter</RootNamespace>
     <AssemblyName>Talifun.Web.UrlRewriter</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == '' ">v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <OldToolsVersion>3.5</OldToolsVersion>
-    <UpgradeBackupLocation />
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v4.0' ">
-	<TargetFrameworkConstant>NET40</TargetFrameworkConstant>
+	  <TargetFrameworkConstant>NET40</TargetFrameworkConstant>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v3.5' ">
-	<TargetFrameworkConstant>NET35</TargetFrameworkConstant>
+	  <TargetFrameworkConstant>NET35</TargetFrameworkConstant>
   </PropertyGroup>    
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

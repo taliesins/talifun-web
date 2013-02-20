@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using Talifun.Web.Crusher.Config;
@@ -88,29 +86,25 @@ namespace Talifun.Web.Crusher
         {
             AppDomain.CurrentDomain.DomainUnload += OnDomainUnload;
 
-            var resetEvents = new WaitHandle[2]
-                {
-                    new ManualResetEvent(false),
-                    new ManualResetEvent(false)
-                };
+            var countdownEvents = new CountdownEvent(2);
 
             ThreadPool.QueueUserWorkItem(data =>
                 {
-                    var manualResetEvent = (ManualResetEvent)data;
+                    var manualResetEvent = (CountdownEvent)data;
                     var groupsProcessor = new JsGroupsProcessor();
                     groupsProcessor.ProcessGroups(_pathProvider, _jsCrusher, _jsGroups);
-                    manualResetEvent.Set();
-                }, resetEvents[0]);
+                    manualResetEvent.Signal();
+                }, countdownEvents);
 
             ThreadPool.QueueUserWorkItem(data =>
                 {
-                    var manualResetEvent = (ManualResetEvent)data;
+                    var manualResetEvent = (CountdownEvent)data;
                     var groupsProcessor = new CssGroupsProcessor();
                     groupsProcessor.ProcessGroups(_pathProvider, _cssCrusher, _cssGroups);
-                    manualResetEvent.Set();
-                }, resetEvents[1]);
+                    manualResetEvent.Signal();
+                }, countdownEvents);
 
-            WaitHandle.WaitAll(resetEvents);
+            countdownEvents.Wait();
         }
 
         private void DisposeManager()
