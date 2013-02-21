@@ -40,36 +40,11 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <ItemGroup Condition=" '$(TargetFrameworkConstant)' == 'NET40' ">
-    <Reference Include="AjaxMin">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\AjaxMin.4.84.4790.14417\lib\net40\AjaxMin.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFrameworkConstant)' == 'NET35' ">
-    <Reference Include="AjaxMin">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\AjaxMin.4.84.4790.14417\lib\net35\AjaxMin.dll</HintPath>
-    </Reference>
-  </ItemGroup>
   <ItemGroup>
-    <Reference Include="dotless.Core">
-      <HintPath>..\..\packages\dotless.1.3.1.0\lib\dotless.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="EcmaScript.NET">
-      <HintPath>..\..\packages\EcmaScript.Net.1.0.1.0\lib\net20\EcmaScript.NET.dll</HintPath>
-    </Reference>
-    <Reference Include="Iesi.Collections">
-      <HintPath>..\..\packages\Iesi.Collections.3.2.0.4000\lib\Net35\Iesi.Collections.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
-    <Reference Include="Yahoo.Yui.Compressor">
-      <HintPath>..\..\packages\YUICompressor.NET.2.2.0.0\lib\NET20\Yahoo.Yui.Compressor.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Options\Option.cs" />
@@ -84,7 +59,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Talifun.Web\Talifun.Web.csproj">
@@ -100,4 +74,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Target Name="AfterBuild" />
 </Project>

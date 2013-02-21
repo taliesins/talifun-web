@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>DotlessClientOnly</id>
+    <version>1.3.1.0</version>
+    <authors>Daniel Hölbling,  James Foster,  Luke Page</authors>
+    <owners>Daniel Hölbling,  James Foster,  Luke Page</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>This package only contains the dot net client only dll. You should only use this package if you do not want any ASP.net functionality.
+    
+    This is a project to port the hugely useful Less libary to the .NET world. It give variables, nested rules and operators to CSS.
+
+For more information about the original Less project see http://lesscss.org/ or http://github.com/dotless/dotless. For more information about how to get started with the .NET version see http://www.dotlesscss.org/.</description>
+    <references>
+      <reference file="dotless.ClientOnly.dll" />
+    </references>
+  </metadata>
+</package>

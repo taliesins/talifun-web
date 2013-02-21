@@ -23,7 +23,7 @@ namespace Talifun.Crusher
 
         private const string HeaderMessage = "Talifun.Crusher:";
 
-        private const string UsageMessage = "Usage: Talifun.Crusher -c=../../../Talifun.Web.Examples/Crusher.Demo/web.config";
+        private const string UsageMessage = "Usage: Talifun.Crusher -c=../../../../Talifun.Web.Examples/Crusher.Demo/web.config";
         private const string HelpMessage = "Help: Talifun.Crusher -?";
 
         static int Main(string[] args)
