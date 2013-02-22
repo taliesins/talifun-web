@@ -165,8 +165,6 @@ namespace Talifun.Crusher.MsBuild
                     throw new Exception("Cannot resolve crusherMsBuildCommandHandle");
                 }
 
-                LogMessage("CreateInstance");
-
                 var crusherMsBuildCommand = (ICloneable)crusherMsBuildCommandHandle.Unwrap();
 
                 if (crusherMsBuildCommand == null)
@@ -174,11 +172,7 @@ namespace Talifun.Crusher.MsBuild
                     throw new Exception("Cannot unwrap crusherMsBuildCommand");
                 }
 
-                LogMessage("Unwrapped");
-
                 crusherMsBuildCommand.Clone();
-              
-                LogMessage("Invoked");
             }
             finally
             {

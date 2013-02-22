@@ -21,10 +21,16 @@ namespace Talifun.Web.Crusher
                     PathProvider = pathProvider,
                     Group = group,
                     Output = output
-                });
+                }).ToList();
 
-            ParallelExecute.EachParallel(cssGroupsToProcess, processGroupConfiguration);
-
+            if (cssGroupsToProcess.Any())
+            {
+                ParallelExecute.EachParallel(cssGroupsToProcess, processGroupConfiguration);
+            }
+            else
+            {
+                output.AppendFormat("No files to process");
+            }
             return output;
         }
 

@@ -18,17 +18,23 @@ namespace Talifun.Web.CssSprite
 
             Action<CssSpriteGroupToProcess> processJsGroup = ProcessJsGroup;
 
-            var jsGroupsToProcess = cssSpriteGroups.Cast<CssSpriteGroupElement>()
+            var cssSpriteGroupToProcess = cssSpriteGroups.Cast<CssSpriteGroupElement>()
                 .Select(group => new CssSpriteGroupToProcess
                 {
                     CssSpriteCreator = cssSpriteCreator,
                     PathProvider = pathProvider,
                     Group = group,
                     Output = output
-                });
+                }).ToList();
 
-            ParallelExecute.EachParallel(jsGroupsToProcess, processJsGroup);
-
+            if (cssSpriteGroupToProcess.Any())
+            {
+                ParallelExecute.EachParallel(cssSpriteGroupToProcess, processJsGroup);
+            }
+            else
+            {
+                output.AppendFormat("No files to process");
+            }
             return output;
         }
 
