@@ -2,7 +2,7 @@
 
 namespace Talifun.Web.StaticFile
 {
-    public class FileEntityCacheItem : IEntity
+    public class EntityCacheItem : IEntity
     {
         public byte[] EntityData { get; set; }
         public long ContentLength { get; set;}

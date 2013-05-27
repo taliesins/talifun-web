@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Reflection;
 using System.Web;
 
 namespace Talifun.Web.StaticFile
@@ -14,7 +15,7 @@ namespace Talifun.Web.StaticFile
         private readonly IMimeTyper _mimeTyper;
         private readonly IHasher _hasher;
         private readonly IHttpRequestHeaderHelper _httpRequestHeaderHelper;
-        private readonly FileEntitySettingProvider _fileEntitySettingProvider;
+        private readonly MimeSettingProvider _mimeSettingProvider;
         private IHttpResponseHeaderHelper _httpResponseHeaderHelper;
         private IHttpRequestResponder _httpRequestResponder;
         private WebServerType _webServerType;
@@ -26,7 +27,7 @@ namespace Talifun.Web.StaticFile
             _mimeTyper = new MimeTyper(_cacheManager);
             _hasher = new Hasher(_retryableFileOpener);
             _httpRequestHeaderHelper = new HttpRequestHeaderHelper();
-            _fileEntitySettingProvider = new FileEntitySettingProvider();
+            _mimeSettingProvider = new MimeSettingProvider();
         }
 
         public static StaticFileManager Instance
@@ -80,12 +81,20 @@ namespace Talifun.Web.StaticFile
 
         public void ProcessRequest(HttpContextBase context, FileInfo file)
         {
+            var fileEntity = new FileEntityResponder(_cacheManager, _retryableFileOpener, _mimeTyper, _hasher, MaxFileSizeToServe, BufferSize, _mimeSettingProvider, file);
+            ProcessRequest(context, fileEntity);
+        }
+
+        public void ProcessRequest(HttpContextBase context, Assembly assembly, string resourcePath)
+        {
+            var fileEntity = new EmbeddedResourceEntityResponder(_cacheManager, _mimeTyper, _hasher, MaxFileSizeToServe, BufferSize, _mimeSettingProvider, assembly, resourcePath);
+            ProcessRequest(context, fileEntity);
+        }
+
+        public void ProcessRequest(HttpContextBase context, IEntityResponder entityResponder)
+        {
             var request = context.Request;
             var response = context.Response;
-
-            var fileSettingEntity = _fileEntitySettingProvider.GetSetting(file);
-
-            var fileEntity = new FileEntity(_cacheManager, _retryableFileOpener, _mimeTyper, _hasher, MaxFileSizeToServe, BufferSize, file, fileSettingEntity);
 
             if (_webServerType == WebServerType.NotSet || _httpResponseHeaderHelper == null || _httpRequestResponder == null)
             {
@@ -94,10 +103,10 @@ namespace Talifun.Web.StaticFile
 
             //We don't want to use up all the servers memory keeping a copy of the file, we just want to stream file to client
             response.BufferOutput = false;
-      
+
             try
             {
-                _httpRequestResponder.ServeRequest(request, response, fileEntity); 
+                _httpRequestResponder.ServeRequest(request, response, entityResponder);
             }
             catch (HttpException httpException)
             {

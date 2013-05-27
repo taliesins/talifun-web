@@ -2,7 +2,7 @@
 
 namespace Talifun.Web.StaticFile
 {
-    public class FileEntitySetting
+    public class MimeSetting
     {
         public bool Compress { get; set; }
         public string Extension { get; set;}

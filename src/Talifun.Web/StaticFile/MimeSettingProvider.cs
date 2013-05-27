@@ -5,31 +5,36 @@ using Talifun.Web.StaticFile.Config;
 
 namespace Talifun.Web.StaticFile
 {
-    public class FileEntitySettingProvider
+    public class MimeSettingProvider
     {
-        private readonly Dictionary<string, FileEntitySetting> _fileExtensionMatches;
-        private readonly FileEntitySetting _fileEntitySettingDefault;
+        private readonly Dictionary<string, MimeSetting> _fileExtensionMatches;
+        private readonly MimeSetting _mimeSettingDefault;
 
-        public FileEntitySettingProvider()
+        public MimeSettingProvider()
         {  
             _fileExtensionMatches = GetFileExtensionsForMatches();
-            _fileEntitySettingDefault = GetDefaultFileExtensionForNoMatches();
+            _mimeSettingDefault = GetDefaultFileExtensionForNoMatches();
         }
 
-        public FileEntitySetting GetSetting(FileInfo fileInfo)
+        public MimeSetting GetSetting(string fileExtension)
         {
-            FileEntitySetting fileEntitySetting = null;
-            if (!_fileExtensionMatches.TryGetValue(fileInfo.Extension.ToLower(), out fileEntitySetting))
+            MimeSetting fileMimeSetting = null;
+            if (!_fileExtensionMatches.TryGetValue(fileExtension, out fileMimeSetting))
             {
-                fileEntitySetting = _fileEntitySettingDefault;
+                fileMimeSetting = _mimeSettingDefault;
             }
 
-            return fileEntitySetting;
+            return fileMimeSetting;
         }
 
-        private static Dictionary<string, FileEntitySetting> GetFileExtensionsForMatches()
+        public MimeSetting GetSetting(FileInfo fileInfo)
         {
-            var fileExtensionMatches = new Dictionary<string, FileEntitySetting>();
+            return GetSetting(fileInfo.Extension.ToLower());
+        }
+
+        private static Dictionary<string, MimeSetting> GetFileExtensionsForMatches()
+        {
+            var fileExtensionMatches = new Dictionary<string, MimeSetting>();
 
             var fileExtensionElements = CurrentStaticFileHandlerConfiguration.Current.FileExtensions;
             foreach (FileExtensionElement fileExtension in fileExtensionElements)
@@ -44,7 +49,7 @@ namespace Talifun.Web.StaticFile
                         key = "." + key;
                     }
 
-                    var fileExtensionElement = new FileEntitySetting
+                    var fileExtensionElement = new MimeSetting
                     {
                         Compress = fileExtension.Compress,
                         Extension = fileExtension.Extension,
@@ -64,11 +69,11 @@ namespace Talifun.Web.StaticFile
             return fileExtensionMatches;
         }
 
-        private static FileEntitySetting GetDefaultFileExtensionForNoMatches()
+        private static MimeSetting GetDefaultFileExtensionForNoMatches()
         {
             var fileExtensionElementDefault = CurrentStaticFileHandlerConfiguration.Current.FileExtensionDefault;
 
-            return new FileEntitySetting
+            return new MimeSetting
             {
                 Compress = fileExtensionElementDefault.Compress,
                 Extension = string.Empty,

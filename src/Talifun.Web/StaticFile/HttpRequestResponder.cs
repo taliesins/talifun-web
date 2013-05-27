@@ -16,7 +16,7 @@ namespace Talifun.Web.StaticFile
             HttpResponseHeaderHelper = httpResponseHeaderHelper;
         }
 
-        public void ServeRequest(HttpRequestBase request, HttpResponseBase response, FileEntity fileEntity)
+        public void ServeRequest(HttpRequestBase request, HttpResponseBase response, IEntityResponder entityResponder)
         {
             if (!IsHttpMethodAllowed(request))
             {
@@ -25,7 +25,7 @@ namespace Talifun.Web.StaticFile
                 return;
             }
 
-            if (!fileEntity.IsAllowedToServeRequestedEntity)
+            if (!entityResponder.IsAllowedToServeRequestedEntity)
             {
                 //If we are unable to parse url send 403 Path Forbidden
                 HttpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatusCode.Forbidden);
@@ -37,7 +37,7 @@ namespace Talifun.Web.StaticFile
             var compressionType = HttpRequestHeaderHelper.GetCompressionMode(request);
 
             // If this is a binary file like image, then we won't compress it.
-            if (!fileEntity.IsCompressable)
+            if (!entityResponder.IsCompressable)
             {
                 compressionType = ResponseCompressionType.None;
             }
@@ -50,25 +50,25 @@ namespace Talifun.Web.StaticFile
                 entityStoredWithCompressionType = ResponseCompressionType.None;
             }
 
-            FileEntityCacheItem fileEntityCacheItem = null;
+            EntityCacheItem fileEntityCacheItem = null;
 
-            if (!fileEntity.TryGetFileHandlerCacheItem(entityStoredWithCompressionType, out fileEntityCacheItem))
+            if (!entityResponder.TryGetFileHandlerCacheItem(entityStoredWithCompressionType, out fileEntityCacheItem))
             {
                 //File does not exist
-                if (!fileEntity.DoesEntityExists)
+                if (!entityResponder.DoesEntityExists)
                 {
                     HttpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatusCode.NotFound);
                     return;
                 }
 
                 //File too large to send
-                if (fileEntity.IsEntityLargerThanMaxFileSize)
+                if (entityResponder.IsEntityLargerThanMaxFileSize)
                 {
                     HttpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatusCode.RequestEntityTooLarge);
                     return;
                 }
             } 
-            else if (fileEntityCacheItem.EntityData == null && !fileEntity.DoesEntityExists)
+            else if (fileEntityCacheItem.EntityData == null && !entityResponder.DoesEntityExists)
             {
                 //If we have cached the properties of the file but its to large to serve from memory then we must check that the file exists each time.
                 HttpResponseHeaderHelper.SendHttpStatusHeaders(response, HttpStatusCode.NotFound);
@@ -85,7 +85,7 @@ namespace Talifun.Web.StaticFile
             }
 
             //Check querystring etag
-            var urlEtagHandler = GetUrlEtagHandler(request, response, fileEntity.UrlEtagHandlingMethod, fileEntity.UrlEtagQuerystringName, fileEntityCacheItem.Etag);
+            var urlEtagHandler = GetUrlEtagHandler(request, response, entityResponder.UrlEtagHandlingMethod, entityResponder.UrlEtagQuerystringName, fileEntityCacheItem.Etag);
             if (urlEtagHandler != null)
             {
                 var shouldStopResponse = urlEtagHandler.UpdateEtag(response, request.Url, fileEntityCacheItem.Etag);
@@ -109,12 +109,12 @@ namespace Talifun.Web.StaticFile
             HttpResponseHeaderHelper.SetResponseResumable(response);
 
             //How the entity should be cached on the client
-            HttpResponseHeaderHelper.SetResponseCachable(response, DateTime.Now, fileEntityCacheItem.LastModified, fileEntityCacheItem.Etag, fileEntity.Expires);
+            HttpResponseHeaderHelper.SetResponseCachable(response, DateTime.Now, fileEntityCacheItem.LastModified, fileEntityCacheItem.Etag, entityResponder.Expires);
 
             var entityResponseForEntity = GetEntityResponse(response, ranges);
             entityResponseForEntity.SendHeaders(response, compressionType, fileEntityCacheItem);
 
-            var transmitEntity = fileEntity.GetTransmitEntityStrategy(fileEntityCacheItem);
+            var transmitEntity = entityResponder.GetTransmitEntityStrategy(fileEntityCacheItem);
             entityResponseForEntity.SendBody(requestHttpMethod, response, transmitEntity);
         }
 

@@ -1,26 +1,24 @@
 ﻿using System;
 using System.IO;
 using System.IO.Compression;
-using System.Web;
 using System.Web.Caching;
 
 namespace Talifun.Web.StaticFile
 {
-    public class FileEntity : IFileEntity
+    public class FileEntityResponder : IEntityResponder
     {
-        protected static string FileInfoEntityType = typeof(FileEntity).ToString();
+        protected static string FileEntityResponderType = typeof(FileEntityResponder).ToString();
 
         protected readonly ICacheManager CacheManager;
         protected readonly IRetryableFileOpener RetryableFileOpener;
         protected readonly IMimeTyper MimeTyper;
         protected readonly IHasher Hasher;
-
         protected readonly long MaxFileSizeToServe;
         protected readonly int BufferSize;
         protected readonly FileInfo FileInfo;
-        protected readonly FileEntitySetting FileEntitySetting;
+        protected readonly MimeSetting MimeSetting;
 
-        public FileEntity(ICacheManager cacheManager, IRetryableFileOpener retryableFileOpener, IMimeTyper mimeTyper, IHasher hasher, long maxFileSizeToServe, int bufferSize, FileInfo fileInfo, FileEntitySetting fileEntitySetting)
+        public FileEntityResponder(ICacheManager cacheManager, IRetryableFileOpener retryableFileOpener, IMimeTyper mimeTyper, IHasher hasher, long maxFileSizeToServe, int bufferSize, MimeSettingProvider mimeSettingProvider, FileInfo fileInfo)
         {
             CacheManager = cacheManager;
             RetryableFileOpener = retryableFileOpener;
@@ -29,7 +27,7 @@ namespace Talifun.Web.StaticFile
             BufferSize = bufferSize;
             MaxFileSizeToServe = maxFileSizeToServe;
             FileInfo = fileInfo;
-            FileEntitySetting = fileEntitySetting;
+            MimeSetting = mimeSettingProvider.GetSetting(fileInfo); 
         }
 
         /// <summary>
@@ -50,7 +48,7 @@ namespace Talifun.Web.StaticFile
         /// </summary>
         /// <param name="fileEntityCacheItem">The cache item.</param>
         /// <returns></returns>
-        public ITransmitEntityStrategy GetTransmitEntityStrategy(FileEntityCacheItem fileEntityCacheItem)
+        public ITransmitEntityStrategy GetTransmitEntityStrategy(EntityCacheItem fileEntityCacheItem)
         {
             if (fileEntityCacheItem.EntityData == null)
             {
@@ -70,14 +68,14 @@ namespace Talifun.Web.StaticFile
         /// <param name="entityStoredWithCompressionType">The compression type to use for the file.</param>
         /// <param name="fileEntityCacheItem">The fileHandlerCacheItem </param>
         /// <returns>Returns true if a fileHandlerCacheItem can be created; otherwise false.</returns>
-        public bool TryGetFileHandlerCacheItem(ResponseCompressionType entityStoredWithCompressionType, out FileEntityCacheItem fileEntityCacheItem)
+        public bool TryGetFileHandlerCacheItem(ResponseCompressionType entityStoredWithCompressionType, out EntityCacheItem fileEntityCacheItem)
         {
             fileEntityCacheItem = null;
 
             // If the response bytes are already cached, then deliver the bytes directly from cache
-            var cacheKey = FileInfoEntityType + ":" + entityStoredWithCompressionType + ":" + FileInfo.FullName;
+            var cacheKey = FileEntityResponderType + ":" + entityStoredWithCompressionType + ":" + FileInfo.FullName;
 
-            var cachedValue = CacheManager.Get<FileEntityCacheItem>(cacheKey);
+            var cachedValue = CacheManager.Get<EntityCacheItem>(cacheKey);
             if (cachedValue != null)
             {
                 fileEntityCacheItem = cachedValue;
@@ -107,7 +105,7 @@ namespace Talifun.Web.StaticFile
                 var contentLength = FileInfo.Length;
 
                 //ETAG is always calculated from uncompressed entity data
-                switch (FileEntitySetting.EtagMethod)
+                switch (MimeSetting.EtagMethod)
                 {
                     case EtagMethodType.MD5:
                         etag = Hasher.CalculateMd5Etag(FileInfo);
@@ -119,7 +117,7 @@ namespace Talifun.Web.StaticFile
                         throw new Exception("Unknown etag method generation");
                 }
 
-                fileEntityCacheItem = new FileEntityCacheItem
+                fileEntityCacheItem = new EntityCacheItem
                 {
                     Etag = etag,
                     LastModified = lastModified,
@@ -128,8 +126,8 @@ namespace Talifun.Web.StaticFile
                     CompressionType = ResponseCompressionType.None
                 };
 
-                if (FileEntitySetting.ServeFromMemory
-                    && (contentLength <= FileEntitySetting.MaxMemorySize))
+                if (MimeSetting.ServeFromMemory
+                    && (contentLength <= MimeSetting.MaxMemorySize))
                 {
                     // When not compressed, buffer is the size of the file but when compressed, 
                     // initial buffer size is one third of the file size. Assuming, compression 
@@ -157,7 +155,7 @@ namespace Talifun.Web.StaticFile
                     fileEntityCacheItem,
                     new CacheDependency(FileInfo.FullName),
                     Cache.NoAbsoluteExpiration,
-                    FileEntitySetting.MemorySlidingExpiration,
+                    MimeSetting.MemorySlidingExpiration,
                     CacheItemPriority.BelowNormal,
                     null);
             }
@@ -211,7 +209,7 @@ namespace Talifun.Web.StaticFile
         {
             get
             {
-                return FileEntitySetting.Compress;
+                return MimeSetting.Compress;
             }
         }
 
@@ -219,7 +217,7 @@ namespace Talifun.Web.StaticFile
         {
             get
             {
-                return FileEntitySetting.Expires;
+                return MimeSetting.Expires;
             }
         }
 
@@ -227,7 +225,7 @@ namespace Talifun.Web.StaticFile
         {
             get
             {
-                return FileEntitySetting.UrlEtagQuerystringName;
+                return MimeSetting.UrlEtagQuerystringName;
             }
         }
 
@@ -235,7 +233,7 @@ namespace Talifun.Web.StaticFile
         {
             get
             {
-                return FileEntitySetting.UrlEtagHandlingMethod;
+                return MimeSetting.UrlEtagHandlingMethod;
             }
         }
     }

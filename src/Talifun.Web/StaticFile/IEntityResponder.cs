@@ -2,15 +2,17 @@
 
 namespace Talifun.Web.StaticFile
 {
-    public interface IFileEntity
+    public interface IEntityResponder
     {
         bool IsAllowedToServeRequestedEntity { get; }
-        ITransmitEntityStrategy GetTransmitEntityStrategy(FileEntityCacheItem fileEntityCacheItem);
+        ITransmitEntityStrategy GetTransmitEntityStrategy(EntityCacheItem fileEntityCacheItem);
         bool TryGetFileHandlerCacheItem(ResponseCompressionType entityStoredWithCompressionType,
-                                        out FileEntityCacheItem fileEntityCacheItem);
+                                        out EntityCacheItem fileEntityCacheItem);
         bool DoesEntityExists { get; }
         bool IsEntityLargerThanMaxFileSize { get; }
         bool IsCompressable { get; }
         TimeSpan Expires { get; }
+        UrlEtagHandlingMethodType UrlEtagHandlingMethod { get; }
+        string UrlEtagQuerystringName { get; }
     }
 }
