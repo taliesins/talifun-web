@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Talifun.FileWatcher</id>
+    <version>1.7.5.0</version>
+    <title>Talifun.FileWatcher</title>
+    <authors>Taliesin Sisson</authors>
+    <owners>Taliesin Sisson</owners>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+    <projectUrl>https://github.com/taliesins/talifun-filewatcher/</projectUrl>
+    <iconUrl>http://code.google.com/p/talifun-web/logo</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A file watcher that waits for file change events to finish before raising a change event.</description>
+    <summary>A file watcher that waits for file change events to finish on a file before raising change events. Useful when you want to know when to begin processing a file. e.g. ftp connection drops and it resumes uploading, you dont want to process the file until the entire file has finished being uploaded.</summary>
+    <language>en-GB</language>
+    <tags>talifun file watcher</tags>
+  </metadata>
+</package>

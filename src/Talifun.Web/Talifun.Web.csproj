@@ -77,27 +77,28 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Xml" />
+
     <Reference Include="Yahoo.Yui.Compressor, Version=2.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\YUICompressor.NET.2.2.0.0\lib\NET20\Yahoo.Yui.Compressor.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFrameworkConstant)' == 'NET40' ">
+    <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="Talifun.FileWatcher">
-      <HintPath>..\..\packages\Talifun.FileWatcher.1.7.0.0\lib\net40\Talifun.FileWatcher.dll</HintPath>
+      <HintPath>..\..\packages\Talifun.FileWatcher.1.7.5.0\lib\net40\Talifun.FileWatcher.dll</HintPath>
     </Reference>
     <Reference Include="AjaxMin">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\AjaxMin.4.84.4790.14417\lib\net40\AjaxMin.dll</HintPath>
+      <HintPath>..\..\packages\AjaxMin.4.94.4916.15482\lib\net40\AjaxMin.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.ApplicationServices" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFrameworkConstant)' == 'NET35' ">
     <Reference Include="Talifun.FileWatcher">
-      <HintPath>..\..\packages\Talifun.FileWatcher.1.7.0.0\lib\net35\Talifun.FileWatcher.dll</HintPath>
+      <HintPath>..\..\packages\Talifun.FileWatcher.1.7.5.0\lib\net35\Talifun.FileWatcher.dll</HintPath>
     </Reference>
     <Reference Include="AjaxMin">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\AjaxMin.4.84.4790.14417\lib\net35\AjaxMin.dll</HintPath>
+      <HintPath>..\..\packages\AjaxMin.4.94.4916.15482\lib\net35\AjaxMin.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

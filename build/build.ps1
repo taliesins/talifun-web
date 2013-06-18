@@ -17,6 +17,7 @@ Include msbuild.ps1
 Include assemblyinfo.ps1
 Include overrides.ps1
 #Include git.ps1
+Include ilmerge.ps1
 
 properties {
   Write-Output "Loading build properties"
@@ -43,7 +44,7 @@ Task Initialize -Depends Clean, Bootstrap-NuGetPackages {
   New-Item $build.dir -ItemType Directory | Out-Null
 }
 
-Task Compile -Depends Version-AssemblyInfo, Initialize, Invoke-MsBuild
+Task Compile -Depends Version-AssemblyInfo, Initialize, Invoke-MsBuild, Create-IlMergePackage
 
 Task Clean { 
   Remove-Item -Force -Recurse $build.dir -ErrorAction SilentlyContinue | Out-Null

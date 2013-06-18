@@ -51,6 +51,23 @@ function global:Resolve-NuGet {
   return $nuget
 }
 
+function global:Resolve-Ilmerge {
+  $ilmergeIsInPath = (FileExistsInPath "Ilmerge.exe")
+  $ilmerge = "Ilmerge"
+  if($ilmergeIsInPath) {
+    $ilmerge = (@(get-command ilmerge) | % {$_.Definition} | ? { (Test-Path $_) } | Select-Object -First 1)
+  } else {  
+    $ilmerges = @(Get-ChildItem "..\*" -recurse -include Ilmerge.exe)
+    if ($ilmerges.Length -le 0) { 
+      Write-Output "No ilmerge executables found."
+      return
+    }
+    $ilmerge = (Resolve-Path $ilmerges[0]).Path
+    $env:Path = $env:Path + ";" + (Split-Path $ilmerge)
+  }
+  return $ilmerge
+}
+
 Push-Location $path
 try {
   Write-Output "Loading Nuget Dependencies"
