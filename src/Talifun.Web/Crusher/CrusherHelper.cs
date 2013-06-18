@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -67,6 +68,11 @@ namespace Talifun.Web.Crusher
         public string CssInternal(string groupName)
         {
             var cssGroup = CssGroups[groupName];
+            if (cssGroup == null)
+            {
+                throw new ConfigurationErrorsException(string.Format("CssGroup \"{0}\" does not exists!", groupName));
+            }
+
             var outputFilePath = cssGroup.OutputFilePath;
             var scriptLinks = string.Empty;
             var cacheKey = GetKey(CssType, outputFilePath);
@@ -138,6 +144,10 @@ namespace Talifun.Web.Crusher
         public string JsInternal(string groupName)
         {
             var jsGroup = JsGroups[groupName];
+            if (jsGroup == null)
+            {
+                throw new ConfigurationErrorsException(string.Format("JsGroup \"{0}\" does not exists!", groupName));
+            }
             var outputFilePath = jsGroup.OutputFilePath;
             var scriptLinks = string.Empty;
 

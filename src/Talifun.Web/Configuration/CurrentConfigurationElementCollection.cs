@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Configuration;
 using System.Diagnostics.CodeAnalysis;
 
@@ -16,6 +17,16 @@ namespace Talifun.Web.Configuration
         [SuppressMessage("Microsoft.Usage", "CA2211:NonConstantFieldsShouldNotBeVisible", Justification = "Visibility is limted to derived classes which should close the generic type and treat the field as private")]
         [SuppressMessage("Microsoft.Design", "CA1000:DoNotDeclareStaticMembersOnGenericTypes", Justification = "Visibility is limted to derived classes which should close the generic type and treat the field as private")]
         protected static ConfigurationPropertyCollection _properties = new ConfigurationPropertyCollection();
+
+        public CurrentConfigurationElementCollection()
+        {
+            
+        }
+
+        public CurrentConfigurationElementCollection(IComparer comparer)
+            : base(comparer)
+        {
+        }
 
         /// <summary>
         /// Gets the collection of configuration properties contained by this configuration element collection.

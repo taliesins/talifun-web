@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using System.Collections;
+using System.Configuration;
 using Talifun.Web.Configuration;
 
 namespace Talifun.Web.Crusher.Config
@@ -9,7 +10,7 @@ namespace Talifun.Web.Crusher.Config
     [ConfigurationCollection(typeof(JsGroupElement))]
     public sealed class JsGroupElementCollection : CurrentConfigurationElementCollection<JsGroupElement>
     {
-        public JsGroupElementCollection()
+        public JsGroupElementCollection() : base(new CaseInsensitiveComparer())
         {
             AddElementName = "jsGroup";
         }
