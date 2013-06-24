@@ -42,14 +42,14 @@ namespace Talifun.Web.Crusher
             MicrosoftAjaxMinCssCompressorPool = new Pool<Microsoft.Ajax.Utilities.Minifier>(64, pool => new Microsoft.Ajax.Utilities.Minifier(), LoadingMode.LazyExpanding, AccessMode.Circular);
         }
 
-    	/// <summary>
-    	/// Add css files to be crushed.
-    	/// </summary>
-    	/// <param name="outputUri">The virtual path for the crushed css file.</param>
-    	/// <param name="files">The css files to be crushed.</param>
-    	/// <param name="directories"> </param>
-    	/// <param name="appendHashToAssets">Should css assets have a hash appended to them.</param>
-    	public virtual CssCrushedOutput CreateGroup(Uri outputUri, IEnumerable<CssFile> files, IEnumerable<CssDirectory> directories, bool appendHashToAssets)
+        /// <summary>
+        /// Add css files to be crushed.
+        /// </summary>
+        /// <param name="outputUri">The virtual path for the crushed css file.</param>
+        /// <param name="files">The css files to be crushed.</param>
+        /// <param name="directories"> </param>
+        /// <param name="appendHashToAssets">Should css assets have a hash appended to them.</param>
+        public virtual CssCrushedOutput CreateGroup(Uri outputUri, IEnumerable<CssFile> files, IEnumerable<CssDirectory> directories, bool appendHashToAssets)
         {
             var outputFileInfo = new FileInfo(new Uri(PathProvider.MapPath(outputUri)).LocalPath);
             var crushedContent = ProcessGroup(outputFileInfo, outputUri, files, directories, appendHashToAssets);
@@ -90,15 +90,15 @@ namespace Talifun.Web.Crusher
             return filesToWatch;
         }
 
-    	/// <summary>
-    	/// Compress the css files and store them in the specified css file.
-    	/// </summary>
-    	/// <param name="outputFileInfo">The virtual path for the crushed js file.</param>
-    	/// <param name="cssRootUri">The path for the crushed css file.</param>
-    	/// <param name="files">The css files to be crushed.</param>
-    	/// <param name="directories">The css directories to be crushed.</param>
-    	/// <param name="appendHashToAssets"></param>
-    	public virtual CssCrushedOutput ProcessGroup(FileInfo outputFileInfo, Uri cssRootUri, IEnumerable<CssFile> files, IEnumerable<CssDirectory> directories, bool appendHashToAssets)
+        /// <summary>
+        /// Compress the css files and store them in the specified css file.
+        /// </summary>
+        /// <param name="outputFileInfo">The virtual path for the crushed js file.</param>
+        /// <param name="cssRootUri">The path for the crushed css file.</param>
+        /// <param name="files">The css files to be crushed.</param>
+        /// <param name="directories">The css directories to be crushed.</param>
+        /// <param name="appendHashToAssets"></param>
+        public virtual CssCrushedOutput ProcessGroup(FileInfo outputFileInfo, Uri cssRootUri, IEnumerable<CssFile> files, IEnumerable<CssDirectory> directories, bool appendHashToAssets)
         {
             var uncompressedContents = new StringBuilder();
             var yahooYuiToBeCompressedContents = new StringBuilder();

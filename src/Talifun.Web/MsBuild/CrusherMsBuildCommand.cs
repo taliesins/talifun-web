@@ -84,117 +84,134 @@ namespace Talifun.Web.MsBuild
 
         public object Clone()
         {
-            var cssSpriteConfiguration = GetCssSpriteSection(_configPath, CssSpriteSectionName);
-            var crusherConfiguration = GetCrusherSection(_configPath, CrusherSectionName);
-
-            var configUri = new Uri(_configPath, UriKind.RelativeOrAbsolute);
-            if (!configUri.IsAbsoluteUri)
+            AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+            try
             {
-                configUri = new Uri(Path.Combine(Environment.CurrentDirectory, configUri.ToString()));
+                var cssSpriteConfiguration = GetCssSpriteSection(_configPath, CssSpriteSectionName);
+                var crusherConfiguration = GetCrusherSection(_configPath, CrusherSectionName);
+
+                var configUri = new Uri(_configPath, UriKind.RelativeOrAbsolute);
+                if (!configUri.IsAbsoluteUri)
+                {
+                    configUri = new Uri(Path.Combine(Environment.CurrentDirectory, configUri.ToString()));
+                }
+
+                var physicalApplicationPath = new FileInfo(configUri.LocalPath).DirectoryName;
+
+                var retryableFileOpener = new RetryableFileOpener();
+                var hasher = new Hasher(retryableFileOpener);
+                var retryableFileWriter = new RetryableFileWriter(BufferSize, Encoding, retryableFileOpener, hasher);
+                var pathProvider = new PathProvider(_applicationPath, physicalApplicationPath);
+                var cacheManager = new HttpCacheManager();
+
+                var cssSpriteOutput = string.Empty;
+                var jsOutput = string.Empty;
+                var cssOutput = string.Empty;
+
+                var countdownEvents = new CountdownEvent(1);
+
+                ThreadPool.QueueUserWorkItem(data =>
+                    {
+                        var countdownEvent = (CountdownEvent) data;
+
+                        try
+                        {
+                            if (cssSpriteConfiguration != null)
+                            {
+                                var cssSpriteGroups = cssSpriteConfiguration.CssSpriteGroups;
+                                var cssSpriteCreator = new CssSpriteCreator(cacheManager, retryableFileOpener,
+                                                                            pathProvider, retryableFileWriter);
+                                var cssSpriteGroupsProcessor = new CssSpriteGroupsProcessor();
+
+                                cssSpriteOutput =
+                                    cssSpriteGroupsProcessor.ProcessGroups(pathProvider, cssSpriteCreator,
+                                                                           cssSpriteGroups).ToString();
+
+                                _logMessage(cssSpriteOutput);
+                            }
+                        }
+                        catch (Exception exception)
+                        {
+                            _logError(exception.ToString());
+                        }
+                        countdownEvent.Signal();
+                    }, countdownEvents);
+
+                countdownEvents.Wait();
+
+                countdownEvents = new CountdownEvent(2);
+
+                ThreadPool.QueueUserWorkItem(data =>
+                    {
+                        var countdownEvent = (CountdownEvent) data;
+
+                        try
+                        {
+                            if (crusherConfiguration != null)
+                            {
+                                var jsCrusher = new JsCrusher(cacheManager, pathProvider, retryableFileOpener,
+                                                              retryableFileWriter);
+                                var jsGroups = crusherConfiguration.JsGroups;
+                                var jsGroupsProcessor = new JsGroupsProcessor();
+
+                                jsOutput = jsGroupsProcessor.ProcessGroups(pathProvider, jsCrusher, jsGroups).ToString();
+
+                                _logMessage(jsOutput);
+                            }
+                        }
+                        catch (Exception exception)
+                        {
+                            _logError(exception.ToString());
+                        }
+                        countdownEvent.Signal();
+                    }, countdownEvents);
+
+                ThreadPool.QueueUserWorkItem(data =>
+                    {
+                        var countdownEvent = (CountdownEvent) data;
+
+                        try
+                        {
+                            if (crusherConfiguration != null)
+                            {
+                                var hashQueryStringKeyName = crusherConfiguration.QuerystringKeyName;
+                                var cssAssetsFileHasher = new CssAssetsFileHasher(hashQueryStringKeyName, hasher,
+                                                                                  pathProvider);
+                                var cssPathRewriter = new CssPathRewriter(cssAssetsFileHasher, pathProvider);
+                                var cssCrusher = new CssCrusher(cacheManager, pathProvider, retryableFileOpener,
+                                                                retryableFileWriter, cssPathRewriter);
+                                var cssGroups = crusherConfiguration.CssGroups;
+                                var cssGroupsCrusher = new CssGroupsProcessor();
+                                cssOutput =
+                                    cssGroupsCrusher.ProcessGroups(pathProvider, cssCrusher, cssGroups).ToString();
+
+                                _logMessage(cssOutput);
+                            }
+                        }
+                        catch (Exception exception)
+                        {
+                            _logError(exception.ToString());
+                        }
+                        countdownEvent.Signal();
+                    }, countdownEvents);
+
+                countdownEvents.Wait();
+            }
+            catch (Exception exception)
+            {
+                _logError(exception.ToString());
+            }
+            finally
+            {
+                AppDomain.CurrentDomain.UnhandledException -= OnUnhandledException;
             }
 
-            var physicalApplicationPath = new FileInfo(configUri.LocalPath).DirectoryName;
-
-            var retryableFileOpener = new RetryableFileOpener();
-            var hasher = new Hasher(retryableFileOpener);
-            var retryableFileWriter = new RetryableFileWriter(BufferSize, Encoding, retryableFileOpener, hasher);
-            var pathProvider = new PathProvider(_applicationPath, physicalApplicationPath);
-            var cacheManager = new HttpCacheManager();
-
-            var cssSpriteOutput = string.Empty;
-            var jsOutput = string.Empty;
-            var cssOutput = string.Empty;
-
-            var countdownEvents = new CountdownEvent(1);
-
-            ThreadPool.QueueUserWorkItem(data =>
-                {
-                    var countdownEvent = (CountdownEvent) data;
-
-                    try
-                    {
-                        if (cssSpriteConfiguration != null)
-                        {
-                            var cssSpriteGroups = cssSpriteConfiguration.CssSpriteGroups;
-                            var cssSpriteCreator = new CssSpriteCreator(cacheManager, retryableFileOpener,
-                                                                        pathProvider, retryableFileWriter);
-                            var cssSpriteGroupsProcessor = new CssSpriteGroupsProcessor();
-
-                            cssSpriteOutput =
-                                cssSpriteGroupsProcessor.ProcessGroups(pathProvider, cssSpriteCreator,
-                                                                        cssSpriteGroups).ToString();
-
-                            _logMessage(cssSpriteOutput);
-                        }
-                    }
-                    catch (Exception exception)
-                    {
-                        _logError(exception.ToString());
-                    }
-                    countdownEvent.Signal();
-                }, countdownEvents);
-
-            countdownEvents.Wait();
-
-            countdownEvents = new CountdownEvent(2);
-
-            ThreadPool.QueueUserWorkItem(data =>
-                {
-                    var countdownEvent = (CountdownEvent) data;
-
-                    try
-                    {
-                        if (crusherConfiguration != null)
-                        {
-                            var jsCrusher = new JsCrusher(cacheManager, pathProvider, retryableFileOpener,
-                                                            retryableFileWriter);
-                            var jsGroups = crusherConfiguration.JsGroups;
-                            var jsGroupsProcessor = new JsGroupsProcessor();
-
-                            jsOutput = jsGroupsProcessor.ProcessGroups(pathProvider, jsCrusher, jsGroups).ToString();
-
-                            _logMessage(jsOutput);
-                        }
-                    }
-                    catch (Exception exception)
-                    {
-                        _logError(exception.ToString());
-                    }
-                    countdownEvent.Signal();
-                }, countdownEvents);
-
-            ThreadPool.QueueUserWorkItem(data =>
-                {
-                    var countdownEvent = (CountdownEvent) data;
-
-                    try
-                    {
-                        if (crusherConfiguration != null)
-                        {
-                            var hashQueryStringKeyName = crusherConfiguration.QuerystringKeyName;
-                            var cssAssetsFileHasher = new CssAssetsFileHasher(hashQueryStringKeyName, hasher,
-                                                                                pathProvider);
-                            var cssPathRewriter = new CssPathRewriter(cssAssetsFileHasher, pathProvider);
-                            var cssCrusher = new CssCrusher(cacheManager, pathProvider, retryableFileOpener,
-                                                            retryableFileWriter, cssPathRewriter);
-                            var cssGroups = crusherConfiguration.CssGroups;
-                            var cssGroupsCrusher = new CssGroupsProcessor();
-                            cssOutput =
-                                cssGroupsCrusher.ProcessGroups(pathProvider, cssCrusher, cssGroups).ToString();
-
-                            _logMessage(cssOutput);
-                        }
-                    }
-                    catch (Exception exception)
-                    {
-                        _logError(exception.ToString());
-                    }
-                    countdownEvent.Signal();
-                }, countdownEvents);
-
-            countdownEvents.Wait();
-
             return null;
+        }
+
+        void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            _logError(e.ToString());
         }
     }
 }

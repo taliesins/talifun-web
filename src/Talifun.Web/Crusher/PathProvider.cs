@@ -77,7 +77,7 @@ namespace Talifun.Web.Crusher
                 }
                 else
                 {
-                    resolvedUrl = MapPath(url);
+                    resolvedUrl = new Uri(MapPath(url)).LocalPath;
                 }
 
                 return Path.GetFullPath(resolvedUrl);
