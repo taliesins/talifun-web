@@ -222,7 +222,7 @@ namespace Talifun.Crusher
                     if (cssSpriteExceptions.Any())
                     {
                         Console.WriteLine("Css sprite errors:");
-                        Console.WriteLine(new AggregateException(cssSpriteExceptions));
+                        Console.WriteLine(new AggregateException(cssSpriteExceptions.Cast<Exception>()));
                     }
                 }
 
@@ -238,7 +238,7 @@ namespace Talifun.Crusher
                     if (cssExceptions.Any())
                     {
                         Console.WriteLine("Css errors:");
-                        Console.WriteLine(new AggregateException(cssExceptions));
+                        Console.WriteLine(new AggregateException(cssExceptions.Cast<Exception>()));
                     }
 
                     Console.WriteLine();
@@ -246,7 +246,7 @@ namespace Talifun.Crusher
                     if (jsExceptions.Any())
                     {
                         Console.WriteLine("Js errors:");
-                        Console.WriteLine(new AggregateException(jsExceptions));
+                        Console.WriteLine(new AggregateException(jsExceptions.Cast<Exception>()));
                     }
                 }
 			}

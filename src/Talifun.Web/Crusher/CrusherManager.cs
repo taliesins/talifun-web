@@ -125,7 +125,7 @@ namespace Talifun.Web.Crusher
 
             countdownEvents.Wait();
 
-            var exceptions = cssExceptions.Cast<Exception>().Concat(jsExceptions).ToList();
+            var exceptions = cssExceptions.Cast<Exception>().Concat(jsExceptions.Cast<Exception>()).ToList();
 
             if (exceptions.Any())
             {
