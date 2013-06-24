@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using Talifun.Crusher.Options;
@@ -10,6 +12,7 @@ using Talifun.Web.Crusher.Config;
 using Talifun.Web.CssSprite;
 using Talifun.Web.CssSprite.Config;
 using Talifun.Web.Helper;
+using AggregateException = Talifun.Web.Crusher.AggregateException;
 
 namespace Talifun.Crusher
 {
@@ -129,19 +132,28 @@ namespace Talifun.Crusher
         	    var cssOutput = string.Empty;
                 var cssSpriteOutput = string.Empty;
 
+                
                 //We want to be able to use output from css sprites in crushed content
                 var countdownEvents = new CountdownEvent(1);
 
+                var cssSpriteExceptions = new List<CssSpriteException>();
                 ThreadPool.QueueUserWorkItem(data =>
                 {
                     var manualResetEvent = (CountdownEvent)data;
-                    if (cssSpriteConfiguration != null)
+                    try
                     {
-                        var cssSpriteGroups = cssSpriteConfiguration.CssSpriteGroups;
-                        var cssSpriteCreator = new CssSpriteCreator(cacheManager, retryableFileOpener, pathProvider, retryableFileWriter);
-                        var cssSpriteGroupsProcessor = new CssSpriteGroupsProcessor();
+                        if (cssSpriteConfiguration != null)
+                        {
+                            var cssSpriteGroups = cssSpriteConfiguration.CssSpriteGroups;
+                            var cssSpriteCreator = new CssSpriteCreator(cacheManager, retryableFileOpener, pathProvider, retryableFileWriter);
+                            var cssSpriteGroupsProcessor = new CssSpriteGroupsProcessor();
 
-                        cssSpriteOutput = cssSpriteGroupsProcessor.ProcessGroups(pathProvider, cssSpriteCreator, cssSpriteGroups).ToString();
+                            cssSpriteOutput = cssSpriteGroupsProcessor.ProcessGroups(pathProvider, cssSpriteCreator, cssSpriteGroups).ToString();
+                        }
+                    }
+                    catch (Exception exception)
+                    {
+                        cssSpriteExceptions.Add(new CssSpriteException(exception));
                     }
                     manualResetEvent.Signal();
                 }, countdownEvents);
@@ -149,40 +161,55 @@ namespace Talifun.Crusher
         	    countdownEvents.Wait();
 
                 countdownEvents = new CountdownEvent(2);
-
+                var jsExceptions = new List<JsException>();
                 ThreadPool.QueueUserWorkItem(data =>
                 {
                     var manualResetEvent = (CountdownEvent)data;
-                    if (crusherConfiguration != null)
+                    try
                     {
-                        var jsCrusher = new JsCrusher(cacheManager, pathProvider, retryableFileOpener, retryableFileWriter);
-                        var jsGroups = crusherConfiguration.JsGroups;
-                        var jsGroupsProcessor = new JsGroupsProcessor();
+                        if (crusherConfiguration != null)
+                        {
+                            var jsCrusher = new JsCrusher(cacheManager, pathProvider, retryableFileOpener, retryableFileWriter);
+                            var jsGroups = crusherConfiguration.JsGroups;
+                            var jsGroupsProcessor = new JsGroupsProcessor();
 
-                        jsOutput = jsGroupsProcessor.ProcessGroups(pathProvider, jsCrusher, jsGroups).ToString();
+                            jsOutput = jsGroupsProcessor.ProcessGroups(pathProvider, jsCrusher, jsGroups).ToString();
+                        }
+                    }
+                    catch (Exception exception)
+                    {
+                        jsExceptions.Add(new JsException(exception));
                     }
                     manualResetEvent.Signal();
                 }, countdownEvents);
 
+                var cssExceptions = new List<CssException>();
                 ThreadPool.QueueUserWorkItem(data =>
                 {
                     var manualResetEvent = (CountdownEvent)data;
-                    if (crusherConfiguration != null)
+                    try
                     {
-                        var hashQueryStringKeyName = crusherConfiguration.QuerystringKeyName;
-                        var cssAssetsFileHasher = new CssAssetsFileHasher(hashQueryStringKeyName, hasher, pathProvider);
-                        var cssPathRewriter = new CssPathRewriter(cssAssetsFileHasher, pathProvider);
-                        var cssCrusher = new CssCrusher(cacheManager, pathProvider, retryableFileOpener, retryableFileWriter, cssPathRewriter);
-                        var cssGroups = crusherConfiguration.CssGroups;
-                        var cssGroupsCrusher = new CssGroupsProcessor();
-                        cssOutput = cssGroupsCrusher.ProcessGroups(pathProvider, cssCrusher, cssGroups).ToString();
+                        if (crusherConfiguration != null)
+                        {
+                            var hashQueryStringKeyName = crusherConfiguration.QuerystringKeyName;
+                            var cssAssetsFileHasher = new CssAssetsFileHasher(hashQueryStringKeyName, hasher, pathProvider);
+                            var cssPathRewriter = new CssPathRewriter(cssAssetsFileHasher, pathProvider);
+                            var cssCrusher = new CssCrusher(cacheManager, pathProvider, retryableFileOpener, retryableFileWriter, cssPathRewriter);
+                            var cssGroups = crusherConfiguration.CssGroups;
+                            var cssGroupsCrusher = new CssGroupsProcessor();
+                            cssOutput = cssGroupsCrusher.ProcessGroups(pathProvider, cssCrusher, cssGroups).ToString();
+                        }
+                    }
+                    catch (Exception exception)
+                    {
+                        cssExceptions.Add(new CssException(exception));
                     }
                     manualResetEvent.Signal();
                 }, countdownEvents);
 
         	    countdownEvents.Wait();
 
-                if (string.IsNullOrEmpty(cssSpriteOutput))
+                if (string.IsNullOrEmpty(cssSpriteOutput) && !cssSpriteExceptions.Any())
                 {
                     Console.WriteLine();
                     Console.WriteLine("Skipping css sprite creation. \"{0}\" section name not found in \"{1}\"", cssSpriteSectionName, configPath);
@@ -191,9 +218,15 @@ namespace Talifun.Crusher
                 {
                     Console.WriteLine();
                     Console.WriteLine(cssSpriteOutput);
+
+                    if (cssSpriteExceptions.Any())
+                    {
+                        Console.WriteLine("Css sprite errors:");
+                        Console.WriteLine(new AggregateException(cssSpriteExceptions));
+                    }
                 }
 
-        	    if (string.IsNullOrEmpty(jsOutput) && string.IsNullOrEmpty(cssOutput))
+                if (string.IsNullOrEmpty(jsOutput) && string.IsNullOrEmpty(cssOutput) && !jsExceptions.Any() && !cssExceptions.Any())
                 {
                     Console.WriteLine();
                     Console.WriteLine("Skipping css/js crushed content creation. \"{0}\" section name not found in \"{1}\"", crusherSectionName, configPath);
@@ -202,8 +235,19 @@ namespace Talifun.Crusher
                 {
                     Console.WriteLine();
                     Console.WriteLine(cssOutput);
+                    if (cssExceptions.Any())
+                    {
+                        Console.WriteLine("Css errors:");
+                        Console.WriteLine(new AggregateException(cssExceptions));
+                    }
+
                     Console.WriteLine();
                     Console.WriteLine(jsOutput);
+                    if (jsExceptions.Any())
+                    {
+                        Console.WriteLine("Js errors:");
+                        Console.WriteLine(new AggregateException(jsExceptions));
+                    }
                 }
 			}
 			catch (Exception exception)

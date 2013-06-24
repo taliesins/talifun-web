@@ -78,7 +78,6 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Abstractions" />
     <Reference Include="System.Xml" />
-
     <Reference Include="Yahoo.Yui.Compressor, Version=2.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\YUICompressor.NET.2.2.0.0\lib\NET20\Yahoo.Yui.Compressor.dll</HintPath>
     </Reference>
@@ -109,8 +108,10 @@
     <Compile Include="Crusher\Config\JsDirectoryElement.cs" />
     <Compile Include="Crusher\Config\CssDirectoryElementCollection.cs" />
     <Compile Include="Crusher\Config\CssDirectoryElement.cs" />
+    <Compile Include="Crusher\AggregateException.cs" />
     <Compile Include="Crusher\CsFileToWatchComparer.cs" />
     <Compile Include="Crusher\CssAsset.cs" />
+    <Compile Include="Crusher\CssException.cs" />
     <Compile Include="Crusher\CssGroupsProcessor.cs" />
     <Compile Include="Crusher\CssGroupToProcess.cs" />
     <Compile Include="Crusher\CssModule\CssAssetsHashModule.cs" />
@@ -123,6 +124,7 @@
     <Compile Include="Crusher\CssDirectory.cs" />
     <Compile Include="Crusher\CrusherHelper.cs" />
     <Compile Include="Crusher\CssFileToWatch.cs" />
+    <Compile Include="Crusher\JsException.cs" />
     <Compile Include="Crusher\JsFileToWatch.cs" />
     <Compile Include="Crusher\JsFileToWatchEqualityComparer.cs" />
     <Compile Include="Crusher\JsGroupsProcessor.cs" />
@@ -133,6 +135,7 @@
     <Compile Include="CssSprite\CssSpriteGroupToProcess.cs" />
     <Compile Include="CssSprite\ImageDirectory.cs" />
     <Compile Include="CssSprite\CssSpriteGroupsProcessor.cs" />
+    <Compile Include="CssSprite\CssSpriteException.cs" />
     <Compile Include="Helper\CountdownEvent .cs" />
     <Compile Include="Helper\Graph.cs" />
     <Compile Include="Helper\HashedSet.cs" />

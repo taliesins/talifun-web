@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using Talifun.Web.Crusher.Config;
@@ -86,25 +88,49 @@ namespace Talifun.Web.Crusher
         {
             AppDomain.CurrentDomain.DomainUnload += OnDomainUnload;
 
+            var jsExceptions = new List<JsException>(); 
+            var cssExceptions = new List<CssException>();
             var countdownEvents = new CountdownEvent(2);
 
             ThreadPool.QueueUserWorkItem(data =>
                 {
                     var manualResetEvent = (CountdownEvent)data;
-                    var groupsProcessor = new JsGroupsProcessor();
-                    groupsProcessor.ProcessGroups(_pathProvider, _jsCrusher, _jsGroups);
+                    try
+                    {
+                        var groupsProcessor = new JsGroupsProcessor();
+                        groupsProcessor.ProcessGroups(_pathProvider, _jsCrusher, _jsGroups);
+                    }
+                    catch (Exception exception)
+                    {
+                        jsExceptions.Add(new JsException(exception));
+                    }
                     manualResetEvent.Signal();
+
                 }, countdownEvents);
 
             ThreadPool.QueueUserWorkItem(data =>
                 {
                     var manualResetEvent = (CountdownEvent)data;
-                    var groupsProcessor = new CssGroupsProcessor();
-                    groupsProcessor.ProcessGroups(_pathProvider, _cssCrusher, _cssGroups);
+                    try
+                    {
+                        var groupsProcessor = new CssGroupsProcessor();
+                        groupsProcessor.ProcessGroups(_pathProvider, _cssCrusher, _cssGroups);
+                    }
+                    catch (Exception exception)
+                    {
+                        cssExceptions.Add(new CssException(exception));
+                    }
                     manualResetEvent.Signal();
                 }, countdownEvents);
 
             countdownEvents.Wait();
+
+            var exceptions = cssExceptions.Cast<Exception>().Concat(jsExceptions).ToList();
+
+            if (exceptions.Any())
+            {
+                throw new AggregateException(exceptions);
+            }
         }
 
         private void DisposeManager()

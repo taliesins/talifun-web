@@ -32,10 +32,13 @@ Write-Output "Create-IlmergePackage"
 
   if ($ilmerge.targets.length -lt 1)
   {
-    $defaultName = ($solution.name -replace "-", ".") + ".dll"
-    $assembliesToMerge = @("Talifun.Web.dll", "Talifun.FileWatcher.dll","AjaxMin.dll", "dotless.ClientOnly.dll", "EcmaScript.NET.dll", "Iesi.Collections.dll", "Yahoo.Yui.Compressor.dll")
-    $files = @(Get-ChildItem -path "$($build.dir)\*.dll" | Where-Object {$assembliesToMerge -contains $_.Name} | Select-Object $_.FullName)
-    $ilmerge.targets["$defaultName"] = $files
+    $talifunweb = ($solution.name -replace "-", ".") + ".dll"
+    $talifunwebAssemblies = @("Talifun.Web.dll", "Talifun.FileWatcher.dll","AjaxMin.dll", "dotless.ClientOnly.dll", "EcmaScript.NET.dll", "Iesi.Collections.dll", "Yahoo.Yui.Compressor.dll")
+    $ilmerge.targets["$talifunweb"] = @(Get-ChildItem -path "$($build.dir)\*.dll" | Where-Object {$talifunwebAssemblies -contains $_.Name} | Select-Object $_.FullName)
+
+    #$talifunwebmsbuild = "Talifun.Crusher.MsBuild.dll"
+    #$talifunwebmsbuildAssemblies = @("Talifun.Crusher.MsBuild.dll","Talifun.Web.dll", "Talifun.FileWatcher.dll","AjaxMin.dll", "dotless.ClientOnly.dll", "EcmaScript.NET.dll", "Iesi.Collections.dll", "Yahoo.Yui.Compressor.dll")
+    #$ilmerge.targets["$talifunwebmsbuild"] = @(Get-ChildItem -path "$($build.dir)\*.dll" | Where-Object {$talifunwebmsbuildAssemblies -contains $_.Name} | Select-Object $_.FullName)    
   }
 
   $temp_directory = $ilmerge.directory+"\merged"
@@ -65,7 +68,7 @@ Write-Output "Create-IlmergePackage"
         $targetPlatform = "/targetplatform:'v2,C:\Windows\Microsoft.NET\Framework\v2.0.50727'"
       }
 
-      $ilmerge.command = "& $($ilmerge.file) $($ilmerge.key) /out:`"$($temp_directory)\$($ilmerge_name)`" $($assemblies) $($targetPlatform)"
+      $ilmerge.command = "& $($ilmerge.file) $($ilmerge.key) /ver:$($build.version) /out:`"$($temp_directory)\$($ilmerge_name)`" $($assemblies) $($targetPlatform)"
 
       $message = "Error executing command: {0}"
       $command = "Invoke-Expression $($ilmerge.command)"
