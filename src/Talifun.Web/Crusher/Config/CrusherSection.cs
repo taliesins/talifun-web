@@ -13,7 +13,8 @@ namespace Talifun.Web.Crusher.Config
         private static readonly ConfigurationProperty cssGroups = new ConfigurationProperty("cssGroups", typeof(CssGroupElementCollection), null, ConfigurationPropertyOptions.IsRequired);
         private static readonly ConfigurationProperty jsGroups = new ConfigurationProperty("jsGroups", typeof(JsGroupElementCollection), null, ConfigurationPropertyOptions.IsRequired);
         private static readonly ConfigurationProperty querystringKeyName = new ConfigurationProperty("querystringKeyName", typeof(string), "etag", ConfigurationPropertyOptions.None);
-        
+        private static readonly ConfigurationProperty watchAssets = new ConfigurationProperty("watchAssets", typeof(bool), false, ConfigurationPropertyOptions.None);
+
         /// <summary>
         /// Perform static initialisation for this configuration section. This includes explicitly adding
         /// configured properties to the Properties collection, and so cannot be performed inline.
@@ -25,6 +26,7 @@ namespace Talifun.Web.Crusher.Config
             properties.Add(cssGroups);
             properties.Add(jsGroups);
             properties.Add(querystringKeyName);
+            properties.Add(watchAssets);
         }
 
         /// <summary>
@@ -55,6 +57,16 @@ namespace Talifun.Web.Crusher.Config
         {
             get { return ((string)base[querystringKeyName]); }
             set { base[querystringKeyName] = value; }
+        }
+
+        /// <summary>
+        /// Should changes to assets trigger regeneration of files.
+        /// </summary>
+        [ConfigurationProperty("watchAssets", DefaultValue = false, IsRequired = false)]
+        public bool WatchAssets
+        {
+            get { return ((bool)base[watchAssets]); }
+            set { base[watchAssets] = value; }
         }
 
         /// <summary>

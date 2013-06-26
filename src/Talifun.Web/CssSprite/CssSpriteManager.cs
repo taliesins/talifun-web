@@ -22,6 +22,7 @@ namespace Talifun.Web.CssSprite
         private readonly ICacheManager _cacheManager;
         private readonly ICssSpriteCreator _cssSpriteCreator;
         private readonly IPathProvider _pathProvider;
+        private readonly IMetaData _fileMetaData;
     	
         private CssSpriteManager()
         {
@@ -31,7 +32,8 @@ namespace Talifun.Web.CssSprite
 
             _cacheManager = new HttpCacheManager();
 			_pathProvider = new PathProvider();
-			_cssSpriteCreator = new CssSpriteCreator(_cacheManager, retryableFileOpener, _pathProvider, retryableFileWriter);
+            _fileMetaData = new SingleFileMetaData(retryableFileOpener, retryableFileWriter);
+			_cssSpriteCreator = new CssSpriteCreator(_cacheManager, retryableFileOpener, _pathProvider, retryableFileWriter, _fileMetaData);
             
             InitManager();
         }

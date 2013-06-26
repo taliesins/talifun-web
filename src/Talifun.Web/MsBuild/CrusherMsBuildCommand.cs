@@ -23,6 +23,14 @@ namespace Talifun.Web.MsBuild
         private const string CssSpriteSectionName = "CssSprite";
         private const int BufferSize = 32768;
         private static readonly Encoding Encoding = Encoding.UTF8;
+        private readonly IRetryableFileOpener _retryableFileOpener;
+        private readonly IHasher _hasher;
+        private readonly IRetryableFileWriter _retryableFileWriter;
+        private readonly IMetaData _fileMetaData;
+        private readonly IPathProvider _pathProvider;
+        private readonly ICacheManager _cacheManager;
+        private readonly CssSpriteSection _cssSpriteConfiguration;
+        private readonly CrusherSection _crusherConfiguration;
 
         public CrusherMsBuildCommand(string applicationPath, string binDirectoryPath, string configPath, Action<string> logMessage, Action<string> logError)
         {
@@ -56,6 +64,24 @@ namespace Talifun.Web.MsBuild
             _configPath = configPath;
             _logMessage = logMessage;
             _logError = logError;
+
+            _retryableFileOpener = new RetryableFileOpener();
+            _hasher = new Hasher(_retryableFileOpener);
+            _retryableFileWriter = new RetryableFileWriter(BufferSize, Encoding, _retryableFileOpener, _hasher);
+            _fileMetaData = new MultiFileMetaData(_retryableFileOpener, _retryableFileWriter);
+
+            _cssSpriteConfiguration = GetCssSpriteSection(_configPath, CssSpriteSectionName);
+            _crusherConfiguration = GetCrusherSection(_configPath, CrusherSectionName);
+
+            var configUri = new Uri(_configPath, UriKind.RelativeOrAbsolute);
+            if (!configUri.IsAbsoluteUri)
+            {
+                configUri = new Uri(Path.Combine(Environment.CurrentDirectory, configUri.ToString()));
+            }
+
+            var physicalApplicationPath = new FileInfo(configUri.LocalPath).DirectoryName;
+            _pathProvider = new PathProvider(_applicationPath, physicalApplicationPath);
+            _cacheManager = new HttpCacheManager();
         }
 
         private CrusherSection GetCrusherSection(string configPath, string sectionName)
@@ -87,23 +113,6 @@ namespace Talifun.Web.MsBuild
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
             try
             {
-                var cssSpriteConfiguration = GetCssSpriteSection(_configPath, CssSpriteSectionName);
-                var crusherConfiguration = GetCrusherSection(_configPath, CrusherSectionName);
-
-                var configUri = new Uri(_configPath, UriKind.RelativeOrAbsolute);
-                if (!configUri.IsAbsoluteUri)
-                {
-                    configUri = new Uri(Path.Combine(Environment.CurrentDirectory, configUri.ToString()));
-                }
-
-                var physicalApplicationPath = new FileInfo(configUri.LocalPath).DirectoryName;
-
-                var retryableFileOpener = new RetryableFileOpener();
-                var hasher = new Hasher(retryableFileOpener);
-                var retryableFileWriter = new RetryableFileWriter(BufferSize, Encoding, retryableFileOpener, hasher);
-                var pathProvider = new PathProvider(_applicationPath, physicalApplicationPath);
-                var cacheManager = new HttpCacheManager();
-
                 var cssSpriteOutput = string.Empty;
                 var jsOutput = string.Empty;
                 var cssOutput = string.Empty;
@@ -116,16 +125,13 @@ namespace Talifun.Web.MsBuild
 
                         try
                         {
-                            if (cssSpriteConfiguration != null)
+                            if (_cssSpriteConfiguration != null)
                             {
-                                var cssSpriteGroups = cssSpriteConfiguration.CssSpriteGroups;
-                                var cssSpriteCreator = new CssSpriteCreator(cacheManager, retryableFileOpener,
-                                                                            pathProvider, retryableFileWriter);
+                                var cssSpriteGroups = _cssSpriteConfiguration.CssSpriteGroups;
+                                var cssSpriteCreator = new CssSpriteCreator(_cacheManager, _retryableFileOpener, _pathProvider, _retryableFileWriter, _fileMetaData);
                                 var cssSpriteGroupsProcessor = new CssSpriteGroupsProcessor();
 
-                                cssSpriteOutput =
-                                    cssSpriteGroupsProcessor.ProcessGroups(pathProvider, cssSpriteCreator,
-                                                                           cssSpriteGroups).ToString();
+                                cssSpriteOutput = cssSpriteGroupsProcessor.ProcessGroups(_pathProvider, cssSpriteCreator, cssSpriteGroups).ToString();
 
                                 _logMessage(cssSpriteOutput);
                             }
@@ -147,14 +153,13 @@ namespace Talifun.Web.MsBuild
 
                         try
                         {
-                            if (crusherConfiguration != null)
+                            if (_crusherConfiguration != null)
                             {
-                                var jsCrusher = new JsCrusher(cacheManager, pathProvider, retryableFileOpener,
-                                                              retryableFileWriter);
-                                var jsGroups = crusherConfiguration.JsGroups;
+                                var jsCrusher = new JsCrusher(_cacheManager, _pathProvider, _retryableFileOpener, _retryableFileWriter, _fileMetaData);
+                                var jsGroups = _crusherConfiguration.JsGroups;
                                 var jsGroupsProcessor = new JsGroupsProcessor();
 
-                                jsOutput = jsGroupsProcessor.ProcessGroups(pathProvider, jsCrusher, jsGroups).ToString();
+                                jsOutput = jsGroupsProcessor.ProcessGroups(_pathProvider, jsCrusher, jsGroups).ToString();
 
                                 _logMessage(jsOutput);
                             }
@@ -172,18 +177,15 @@ namespace Talifun.Web.MsBuild
 
                         try
                         {
-                            if (crusherConfiguration != null)
+                            if (_crusherConfiguration != null)
                             {
-                                var hashQueryStringKeyName = crusherConfiguration.QuerystringKeyName;
-                                var cssAssetsFileHasher = new CssAssetsFileHasher(hashQueryStringKeyName, hasher,
-                                                                                  pathProvider);
-                                var cssPathRewriter = new CssPathRewriter(cssAssetsFileHasher, pathProvider);
-                                var cssCrusher = new CssCrusher(cacheManager, pathProvider, retryableFileOpener,
-                                                                retryableFileWriter, cssPathRewriter);
-                                var cssGroups = crusherConfiguration.CssGroups;
+                                var hashQueryStringKeyName = _crusherConfiguration.QuerystringKeyName;
+                                var cssAssetsFileHasher = new CssAssetsFileHasher(hashQueryStringKeyName, _hasher, _pathProvider);
+                                var cssPathRewriter = new CssPathRewriter(cssAssetsFileHasher, _pathProvider);
+                                var cssCrusher = new CssCrusher(_cacheManager, _pathProvider, _retryableFileOpener, _retryableFileWriter, cssPathRewriter, _fileMetaData, _crusherConfiguration.WatchAssets);
+                                var cssGroups = _crusherConfiguration.CssGroups;
                                 var cssGroupsCrusher = new CssGroupsProcessor();
-                                cssOutput =
-                                    cssGroupsCrusher.ProcessGroups(pathProvider, cssCrusher, cssGroups).ToString();
+                                cssOutput = cssGroupsCrusher.ProcessGroups(_pathProvider, cssCrusher, cssGroups).ToString();
 
                                 _logMessage(cssOutput);
                             }

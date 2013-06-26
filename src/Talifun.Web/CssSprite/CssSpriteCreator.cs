@@ -22,17 +22,17 @@ namespace Talifun.Web.CssSprite
         protected readonly IRetryableFileOpener RetryableFileOpener;
 		protected readonly IPathProvider PathProvider;   
         protected readonly IRetryableFileWriter RetryableFileWriter;
-
+        protected readonly IMetaData FileMetaData;
         protected static string CssSpriteCreatorType = typeof(CssSpriteCreator).ToString();
-
         protected readonly IComparer<SpriteElement> SquarenessComparer = new SquarenessComparer();
 
-        public CssSpriteCreator(ICacheManager cacheManager, IRetryableFileOpener retryableFileOpener, IPathProvider pathProvider, IRetryableFileWriter retryableFileWriter)
+        public CssSpriteCreator(ICacheManager cacheManager, IRetryableFileOpener retryableFileOpener, IPathProvider pathProvider, IRetryableFileWriter retryableFileWriter, IMetaData fileMetaData)
         {
             CacheManager = cacheManager;
             RetryableFileOpener = retryableFileOpener;
 			PathProvider = pathProvider;
             RetryableFileWriter = retryableFileWriter;
+            FileMetaData = fileMetaData;
         }
 
         /// <summary>
@@ -46,16 +46,24 @@ namespace Talifun.Web.CssSprite
         public virtual IEnumerable<ImageFile> AddFiles(FileInfo imageOutputPath, Uri spriteImageUrl, FileInfo cssOutputPath, IEnumerable<ImageFile> files, IEnumerable<ImageDirectory> directories)
         {
             var filesToWatch = GetFilesToWatch(files, directories);
+            var metaDataFiles = filesToWatch.Select(x => new FileInfo(x.FilePath)).Distinct().OrderBy(x => x.FullName);
+
+            var isMetaDataFresh = FileMetaData.IsMetaDataFresh(cssOutputPath, metaDataFiles);
+            
+            if (!isMetaDataFresh)
+            {
+                var spriteElements = ProcessFiles(filesToWatch);
+                spriteElements = CalculatePositions(spriteElements);
+                var etag = SaveSpritesImage(spriteElements, imageOutputPath);
+                var css = GetCssSpriteCss(spriteElements, etag, spriteImageUrl);
+                RetryableFileWriter.SaveContentsToFile(css, cssOutputPath);
+
+               FileMetaData. CreateMetaData(cssOutputPath, metaDataFiles);
+            }
 
             var foldersToWatch = directories
                 .Select(x => Talifun.FileWatcher.EnhancedFileSystemWatcherFactory.Instance
                 .CreateEnhancedFileSystemWatcher(new Uri(PathProvider.MapPath(x.DirectoryPath)).LocalPath, x.IncludeFilter, x.ExcludeFilter, x.PollTime, x.IncludeSubDirectories));
-
-            var spriteElements = ProcessFiles(filesToWatch);
-            spriteElements = CalculatePositions(spriteElements);
-            var etag = SaveSpritesImage(spriteElements, imageOutputPath);
-            var css = GetCssSpriteCss(spriteElements, etag, spriteImageUrl);
-            RetryableFileWriter.SaveContentsToFile(css, cssOutputPath);
 
             AddFilesToCache(imageOutputPath, spriteImageUrl, cssOutputPath, filesToWatch, files, foldersToWatch, directories);
 

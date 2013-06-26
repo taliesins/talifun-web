@@ -23,6 +23,7 @@ namespace Talifun.Web.Crusher
         private readonly IPathProvider _pathProvider;
         private readonly ICssCrusher _cssCrusher;
         private readonly IJsCrusher _jsCrusher;
+        private readonly IMetaData _fileMetaData;
 
         private CrusherManager()
         {
@@ -39,8 +40,10 @@ namespace Talifun.Web.Crusher
             var cssPathRewriter = new CssPathRewriter(cssAssetsFileHasher, _pathProvider);
 
             _cacheManager = new HttpCacheManager();
-            _cssCrusher = new CssCrusher(_cacheManager, _pathProvider, retryableFileOpener, retryableFileWriter, cssPathRewriter);
-            _jsCrusher = new JsCrusher(_cacheManager, _pathProvider, retryableFileOpener, retryableFileWriter);
+            _fileMetaData = new SingleFileMetaData(retryableFileOpener, retryableFileWriter);
+
+            _cssCrusher = new CssCrusher(_cacheManager, _pathProvider, retryableFileOpener, retryableFileWriter, cssPathRewriter, _fileMetaData, crusherConfiguration.WatchAssets);
+            _jsCrusher = new JsCrusher(_cacheManager, _pathProvider, retryableFileOpener, retryableFileWriter, _fileMetaData);
 
             InitManager();
         }

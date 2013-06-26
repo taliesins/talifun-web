@@ -25,19 +25,21 @@ namespace Talifun.Web.Crusher
         protected readonly IRetryableFileOpener RetryableFileOpener;
         protected readonly IRetryableFileWriter RetryableFileWriter;
         protected readonly ICssPathRewriter CssPathRewriter;
+        protected readonly IMetaData FileMetaData;
         protected static string CssCrusherType = typeof(CssCrusher).ToString();
-
 		protected readonly Pool<Yahoo.Yui.Compressor.CssCompressor> YahooYuiCssCompressorPool;
-
 		protected readonly Pool<Microsoft.Ajax.Utilities.Minifier> MicrosoftAjaxMinCssCompressorPool;
+        protected readonly bool WatchAssets = false;
 
-        public CssCrusher(ICacheManager cacheManager, IPathProvider pathProvider, IRetryableFileOpener retryableFileOpener, IRetryableFileWriter retryableFileWriter, ICssPathRewriter cssPathRewriter)
+        public CssCrusher(ICacheManager cacheManager, IPathProvider pathProvider, IRetryableFileOpener retryableFileOpener, IRetryableFileWriter retryableFileWriter, ICssPathRewriter cssPathRewriter, IMetaData fileMetaData, bool watchAssets)
         {
             CacheManager = cacheManager;
             PathProvider = pathProvider;
             RetryableFileOpener = retryableFileOpener;
             RetryableFileWriter = retryableFileWriter;
             CssPathRewriter = cssPathRewriter;
+            FileMetaData = fileMetaData;
+            WatchAssets = watchAssets;
             YahooYuiCssCompressorPool = new Pool<Yahoo.Yui.Compressor.CssCompressor>(64, pool => new Yahoo.Yui.Compressor.CssCompressor(), LoadingMode.LazyExpanding, AccessMode.Circular);
             MicrosoftAjaxMinCssCompressorPool = new Pool<Microsoft.Ajax.Utilities.Minifier>(64, pool => new Microsoft.Ajax.Utilities.Minifier(), LoadingMode.LazyExpanding, AccessMode.Circular);
         }
@@ -53,10 +55,7 @@ namespace Talifun.Web.Crusher
         {
             var outputFileInfo = new FileInfo(new Uri(PathProvider.MapPath(outputUri)).LocalPath);
             var crushedContent = ProcessGroup(outputFileInfo, outputUri, files, directories, appendHashToAssets);
-            
-            RetryableFileWriter.SaveContentsToFile(crushedContent.Output, outputFileInfo);
 			AddGroupToCache(outputUri, crushedContent.FilesToWatch, crushedContent.CssAssetFilePaths, files, crushedContent.FoldersToWatch, directories);
-
     	    return crushedContent;
         }
 
@@ -100,20 +99,54 @@ namespace Talifun.Web.Crusher
         /// <param name="appendHashToAssets"></param>
         public virtual CssCrushedOutput ProcessGroup(FileInfo outputFileInfo, Uri cssRootUri, IEnumerable<CssFile> files, IEnumerable<CssDirectory> directories, bool appendHashToAssets)
         {
-            var uncompressedContents = new StringBuilder();
-            var yahooYuiToBeCompressedContents = new StringBuilder();
-			var microsoftAjaxMintoBeCompressedContents = new StringBuilder();
-            var localCssAssetFilesThatExist = new List<FileInfo>();
-
     		var filesToWatch = GetFilesToWatch(files, directories);
 
             var filesToProcess = filesToWatch
                 .Select(cssFile => new CssFileProcessor(RetryableFileOpener, PathProvider, CssPathRewriter, cssFile.FilePath, cssFile.CompressionType, cssRootUri, appendHashToAssets));
 
+            var localCssAssetFilesThatExist = new List<FileInfo>();
+            if (WatchAssets)
+            {
+                localCssAssetFilesThatExist = filesToProcess
+                    .SelectMany(x => x.GetLocalCssAssetFilesThatExist().Select(y => y.File))
+                    .ToList();
+            }
+
+            var metaDataFiles = filesToWatch
+                .Select(x => new FileInfo(x.FilePath)).Concat(localCssAssetFilesThatExist)
+                .Distinct()
+                .OrderBy(x => x.FullName);
+
+            var isMetaDataFresh = FileMetaData.IsMetaDataFresh(outputFileInfo, metaDataFiles);
+
+            if (!isMetaDataFresh)
+            {
+                var content = GetGroupContent(filesToProcess);
+
+                RetryableFileWriter.SaveContentsToFile(content, outputFileInfo);
+
+                FileMetaData.CreateMetaData(outputFileInfo, metaDataFiles);
+            }
+
             var foldersToWatch = directories
-                .Select(x =>
-                    Talifun.FileWatcher.EnhancedFileSystemWatcherFactory.Instance
-                    .CreateEnhancedFileSystemWatcher(new Uri(PathProvider.MapPath(x.DirectoryPath)).LocalPath, x.IncludeFilter, x.ExcludeFilter, x.PollTime, x.IncludeSubDirectories));
+                .Select(x => Talifun.FileWatcher.EnhancedFileSystemWatcherFactory.Instance
+                .CreateEnhancedFileSystemWatcher(new Uri(PathProvider.MapPath(x.DirectoryPath)).LocalPath, x.IncludeFilter, x.ExcludeFilter, x.PollTime, x.IncludeSubDirectories));
+
+            var crushedOutput = new CssCrushedOutput
+            {
+				FilesToWatch = filesToWatch,
+                FoldersToWatch = foldersToWatch,
+                CssAssetFilePaths = localCssAssetFilesThatExist
+            };
+
+            return crushedOutput;
+        }
+
+        private StringBuilder GetGroupContent(IEnumerable<CssFileProcessor> filesToProcess)
+        {
+            var uncompressedContents = new StringBuilder();
+            var yahooYuiToBeCompressedContents = new StringBuilder();
+            var microsoftAjaxMintoBeCompressedContents = new StringBuilder();
 
             foreach (var fileToProcess in filesToProcess)
             {
@@ -125,50 +158,40 @@ namespace Talifun.Web.Crusher
                     case CssCompressionType.YahooYui:
                         yahooYuiToBeCompressedContents.AppendLine(fileToProcess.GetContents());
                         break;
-					case CssCompressionType.MicrosoftAjaxMin:
-						microsoftAjaxMintoBeCompressedContents.AppendLine(fileToProcess.GetContents());
-                		break;
+                    case CssCompressionType.MicrosoftAjaxMin:
+                        microsoftAjaxMintoBeCompressedContents.AppendLine(fileToProcess.GetContents());
+                        break;
                 }
-
-                var cssAssets = fileToProcess.GetLocalCssAssetFilesThatExist().Select(x=>x.File);
-                localCssAssetFilesThatExist.AddRange(cssAssets);
             }
 
-			if (yahooYuiToBeCompressedContents.Length > 0)
-			{
-			    var yahooYuiCssCompressor = YahooYuiCssCompressorPool.Acquire();
-				try
-				{
-				    uncompressedContents.Append(yahooYuiCssCompressor.Compress(yahooYuiToBeCompressedContents.ToString()));
-				}
-				finally
-				{
-				    YahooYuiCssCompressorPool.Release(yahooYuiCssCompressor);
-				}
-			}
-
-			if (microsoftAjaxMintoBeCompressedContents.Length > 0)
-			{
-			    var microsoftAjaxMinCssCompressor = MicrosoftAjaxMinCssCompressorPool.Acquire();
-				try
-				{
-				    uncompressedContents.Append(microsoftAjaxMinCssCompressor.MinifyStyleSheet(microsoftAjaxMintoBeCompressedContents.ToString()));
-				}
-				finally
-				{
-                    MicrosoftAjaxMinCssCompressorPool.Release(microsoftAjaxMinCssCompressor);
-				}
-			}
-
-            var crushedOutput = new CssCrushedOutput
+            if (yahooYuiToBeCompressedContents.Length > 0)
             {
-                Output = uncompressedContents,
-				FilesToWatch = filesToWatch,
-                FoldersToWatch = foldersToWatch,
-                CssAssetFilePaths = localCssAssetFilesThatExist
-            };
+                var yahooYuiCssCompressor = YahooYuiCssCompressorPool.Acquire();
+                try
+                {
+                    uncompressedContents.Append(
+                        yahooYuiCssCompressor.Compress(yahooYuiToBeCompressedContents.ToString()));
+                }
+                finally
+                {
+                    YahooYuiCssCompressorPool.Release(yahooYuiCssCompressor);
+                }
+            }
 
-            return crushedOutput;
+            if (microsoftAjaxMintoBeCompressedContents.Length > 0)
+            {
+                var microsoftAjaxMinCssCompressor = MicrosoftAjaxMinCssCompressorPool.Acquire();
+                try
+                {
+                    uncompressedContents.Append(
+                        microsoftAjaxMinCssCompressor.MinifyStyleSheet(microsoftAjaxMintoBeCompressedContents.ToString()));
+                }
+                finally
+                {
+                    MicrosoftAjaxMinCssCompressorPool.Release(microsoftAjaxMinCssCompressor);
+                }
+            }
+            return uncompressedContents;
         }
 
         /// <summary>

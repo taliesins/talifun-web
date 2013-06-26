@@ -56,8 +56,7 @@ namespace Talifun.Web.CssSprite
                         DirectoryPath = imageDirectory.DirectoryPath,
                         ExcludeFilter = imageDirectory.ExcludeFilter,
                         IncludeFilter = imageDirectory.IncludeFilter,
-                        IncludeSubDirectories =
-                            imageDirectory.IncludeSubDirectories,
+                        IncludeSubDirectories = imageDirectory.IncludeSubDirectories,
                         PollTime = imageDirectory.PollTime
                     })
                  .ToList();

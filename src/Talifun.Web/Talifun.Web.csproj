@@ -119,6 +119,7 @@
     <Compile Include="Crusher\CssModule\ICssModule.cs" />
     <Compile Include="Crusher\CssModule\RelativePathModule.cs" />
     <Compile Include="Crusher\ICssGroupsProcessor.cs" />
+    <Compile Include="Crusher\IMetaData.cs" />
     <Compile Include="Crusher\IJsGroupsProcessor.cs" />
     <Compile Include="Crusher\JsDirectory.cs" />
     <Compile Include="Crusher\CssDirectory.cs" />
@@ -130,6 +131,8 @@
     <Compile Include="Crusher\JsGroupsProcessor.cs" />
     <Compile Include="Crusher\JsGroupToProcess.cs" />
     <Compile Include="Crusher\JsModule\IJsModule.cs" />
+    <Compile Include="Crusher\MultiFileMetaData.cs" />
+    <Compile Include="Crusher\SingleFileMetaData.cs" />
     <Compile Include="CssSprite\Config\ImageDirectoryElement.cs" />
     <Compile Include="CssSprite\Config\ImageDirectoryElementCollection.cs" />
     <Compile Include="CssSprite\CssSpriteGroupToProcess.cs" />
