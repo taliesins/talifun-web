@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -19,11 +20,9 @@ namespace Talifun.Web.Crusher
         private readonly string _hashQueryStringKeyName;
         private readonly CssGroupElementCollection _cssGroups;
         private readonly JsGroupElementCollection _jsGroups;
-        private readonly ICacheManager _cacheManager;
         private readonly IPathProvider _pathProvider;
         private readonly ICssCrusher _cssCrusher;
         private readonly IJsCrusher _jsCrusher;
-        private readonly IMetaData _fileMetaData;
 
         private CrusherManager()
         {
@@ -39,11 +38,16 @@ namespace Talifun.Web.Crusher
             var cssAssetsFileHasher = new CssAssetsFileHasher(_hashQueryStringKeyName, hasher, _pathProvider);
             var cssPathRewriter = new CssPathRewriter(cssAssetsFileHasher, _pathProvider);
 
-            _cacheManager = new HttpCacheManager();
-            _fileMetaData = new SingleFileMetaData(retryableFileOpener, retryableFileWriter);
+            var cacheManager = new HttpCacheManager();
 
-            _cssCrusher = new CssCrusher(_cacheManager, _pathProvider, retryableFileOpener, retryableFileWriter, cssPathRewriter, _fileMetaData, crusherConfiguration.WatchAssets);
-            _jsCrusher = new JsCrusher(_cacheManager, _pathProvider, retryableFileOpener, retryableFileWriter, _fileMetaData);
+            var jsSpriteMetaDataFileInfo = new FileInfo("js.metadata");
+            var jsMetaData = new SingleFileMetaData(jsSpriteMetaDataFileInfo, retryableFileOpener, retryableFileWriter);
+
+            var cssSpriteMetaDataFileInfo = new FileInfo("css.metadata");
+            var cssMetaData = new SingleFileMetaData(cssSpriteMetaDataFileInfo, retryableFileOpener, retryableFileWriter);
+
+            _cssCrusher = new CssCrusher(cacheManager, _pathProvider, retryableFileOpener, retryableFileWriter, cssPathRewriter, cssMetaData, crusherConfiguration.WatchAssets);
+            _jsCrusher = new JsCrusher(cacheManager, _pathProvider, retryableFileOpener, retryableFileWriter, jsMetaData);
 
             InitManager();
         }

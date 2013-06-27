@@ -127,7 +127,15 @@ namespace Talifun.Crusher
 				var retryableFileWriter = new RetryableFileWriter(BufferSize, Encoding, retryableFileOpener, hasher);
 				var pathProvider = new PathProvider(applicationPath, physicalApplicationPath);
 				var cacheManager = new HttpCacheManager();
-        	    var fileMetaData = new SingleFileMetaData(retryableFileOpener, retryableFileWriter);
+
+                var cssSpriteSpriteMetaDataFileInfo = new FileInfo("cssSprite.metadata");
+                var cssSpriteMetaData = new SingleFileMetaData(cssSpriteSpriteMetaDataFileInfo, retryableFileOpener, retryableFileWriter);
+
+                var jsSpriteMetaDataFileInfo = new FileInfo("js.metadata");
+                var jsMetaData = new SingleFileMetaData(jsSpriteMetaDataFileInfo, retryableFileOpener, retryableFileWriter);
+
+                var cssSpriteMetaDataFileInfo = new FileInfo("css.metadata");
+                var cssMetaData = new SingleFileMetaData(cssSpriteMetaDataFileInfo, retryableFileOpener, retryableFileWriter);
 
         	    var jsOutput = string.Empty;
         	    var cssOutput = string.Empty;
@@ -146,7 +154,7 @@ namespace Talifun.Crusher
                         if (cssSpriteConfiguration != null)
                         {
                             var cssSpriteGroups = cssSpriteConfiguration.CssSpriteGroups;
-                            var cssSpriteCreator = new CssSpriteCreator(cacheManager, retryableFileOpener, pathProvider, retryableFileWriter, fileMetaData);
+                            var cssSpriteCreator = new CssSpriteCreator(cacheManager, retryableFileOpener, pathProvider, retryableFileWriter, cssSpriteMetaData);
                             var cssSpriteGroupsProcessor = new CssSpriteGroupsProcessor();
 
                             cssSpriteOutput = cssSpriteGroupsProcessor.ProcessGroups(pathProvider, cssSpriteCreator, cssSpriteGroups).ToString();
@@ -170,7 +178,7 @@ namespace Talifun.Crusher
                     {
                         if (crusherConfiguration != null)
                         {
-                            var jsCrusher = new JsCrusher(cacheManager, pathProvider, retryableFileOpener, retryableFileWriter, fileMetaData);
+                            var jsCrusher = new JsCrusher(cacheManager, pathProvider, retryableFileOpener, retryableFileWriter, jsMetaData);
                             var jsGroups = crusherConfiguration.JsGroups;
                             var jsGroupsProcessor = new JsGroupsProcessor();
 
@@ -195,7 +203,7 @@ namespace Talifun.Crusher
                             var hashQueryStringKeyName = crusherConfiguration.QuerystringKeyName;
                             var cssAssetsFileHasher = new CssAssetsFileHasher(hashQueryStringKeyName, hasher, pathProvider);
                             var cssPathRewriter = new CssPathRewriter(cssAssetsFileHasher, pathProvider);
-                            var cssCrusher = new CssCrusher(cacheManager, pathProvider, retryableFileOpener, retryableFileWriter, cssPathRewriter, fileMetaData, crusherConfiguration.WatchAssets);
+                            var cssCrusher = new CssCrusher(cacheManager, pathProvider, retryableFileOpener, retryableFileWriter, cssPathRewriter, cssMetaData, crusherConfiguration.WatchAssets);
                             var cssGroups = crusherConfiguration.CssGroups;
                             var cssGroupsCrusher = new CssGroupsProcessor();
                             cssOutput = cssGroupsCrusher.ProcessGroups(pathProvider, cssCrusher, cssGroups).ToString();

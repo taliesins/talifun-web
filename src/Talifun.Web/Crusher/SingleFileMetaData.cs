@@ -10,12 +10,12 @@ namespace Talifun.Web.Crusher
     public class SingleFileMetaData : IMetaData
     {
         private const int PollTime = 2000;
-        private const string MetaDataFileName = "MetaData.meta";
         private readonly Dictionary<string, string> _metaDataForFiles;
+        private readonly FileInfo _metaDataFile;
         private readonly IRetryableFileWriter _retryableFileWriter;
         private readonly System.Timers.Timer _timer;
 
-        public SingleFileMetaData(IRetryableFileOpener retryableFileOpener, IRetryableFileWriter retryableFileWriter)
+        public SingleFileMetaData(FileInfo metaDataFile, IRetryableFileOpener retryableFileOpener, IRetryableFileWriter retryableFileWriter)
         {
             _timer = new System.Timers.Timer();
             _timer.Elapsed += OnTimerElapsed;
@@ -23,14 +23,13 @@ namespace Talifun.Web.Crusher
             _timer.Enabled = false;
             _timer.AutoReset = false;
 
+            _metaDataFile = metaDataFile;
             _retryableFileWriter = retryableFileWriter;
-
-            var metaDataFile = new FileInfo(MetaDataFileName);
 
             if (metaDataFile.Exists)
             {
 
-                _metaDataForFiles = retryableFileOpener.ReadAllText(metaDataFile)
+                _metaDataForFiles = retryableFileOpener.ReadAllText(_metaDataFile)
                     .Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
                     .ToDictionary(k => k.Split(new[] { "|" }, StringSplitOptions.RemoveEmptyEntries)[0], v => v.Split(new[] { "|" }, StringSplitOptions.RemoveEmptyEntries)[1]);
             }
@@ -89,14 +88,12 @@ namespace Talifun.Web.Crusher
 
         public virtual void WriteMetaDataFiles()
         {
-            var metaDataFile = new FileInfo(MetaDataFileName);
-
             var metaDataForFiles = _metaDataForFiles
                 .Select(s => string.Format("{0}|{1}", s.Key, s.Value))
                 .Aggregate(new StringBuilder(), (ag, n) => ag.Append(Environment.NewLine).Append(n))
                 .ToString();
 
-            _retryableFileWriter.SaveContentsToFile(metaDataForFiles, metaDataFile);
+            _retryableFileWriter.SaveContentsToFile(metaDataForFiles, _metaDataFile);
 
         }
 

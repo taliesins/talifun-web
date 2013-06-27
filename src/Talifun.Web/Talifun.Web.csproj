@@ -132,6 +132,7 @@
     <Compile Include="Crusher\JsGroupToProcess.cs" />
     <Compile Include="Crusher\JsModule\IJsModule.cs" />
     <Compile Include="Crusher\MultiFileMetaData.cs" />
+    <Compile Include="Crusher\NullMetaData.cs" />
     <Compile Include="Crusher\SingleFileMetaData.cs" />
     <Compile Include="CssSprite\Config\ImageDirectoryElement.cs" />
     <Compile Include="CssSprite\Config\ImageDirectoryElementCollection.cs" />

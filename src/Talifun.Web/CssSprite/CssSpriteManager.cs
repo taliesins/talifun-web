@@ -19,10 +19,9 @@ namespace Talifun.Web.CssSprite
         private const int BufferSize = 32768;
 		private readonly Encoding _encoding = Encoding.UTF8;
         private readonly CssSpriteGroupElementCollection _cssSpriteGroups = CurrentCssSpriteConfiguration.Current.CssSpriteGroups;
-        private readonly ICacheManager _cacheManager;
         private readonly ICssSpriteCreator _cssSpriteCreator;
         private readonly IPathProvider _pathProvider;
-        private readonly IMetaData _fileMetaData;
+        private readonly IMetaData _cssSpriteMetaData;
     	
         private CssSpriteManager()
         {
@@ -30,10 +29,11 @@ namespace Talifun.Web.CssSprite
             var hasher = new Hasher(retryableFileOpener);
 			var retryableFileWriter = new RetryableFileWriter(BufferSize, _encoding, retryableFileOpener, hasher);
 
-            _cacheManager = new HttpCacheManager();
+            var cacheManager = new HttpCacheManager();
 			_pathProvider = new PathProvider();
-            _fileMetaData = new SingleFileMetaData(retryableFileOpener, retryableFileWriter);
-			_cssSpriteCreator = new CssSpriteCreator(_cacheManager, retryableFileOpener, _pathProvider, retryableFileWriter, _fileMetaData);
+            var cssSpriteMetaDataFileInfo = new FileInfo("cssSprite.metadata");
+            _cssSpriteMetaData = new SingleFileMetaData(cssSpriteMetaDataFileInfo, retryableFileOpener, retryableFileWriter);
+			_cssSpriteCreator = new CssSpriteCreator(cacheManager, retryableFileOpener, _pathProvider, retryableFileWriter, _cssSpriteMetaData);
             
             InitManager();
         }
