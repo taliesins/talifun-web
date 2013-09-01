@@ -128,7 +128,7 @@ namespace Talifun.Web.StaticFile
                     case EtagMethodType.MD5:
                         using (var resourceStream = _assembly.GetManifestResourceStream(ResourcePath))
                         {
-                            etag = Hasher.CalculateMd5Etag(resourceStream);
+                            etag = Hasher.Hash(resourceStream);
                         }
                         break;
                     case EtagMethodType.LastModified:

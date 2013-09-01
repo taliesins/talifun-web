@@ -25,7 +25,7 @@ namespace Talifun.Web.StaticFile
             _cacheManager = new HttpCacheManager();
             _retryableFileOpener = new RetryableFileOpener();
             _mimeTyper = new MimeTyper(_cacheManager);
-            _hasher = new Hasher(_retryableFileOpener);
+            _hasher = new Md5Hasher(_retryableFileOpener);
             _httpRequestHeaderHelper = new HttpRequestHeaderHelper();
             _mimeSettingProvider = new MimeSettingProvider();
         }

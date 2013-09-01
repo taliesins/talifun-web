@@ -123,7 +123,7 @@ namespace Talifun.Crusher
                 var physicalApplicationPath = new FileInfo(configUri.LocalPath).DirectoryName;
 
 				var retryableFileOpener = new RetryableFileOpener();
-				var hasher = new Hasher(retryableFileOpener);
+				var hasher = new Md5Hasher(retryableFileOpener);
 				var retryableFileWriter = new RetryableFileWriter(BufferSize, Encoding, retryableFileOpener, hasher);
 				var pathProvider = new PathProvider(applicationPath, physicalApplicationPath);
 				var cacheManager = new HttpCacheManager();

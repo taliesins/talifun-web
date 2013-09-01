@@ -27,7 +27,7 @@ namespace Talifun.Web.CssSprite
         private CssSpriteManager()
         {
             var retryableFileOpener = new RetryableFileOpener();
-            var hasher = new Hasher(retryableFileOpener);
+            var hasher = new Md5Hasher(retryableFileOpener);
 			var retryableFileWriter = new RetryableFileWriter(BufferSize, _encoding, retryableFileOpener, hasher);
 
             _cacheManager = new HttpCacheManager();

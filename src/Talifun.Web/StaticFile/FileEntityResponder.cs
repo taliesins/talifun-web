@@ -108,7 +108,7 @@ namespace Talifun.Web.StaticFile
                 switch (MimeSetting.EtagMethod)
                 {
                     case EtagMethodType.MD5:
-                        etag = Hasher.CalculateMd5Etag(FileInfo);
+                        etag = Hasher.Hash(FileInfo);
                         break;
                     case EtagMethodType.LastModified:
                         etag = lastModified.ToString();

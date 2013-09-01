@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-#if NET35
-using System.Collections.ObjectModel;
-using Iesi.Collections.Generic;
-#endif
 
 namespace Talifun.Web
 {
@@ -132,13 +128,5 @@ namespace Talifun.Web
         }
     }
 
-#if NET35
-    public static class SetExtensions
-    {
-        public static bool SetEquals<T>(this Iesi.Collections.Generic.ISet<T> set, IEnumerable<T> otherSet)
-        {
-            return set.ContainsAll(new Collection<T>(new List<T>(otherSet)));
-        }
-    }
-#endif
+
 }

@@ -66,7 +66,7 @@ namespace Talifun.Web.MsBuild
             _logError = logError;
 
             _retryableFileOpener = new RetryableFileOpener();
-            _hasher = new Hasher(_retryableFileOpener);
+            _hasher = new Md5Hasher(_retryableFileOpener);
             _retryableFileWriter = new RetryableFileWriter(BufferSize, Encoding, _retryableFileOpener, _hasher);
             _fileMetaData = new MultiFileMetaData(_retryableFileOpener, _retryableFileWriter);
 

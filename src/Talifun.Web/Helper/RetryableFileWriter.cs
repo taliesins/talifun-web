@@ -65,8 +65,8 @@ namespace Talifun.Web.Helper
                 var overwrite = true;
                 if (outputFile.Length > 0)
                 {
-                    etag = Hasher.CalculateMd5Etag(outputStream);
-                    var outputFileHash = Hasher.CalculateMd5Etag(outputFile);
+                    etag = Hasher.Hash(outputStream);
+                    var outputFileHash = Hasher.Hash(outputFile);
 
                     overwrite = (etag != outputFileHash);
                 }

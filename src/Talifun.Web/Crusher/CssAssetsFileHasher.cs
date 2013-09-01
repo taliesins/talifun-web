@@ -28,7 +28,7 @@ namespace Talifun.Web.Crusher
                 return url;
             }
 
-            var hash = Hasher.CalculateMd5Etag(fileInfo);
+            var hash = Hasher.Hash(fileInfo);
             url = AppendQueryStringPairValue(url, HashQueryStringKeyName, hash);
             return url;
         }

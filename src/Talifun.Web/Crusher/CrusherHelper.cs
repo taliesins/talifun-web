@@ -33,7 +33,7 @@ namespace Talifun.Web.Crusher
             CssGroups = CurrentCrusherConfiguration.Current.CssGroups;
             JsGroups = CurrentCrusherConfiguration.Current.JsGroups;
             RetryableFileOpener = new RetryableFileOpener();
-            Hasher = new Hasher(RetryableFileOpener);
+            Hasher = new Md5Hasher(RetryableFileOpener);
         }
 
         private static CrusherHelper Instance
@@ -87,7 +87,7 @@ namespace Talifun.Web.Crusher
                 if (!cssGroup.Debug)
                 {
                     var fileInfo = new FileInfo(new Uri(MapPath(outputFilePath)).LocalPath);
-                    var etag = Hasher.CalculateMd5Etag(fileInfo);
+                    var etag = Hasher.Hash(fileInfo);
 					var url = cssGroup.Url;
 
 					if (string.IsNullOrEmpty(url))
@@ -121,7 +121,7 @@ namespace Talifun.Web.Crusher
 
                     foreach (var fileInfo in files)
                     {
-                        var etag = Hasher.CalculateMd5Etag(fileInfo);
+                        var etag = Hasher.Hash(fileInfo);
                         var url = this.ResolveUrl(ToRelative(fileInfo.FullName).ToString());
 
                         var fileName = fileInfo.Name.ToLower();
@@ -163,7 +163,7 @@ namespace Talifun.Web.Crusher
                 if (!jsGroup.Debug)
                 {
                     var fileInfo = new FileInfo(new Uri(MapPath(outputFilePath)).LocalPath);
-                    var etag = Hasher.CalculateMd5Etag(fileInfo);
+                    var etag = Hasher.Hash(fileInfo);
                     var url = string.IsNullOrEmpty(jsGroup.Url) ? this.ResolveUrl(outputFilePath) : jsGroup.Url;
 
 					if (string.IsNullOrEmpty(url))
@@ -206,7 +206,7 @@ namespace Talifun.Web.Crusher
 
                     foreach (var fileInfo in files)
                     {
-                        var etag = Hasher.CalculateMd5Etag(fileInfo);
+                        var etag = Hasher.Hash(fileInfo);
                         var url = this.ResolveUrl(ToRelative(fileInfo.FullName).ToString());
 
                         scriptLinksBuilder.Append("<script language=\"javascript\" type=\"text/javascript\" src=\"" + url + "?" + QuerystringKeyName + "=" + etag + "\"></script>");

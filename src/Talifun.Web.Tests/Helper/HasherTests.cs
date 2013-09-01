@@ -5,13 +5,13 @@ using Rhino.Mocks;
 
 namespace Talifun.Web.Tests.Helper
 {
-    public abstract class HasherTests : BehaviourTest<Hasher>
+    public abstract class HasherTests : BehaviourTest<Md5Hasher>
     {
         protected IRetryableFileOpener RetryableFileOpener = MockRepository.GenerateMock<IRetryableFileOpener>();
 
-        protected override Hasher CreateSystemUnderTest()
+        protected override Md5Hasher CreateSystemUnderTest()
         {
-            return new Hasher(RetryableFileOpener);
+            return new Md5Hasher(RetryableFileOpener);
         }
     }
 
@@ -42,7 +42,7 @@ namespace Talifun.Web.Tests.Helper
     {
         protected override void When()
         {
-            Hash = SystemUnderTest.CalculateMd5Etag(Stream);
+            Hash = SystemUnderTest.Hash(Stream);
         }
     }
 
@@ -61,7 +61,7 @@ namespace Talifun.Web.Tests.Helper
 
         protected override void When()
         {
-            Hash = SystemUnderTest.CalculateMd5Etag(Stream, StartPosition, EndPosition);
+            Hash = SystemUnderTest.Hash(Stream, StartPosition, EndPosition);
         }
     }
 
@@ -86,7 +86,7 @@ namespace Talifun.Web.Tests.Helper
 
         protected override void When()
         {
-            Hash = SystemUnderTest.CalculateMd5Etag(FileToHash);
+            Hash = SystemUnderTest.Hash(FileToHash);
         }
     }
 }

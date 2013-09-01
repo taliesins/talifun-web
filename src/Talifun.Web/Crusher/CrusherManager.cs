@@ -33,7 +33,7 @@ namespace Talifun.Web.Crusher
             _jsGroups = crusherConfiguration.JsGroups;
 
             var retryableFileOpener = new RetryableFileOpener();
-            var hasher = new Hasher(retryableFileOpener);
+            var hasher = new Md5Hasher(retryableFileOpener);
 			var retryableFileWriter = new RetryableFileWriter(BufferSize, _encoding, retryableFileOpener, hasher);
             _pathProvider = new PathProvider();
             var cssAssetsFileHasher = new CssAssetsFileHasher(_hashQueryStringKeyName, hasher, _pathProvider);
