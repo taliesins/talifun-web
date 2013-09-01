@@ -2,7 +2,7 @@
 using System;
 using System.Threading;
 
-namespace Talifun.Web.Helper
+namespace Talifun.Web
 {
     /// <summary>
     /// Represents a synchronization primitive that is signaled when its count reaches zero.
