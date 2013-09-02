@@ -30,17 +30,6 @@ Write-Output "Create-IlmergePackage"
   Assert (![string]::IsNullOrEmpty($ilmerge.file) -and (Test-Path($ilmerge.file))) "The location of the ilmerge exe must be specified."
   Assert (Test-Path($ilmerge.file)) "Could not find ilmerge exe"
 
-  if ($ilmerge.targets.length -lt 1)
-  {
-    $talifunweb = ($solution.name -replace "-", ".") + ".dll"
-    $talifunwebAssemblies = @("Talifun.Web.dll", "Talifun.FileWatcher.dll","AjaxMin.dll", "dotless.ClientOnly.dll", "EcmaScript.NET.dll", "Iesi.Collections.dll", "Yahoo.Yui.Compressor.dll")
-    $ilmerge.targets["$talifunweb"] = @(Get-ChildItem -path "$($build.dir)\*.dll" | Where-Object {$talifunwebAssemblies -contains $_.Name} | Select-Object $_.FullName)
-
-    #$talifunwebmsbuild = "Talifun.Crusher.MsBuild.dll"
-    #$talifunwebmsbuildAssemblies = @("Talifun.Crusher.MsBuild.dll","Talifun.Web.dll", "Talifun.FileWatcher.dll","AjaxMin.dll", "dotless.ClientOnly.dll", "EcmaScript.NET.dll", "Iesi.Collections.dll", "Yahoo.Yui.Compressor.dll")
-    #$ilmerge.targets["$talifunwebmsbuild"] = @(Get-ChildItem -path "$($build.dir)\*.dll" | Where-Object {$talifunwebmsbuildAssemblies -contains $_.Name} | Select-Object $_.FullName)    
-  }
-
   $temp_directory = $ilmerge.directory+"\merged"
 
   if(!(Test-Path($temp_directory))) 

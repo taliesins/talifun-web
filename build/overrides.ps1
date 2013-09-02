@@ -10,4 +10,16 @@
 
 properties {
   Write-Output "Loading override settings"
+
+  $solution.name = "Talifun-Web"
+
+
+    $talifunweb = ($solution.name -replace "-", ".") + ".dll"
+    $talifunwebAssemblies = @("Talifun.Web.dll", "Talifun.FileWatcher.dll","AjaxMin.dll", "dotless.ClientOnly.dll", "EcmaScript.NET.dll", "Iesi.Collections.dll", "Yahoo.Yui.Compressor.dll")
+    $ilmerge.targets["$talifunweb"] = @(Get-ChildItem -path "$($build.dir)\*.dll" | Where-Object {$talifunwebAssemblies -contains $_.Name} | Select-Object $_.FullName)
+
+    #$talifunwebmsbuild = "Talifun.Crusher.MsBuild.dll"
+    #$talifunwebmsbuildAssemblies = @("Talifun.Crusher.MsBuild.dll","Talifun.Web.dll", "Talifun.FileWatcher.dll","AjaxMin.dll", "dotless.ClientOnly.dll", "EcmaScript.NET.dll", "Iesi.Collections.dll", "Yahoo.Yui.Compressor.dll")
+    #$ilmerge.targets["$talifunwebmsbuild"] = @(Get-ChildItem -path "$($build.dir)\*.dll" | Where-Object {$talifunwebmsbuildAssemblies -contains $_.Name} | Select-Object $_.FullName)    
+
 }
