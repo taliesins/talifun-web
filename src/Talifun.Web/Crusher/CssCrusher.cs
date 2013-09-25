@@ -51,7 +51,7 @@ namespace Talifun.Web.Crusher
         /// <param name="files">The css files to be crushed.</param>
         /// <param name="directories"> </param>
         /// <param name="appendHashToAssets">Should css assets have a hash appended to them.</param>
-        public virtual CssCrushedOutput CreateGroup(Uri outputUri, IEnumerable<CssFile> files, IEnumerable<CssDirectory> directories, bool appendHashToAssets)
+        public virtual CssCrushedOutput AddGroup(Uri outputUri, IEnumerable<CssFile> files, IEnumerable<CssDirectory> directories, bool appendHashToAssets)
         {
             var outputFileInfo = new FileInfo(new Uri(PathProvider.MapPath(outputUri)).LocalPath);
             var crushedContent = ProcessGroup(outputFileInfo, outputUri, files, directories, appendHashToAssets);
@@ -282,7 +282,7 @@ namespace Talifun.Web.Crusher
             switch (reason)
             {
                 case CacheItemRemovedReason.DependencyChanged:
-                    CreateGroup(cacheItem.OutputUri, cacheItem.Files, cacheItem.Directories, cacheItem.AppendHashToAssets);
+                    AddGroup(cacheItem.OutputUri, cacheItem.Files, cacheItem.Directories, cacheItem.AppendHashToAssets);
                     break;
                 case CacheItemRemovedReason.Underused:
                 case CacheItemRemovedReason.Expired:

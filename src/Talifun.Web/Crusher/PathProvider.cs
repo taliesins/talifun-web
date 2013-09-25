@@ -192,6 +192,49 @@ namespace Talifun.Web.Crusher
         }
 
         /// <summary>
+        /// Get the relative uri for a file
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        public virtual Uri ToRelative(FileInfo file)
+        {
+            var physicalApplicationPath = GetPhysicalApplicationPath();
+            var physicalFilePath = file.FullName;
+
+            if (!physicalFilePath.StartsWith(physicalApplicationPath))
+            {
+                throw new Exception("Can't convert to relative as file is not under physical application path");
+            }
+
+            var relativeUrl = physicalFilePath.Substring(physicalApplicationPath.Length).Replace('\\', '/');
+
+            return ToRelative(relativeUrl);
+        }
+
+        /// <summary>
+        /// Get the relative uri for a file
+        /// </summary>
+        /// <param name="rootPathUri"></param>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        public Uri MakeRelativeUri(Uri rootPathUri, FileInfo file)
+        {
+            if (!rootPathUri.IsAbsoluteUri)
+            {
+                rootPathUri = new Uri(MapPath(rootPathUri));
+            }
+
+            var relativePath = ToRelative(file);
+            var absoluteUri = relativePath.IsAbsoluteUri
+                      ? relativePath
+                      : new Uri(MapPath(GetAbsoluteUriDirectory(rootPathUri), relativePath));
+
+            var relativeUri = rootPathUri.MakeRelativeUri(absoluteUri);
+
+            return relativeUri;
+        }
+
+        /// <summary>
         /// Get the absolute application path
         /// </summary>
         /// <returns></returns>

@@ -7,16 +7,18 @@ namespace Talifun.Web
 {
     public class TransmitEntityStrategyForEmbeddedResource : ITransmitEntityStrategy
     {
+        private readonly IEmbeddedResourceLoader _embeddedResourceLoader;
         public IEntity Entity { get; private set; }
         protected readonly Assembly Assembly;
         protected readonly string ResourcePath;
         protected readonly int BufferSize;
 
-        public TransmitEntityStrategyForEmbeddedResource(IEntity entity, Assembly assembly, string resourcePath, int bufferSize)
+        public TransmitEntityStrategyForEmbeddedResource(IEmbeddedResourceLoader embeddedResourceLoader, IEntity entity, Assembly assembly, string resourcePath, int bufferSize)
         {
             Entity = entity;
+            _embeddedResourceLoader = embeddedResourceLoader;
             Assembly = assembly;
-            ResourcePath = string.Format("{0}.{1}", assembly.GetName().Name, resourcePath.Replace("/", "."));
+            ResourcePath = resourcePath;
             BufferSize = bufferSize;
         }
 
@@ -45,15 +47,7 @@ namespace Talifun.Web
         /// <param name="assembly"> </param>
         public virtual void TransmitFile(HttpResponseBase response, Assembly assembly, string resourcePath, int bufferSize)
         {
-            using (var stream = assembly.GetManifestResourceStream(resourcePath))
-            {
-                var buffer = new byte[bufferSize];
-                var readCount = 0;
-                while ((readCount = stream.Read(buffer, 0, bufferSize)) > 0)
-                {
-                    response.OutputStream.Write(buffer, 0, readCount);
-                }
-            }
+            _embeddedResourceLoader.LoadEmbeddedResource(response.OutputStream, assembly, resourcePath, bufferSize);
         }
 
         /// <summary>
@@ -67,22 +61,7 @@ namespace Talifun.Web
         /// <param name="assembly"> </param>
         public virtual void TransmitFile(HttpResponseBase response, Assembly assembly, string resourcePath, long bufferSize, long offset, long length)
         {
-            using (var stream = assembly.GetManifestResourceStream(resourcePath))
-            {
-                stream.Seek(offset, SeekOrigin.Begin);
-
-                var buffer = new byte[bufferSize];
-                while (length > 0)
-                {
-                    var lengthOfReadChunk = stream.Read(buffer, 0, (int)Math.Min(bufferSize, length));
-
-                    // Write the data to the current output stream.
-                    response.OutputStream.Write(buffer, 0, lengthOfReadChunk);
-
-                    // Reduce BytesToRead
-                    length -= lengthOfReadChunk;
-                }
-            }
+            _embeddedResourceLoader.LoadEmbeddedResource(response.OutputStream, assembly, resourcePath, (int)bufferSize, offset, length);
         }
         #endregion
     }

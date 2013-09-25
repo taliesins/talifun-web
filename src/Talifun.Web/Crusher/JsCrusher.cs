@@ -7,8 +7,10 @@ using System.Text.RegularExpressions;
 using System.Web.Caching;
 using Microsoft.Ajax.Utilities;
 using Talifun.FileWatcher;
+using Talifun.Web.Coffee;
 using Talifun.Web.Helper;
 using Talifun.Web.Helper.Pooling;
+using Talifun.Web.Hogan;
 using Yahoo.Yui.Compressor;
 
 namespace Talifun.Web.Crusher
@@ -26,6 +28,9 @@ namespace Talifun.Web.Crusher
 
         protected readonly Pool<Yahoo.Yui.Compressor.JavaScriptCompressor> YahooYuiJavaScriptCompressorPool;
         protected readonly Pool<Microsoft.Ajax.Utilities.Minifier> MicrosoftAjaxMinJavaScriptCompressorPool;
+
+        protected readonly Pool<Coffee.CoffeeCompiler> CoffeeCompilerPool;
+        protected readonly Pool<Hogan.HoganCompiler> HoganCompilerPool;
         
         protected static string JsCrusherType = typeof(JsCrusher).ToString();
 
@@ -38,6 +43,8 @@ namespace Talifun.Web.Crusher
             FileMetaData = fileMetaData;
             YahooYuiJavaScriptCompressorPool = new Pool<JavaScriptCompressor>(64, pool => new JavaScriptCompressor(), LoadingMode.LazyExpanding, AccessMode.Circular);
             MicrosoftAjaxMinJavaScriptCompressorPool = new Pool<Minifier>(64, pool => new Minifier(), LoadingMode.LazyExpanding, AccessMode.Circular);
+            CoffeeCompilerPool = new Pool<CoffeeCompiler>(4, pool => new CoffeeCompiler(new EmbeddedResourceLoader()), LoadingMode.LazyExpanding, AccessMode.Circular);
+            HoganCompilerPool = new Pool<HoganCompiler>(4, pool => new HoganCompiler(new EmbeddedResourceLoader()), LoadingMode.LazyExpanding, AccessMode.Circular);
         }
 
     	/// <summary>
@@ -49,7 +56,7 @@ namespace Talifun.Web.Crusher
     	public virtual JsCrushedOutput AddGroup(Uri outputUri, IEnumerable<JsFile> files, IEnumerable<JsDirectory> directories)
         {
             var outputFileInfo = new FileInfo(new Uri(PathProvider.MapPath(outputUri)).LocalPath);
-			var crushedContent = ProcessGroup(outputFileInfo, files, directories);            
+			var crushedContent = ProcessGroup(outputFileInfo, outputUri, files, directories);            
             AddGroupToCache(outputUri, crushedContent.FilesToWatch, files, crushedContent.FoldersToWatch, directories);
     	    return crushedContent;
         }
@@ -82,13 +89,14 @@ namespace Talifun.Web.Crusher
             return filesInDirectoriesToWatch.Concat(filesToWatch).Distinct(new JsFileToWatchEqualityComparer());
 		}
 
-    	/// <summary>
-    	/// Compress the js files and store them in the specified js file.
-    	/// </summary>
-    	/// <param name="outputFileInfo">The output path for the crushed js file.</param>
-    	/// <param name="files">The js files to be crushed.</param>
-    	/// <param name="directories"> </param>
-    	public virtual JsCrushedOutput ProcessGroup(FileInfo outputFileInfo, IEnumerable<JsFile> files, IEnumerable<JsDirectory> directories)
+        /// <summary>
+        /// Compress the js files and store them in the specified js file.
+        /// </summary>
+        /// <param name="outputFileInfo">The output path for the crushed js file.</param>
+        /// <param name="jsRootUri"></param>
+        /// <param name="files">The js files to be crushed.</param>
+        /// <param name="directories"> </param>
+        public virtual JsCrushedOutput ProcessGroup(FileInfo outputFileInfo, Uri jsRootUri, IEnumerable<JsFile> files, IEnumerable<JsDirectory> directories)
         {
     		var filesToWatch = GetFilesToWatch(files, directories);
 
@@ -98,7 +106,10 @@ namespace Talifun.Web.Crusher
 
     	    if (!isMetaDataFresh)
     	    {
-                var content = GetGroupContent(filesToWatch);
+                var filesToProcess = filesToWatch
+                    .Select(jsFile => new JsFileProcessor(CoffeeCompilerPool, HoganCompilerPool, RetryableFileOpener, PathProvider, jsFile.FilePath, jsFile.CompressionType, jsRootUri));
+
+                var content = GetGroupContent(filesToProcess);
 
     	        RetryableFileWriter.SaveContentsToFile(content, outputFileInfo);
 
@@ -118,11 +129,8 @@ namespace Talifun.Web.Crusher
             return crushedOutput;
         }
 
-        private StringBuilder GetGroupContent(IEnumerable<JsFileToWatch> filesToWatch)
+        private StringBuilder GetGroupContent(IEnumerable<JsFileProcessor> filesToProcess)
         {
-            var filesToProcess = filesToWatch
-                .Select(jsFile => new JsFileProcessor(RetryableFileOpener, PathProvider, jsFile.FilePath, jsFile.CompressionType));
-
             var uncompressedContents = new StringBuilder();
             var yahooYuiToBeCompressedContents = new StringBuilder();
             var microsoftAjaxMinToBeCompressedContents = new StringBuilder();

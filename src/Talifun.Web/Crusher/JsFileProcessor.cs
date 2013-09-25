@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using Talifun.Web.Coffee;
 using Talifun.Web.Crusher.JsModule;
+using Talifun.Web.Helper.Pooling;
+using Talifun.Web.Hogan;
 
 namespace Talifun.Web.Crusher
 {
@@ -11,16 +14,22 @@ namespace Talifun.Web.Crusher
         private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
         private readonly IRetryableFileOpener _retryableFileOpener;
         private readonly IPathProvider _pathProvider;
+        private readonly Uri _jsRootUri;
         private readonly FileInfo _fileInfo;
         private readonly List<IJsModule> _modules;
 
-        public JsFileProcessor(IRetryableFileOpener retryableFileOpener, IPathProvider pathProvider, string filePath, JsCompressionType compressionType)
+        public JsFileProcessor(Pool<Coffee.CoffeeCompiler> coffeeCompilerPool, Pool<Hogan.HoganCompiler> hoganCompilerPool, IRetryableFileOpener retryableFileOpener, IPathProvider pathProvider, string filePath, JsCompressionType compressionType, Uri jsRootUri)
         {
             _retryableFileOpener = retryableFileOpener;
             _pathProvider = pathProvider;
+            _jsRootUri = jsRootUri;
             CompressionType = compressionType;
             _fileInfo = new FileInfo(new Uri(_pathProvider.MapPath(filePath)).LocalPath);
-            _modules = new List<IJsModule>();
+            _modules = new List<IJsModule>()
+            {
+                new HoganModule(pathProvider, hoganCompilerPool),
+                new CoffeeModule(coffeeCompilerPool)
+            };
         }
 
         public JsCompressionType CompressionType { get; protected set; }
@@ -40,7 +49,7 @@ namespace Talifun.Web.Crusher
 
                         foreach (var module in _modules)
                         {
-                            _contents = module.Process(_fileInfo, _contents);
+                            _contents = module.Process(_jsRootUri, _fileInfo, _contents);
                         }
                     }
                     finally

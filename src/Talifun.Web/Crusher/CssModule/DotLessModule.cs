@@ -1,18 +1,20 @@
 ﻿using System;
+using System.Linq;
 
 namespace Talifun.Web.Crusher.CssModule
 {
     public class DotLessModule : ICssModule
     {
+        private readonly string[] _lessExtensions = { ".less", ".less.js" }; 
+
         public string Process(Uri cssRootPathUri, System.IO.FileInfo file, string fileContents)
         {
-            var fileName = file.Name.ToLower();
-            if (fileName.EndsWith(".less") || fileName.EndsWith(".less.css"))
+            if (!_lessExtensions.Contains(file.Extension.ToLower()))
             {
-                return dotless.Core.Less.Parse(fileContents);
+                return fileContents;
             }
-
-            return fileContents;
+                
+            return dotless.Core.Less.Parse(fileContents);
         }
     }
 }

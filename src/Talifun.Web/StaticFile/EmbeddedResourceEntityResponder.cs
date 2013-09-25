@@ -13,6 +13,7 @@ namespace Talifun.Web.StaticFile
         protected readonly ICacheManager CacheManager;
         protected readonly IMimeTyper MimeTyper;
         protected readonly IHasher Hasher;
+        protected readonly IEmbeddedResourceLoader EmbeddedResourceLoader;
         private readonly Assembly _assembly;
         private readonly string _resourcePath;
         protected readonly MimeSetting MimeSetting;
@@ -23,7 +24,7 @@ namespace Talifun.Web.StaticFile
         protected readonly string ResourceExtension;
         protected readonly DateTime ResourceLastModified;
 
-        public EmbeddedResourceEntityResponder(ICacheManager cacheManager, IMimeTyper mimeTyper, IHasher hasher, long maxFileSizeToServe, int bufferSize, MimeSettingProvider mimeSettingProvider, Assembly assembly, string resourcePath)
+        public EmbeddedResourceEntityResponder(ICacheManager cacheManager, IMimeTyper mimeTyper, IHasher hasher, IEmbeddedResourceLoader embeddedResourceLoader, long maxFileSizeToServe, int bufferSize, MimeSettingProvider mimeSettingProvider, Assembly assembly, string resourcePath)
         {
             _assembly = assembly;
             _resourcePath = resourcePath;
@@ -49,6 +50,7 @@ namespace Talifun.Web.StaticFile
             BufferSize = bufferSize;
             MaxFileSizeToServe = maxFileSizeToServe;
             Hasher = hasher;
+            EmbeddedResourceLoader = embeddedResourceLoader;
             MimeTyper = mimeTyper;
             CacheManager = cacheManager;
         }
@@ -71,7 +73,7 @@ namespace Talifun.Web.StaticFile
             if (entityCacheItem.EntityData == null)
             {
                 //We will serve the embedded resource
-                return new TransmitEntityStrategyForEmbeddedResource(entityCacheItem, _assembly, _resourcePath, BufferSize);
+                return new TransmitEntityStrategyForEmbeddedResource(EmbeddedResourceLoader, entityCacheItem, _assembly, _resourcePath, BufferSize);
             }
             else
             {

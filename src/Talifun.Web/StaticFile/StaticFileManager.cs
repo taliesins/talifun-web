@@ -14,6 +14,7 @@ namespace Talifun.Web.StaticFile
         private readonly IRetryableFileOpener _retryableFileOpener;
         private readonly IMimeTyper _mimeTyper;
         private readonly IHasher _hasher;
+        private readonly IEmbeddedResourceLoader _embeddedResourceLoader;
         private readonly IHttpRequestHeaderHelper _httpRequestHeaderHelper;
         private readonly MimeSettingProvider _mimeSettingProvider;
         private IHttpResponseHeaderHelper _httpResponseHeaderHelper;
@@ -26,6 +27,7 @@ namespace Talifun.Web.StaticFile
             _retryableFileOpener = new RetryableFileOpener();
             _mimeTyper = new MimeTyper(_cacheManager);
             _hasher = new Md5Hasher(_retryableFileOpener);
+            _embeddedResourceLoader = new EmbeddedResourceLoader();
             _httpRequestHeaderHelper = new HttpRequestHeaderHelper();
             _mimeSettingProvider = new MimeSettingProvider();
         }
@@ -87,7 +89,7 @@ namespace Talifun.Web.StaticFile
 
         public void ProcessRequest(HttpContextBase context, Assembly assembly, string resourcePath)
         {
-            var fileEntity = new EmbeddedResourceEntityResponder(_cacheManager, _mimeTyper, _hasher, MaxFileSizeToServe, BufferSize, _mimeSettingProvider, assembly, resourcePath);
+            var fileEntity = new EmbeddedResourceEntityResponder(_cacheManager, _mimeTyper, _hasher, _embeddedResourceLoader, MaxFileSizeToServe, BufferSize, _mimeSettingProvider, assembly, resourcePath);
             ProcessRequest(context, fileEntity);
         }
 

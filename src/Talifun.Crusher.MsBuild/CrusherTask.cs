@@ -73,7 +73,6 @@ namespace Talifun.Crusher.MsBuild
             return true;
         }
 
-
         public IBuildEngine BuildEngine { get; set; }
         public ITaskHost HostObject { get; set; }
 

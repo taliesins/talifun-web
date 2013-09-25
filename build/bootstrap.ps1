@@ -18,7 +18,9 @@ function script:BootStrap-Chewie {
   if(!(test-path $pwd\.NugetFile)) {
     new-item -path $pwd -name .NugetFile -itemtype file
     add-content $pwd\.NugetFile "install_to '.'"
-    add-content $pwd\.NugetFile "chew 'psake' '4.1.0'"
+    add-content $pwd\.NugetFile "chew 'psake' '4.2.0.1'"
+    add-content $pwd\.NugetFile "chew 'NUnit.Runners' '2.6.2'"
+    #add-content $pwd\.NugetFile "chew 'xunit.runners' '1.9.2'"
   }
 }
 

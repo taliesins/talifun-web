@@ -58,7 +58,7 @@ namespace Talifun.Web.Crusher
                 .ToList();
 
             var outputUri = new Uri(cssGroupToProcess.PathProvider.ToAbsolute(cssGroupToProcess.Group.OutputFilePath), UriKind.Relative);
-            var output = cssGroupToProcess.Crusher.CreateGroup(outputUri, files, directories, cssGroupToProcess.Group.AppendHashToCssAsset);
+            var output = cssGroupToProcess.Crusher.AddGroup(outputUri, files, directories, cssGroupToProcess.Group.AppendHashToCssAsset);
 
             stopwatch.Stop();
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace Talifun.Web.Crusher
 {
@@ -17,5 +18,7 @@ namespace Talifun.Web.Crusher
         //Uri GetRelativeRootUri(string uri);
         Uri GetAbsoluteUriDirectory(string uri);
         Uri ToRelative(string uri);
+        Uri ToRelative(FileInfo file);
+        Uri MakeRelativeUri(Uri rootPathUri, FileInfo file);
     }
 }
