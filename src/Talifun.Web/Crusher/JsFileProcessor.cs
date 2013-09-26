@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
-using Talifun.Web.Coffee;
 using Talifun.Web.Crusher.JsModule;
 using Talifun.Web.Helper.Pooling;
-using Talifun.Web.Hogan;
 
 namespace Talifun.Web.Crusher
 {
@@ -18,7 +16,7 @@ namespace Talifun.Web.Crusher
         private readonly FileInfo _fileInfo;
         private readonly List<IJsModule> _modules;
 
-        public JsFileProcessor(Pool<Coffee.CoffeeCompiler> coffeeCompilerPool, Pool<Hogan.HoganCompiler> hoganCompilerPool, IRetryableFileOpener retryableFileOpener, IPathProvider pathProvider, string filePath, JsCompressionType compressionType, Uri jsRootUri)
+        public JsFileProcessor(Pool<Coffee.CoffeeCompiler> coffeeCompilerPool, Pool<IcedCoffee.IcedCoffeeCompiler> icedCoffeeCompilerPool, Pool<LiveScript.LiveScriptCompiler> liveScriptCompilerPool, Pool<Hogan.HoganCompiler> hoganCompilerPool, IRetryableFileOpener retryableFileOpener, IPathProvider pathProvider, string filePath, JsCompressionType compressionType, Uri jsRootUri)
         {
             _retryableFileOpener = retryableFileOpener;
             _pathProvider = pathProvider;
@@ -27,8 +25,10 @@ namespace Talifun.Web.Crusher
             _fileInfo = new FileInfo(new Uri(_pathProvider.MapPath(filePath)).LocalPath);
             _modules = new List<IJsModule>()
             {
-                new HoganModule(pathProvider, hoganCompilerPool),
-                new CoffeeModule(coffeeCompilerPool)
+                new CoffeeModule(coffeeCompilerPool),
+                new IcedCoffeeModule(icedCoffeeCompilerPool),
+                new LiveScriptModule(liveScriptCompilerPool),
+                new HoganModule(pathProvider, hoganCompilerPool)
             };
         }
 

@@ -8,7 +8,7 @@ namespace Talifun.Web.Crusher.JsModule
 {
     public class CoffeeModule : IJsModule
     {
-        private readonly string[] _hoganExtensions = { ".coffee", ".coffee.js" };
+        private readonly string[] _coffeeExtensions = { ".coffee", ".coffee.js" };
 
         protected readonly Pool<CoffeeCompiler> CoffeeCompilerPool;
 
@@ -19,7 +19,7 @@ namespace Talifun.Web.Crusher.JsModule
 
         public string Process(Uri jsRootPathUri, FileInfo file, string fileContents)
         {
-            if (!_hoganExtensions.Contains(file.Extension.ToLower()))
+            if (!_coffeeExtensions.Contains(file.Extension.ToLower()))
             {
                 return fileContents;
             }

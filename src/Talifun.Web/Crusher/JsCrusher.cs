@@ -5,13 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web.Caching;
-using Microsoft.Ajax.Utilities;
 using Talifun.FileWatcher;
-using Talifun.Web.Coffee;
 using Talifun.Web.Helper;
 using Talifun.Web.Helper.Pooling;
-using Talifun.Web.Hogan;
-using Yahoo.Yui.Compressor;
 
 namespace Talifun.Web.Crusher
 {
@@ -30,6 +26,8 @@ namespace Talifun.Web.Crusher
         protected readonly Pool<Microsoft.Ajax.Utilities.Minifier> MicrosoftAjaxMinJavaScriptCompressorPool;
 
         protected readonly Pool<Coffee.CoffeeCompiler> CoffeeCompilerPool;
+        protected readonly Pool<IcedCoffee.IcedCoffeeCompiler> IcedCoffeeCompilerPool;
+        protected readonly Pool<LiveScript.LiveScriptCompiler> LiveScriptCompilerPool;
         protected readonly Pool<Hogan.HoganCompiler> HoganCompilerPool;
         
         protected static string JsCrusherType = typeof(JsCrusher).ToString();
@@ -41,10 +39,12 @@ namespace Talifun.Web.Crusher
             RetryableFileOpener = retryableFileOpener;
             RetryableFileWriter = retryableFileWriter;
             FileMetaData = fileMetaData;
-            YahooYuiJavaScriptCompressorPool = new Pool<JavaScriptCompressor>(64, pool => new JavaScriptCompressor(), LoadingMode.LazyExpanding, AccessMode.Circular);
-            MicrosoftAjaxMinJavaScriptCompressorPool = new Pool<Minifier>(64, pool => new Minifier(), LoadingMode.LazyExpanding, AccessMode.Circular);
-            CoffeeCompilerPool = new Pool<CoffeeCompiler>(4, pool => new CoffeeCompiler(new EmbeddedResourceLoader()), LoadingMode.LazyExpanding, AccessMode.Circular);
-            HoganCompilerPool = new Pool<HoganCompiler>(4, pool => new HoganCompiler(new EmbeddedResourceLoader()), LoadingMode.LazyExpanding, AccessMode.Circular);
+            YahooYuiJavaScriptCompressorPool = new Pool<Yahoo.Yui.Compressor.JavaScriptCompressor>(64, pool => new Yahoo.Yui.Compressor.JavaScriptCompressor(), LoadingMode.LazyExpanding, AccessMode.Circular);
+            MicrosoftAjaxMinJavaScriptCompressorPool = new Pool<Microsoft.Ajax.Utilities.Minifier>(64, pool => new Microsoft.Ajax.Utilities.Minifier(), LoadingMode.LazyExpanding, AccessMode.Circular);
+            CoffeeCompilerPool = new Pool<Coffee.CoffeeCompiler>(4, pool => new Coffee.CoffeeCompiler(new EmbeddedResourceLoader()), LoadingMode.LazyExpanding, AccessMode.Circular);
+            IcedCoffeeCompilerPool = new Pool<IcedCoffee.IcedCoffeeCompiler>(4, pool => new IcedCoffee.IcedCoffeeCompiler(new EmbeddedResourceLoader()), LoadingMode.LazyExpanding, AccessMode.Circular);
+            LiveScriptCompilerPool = new Pool<LiveScript.LiveScriptCompiler>(4, pool => new LiveScript.LiveScriptCompiler(new EmbeddedResourceLoader()), LoadingMode.LazyExpanding, AccessMode.Circular);
+            HoganCompilerPool = new Pool<Hogan.HoganCompiler>(4, pool => new Hogan.HoganCompiler(new EmbeddedResourceLoader()), LoadingMode.LazyExpanding, AccessMode.Circular);
         }
 
     	/// <summary>
@@ -107,7 +107,11 @@ namespace Talifun.Web.Crusher
     	    if (!isMetaDataFresh)
     	    {
                 var filesToProcess = filesToWatch
-                    .Select(jsFile => new JsFileProcessor(CoffeeCompilerPool, HoganCompilerPool, RetryableFileOpener, PathProvider, jsFile.FilePath, jsFile.CompressionType, jsRootUri));
+                    .Select(jsFile => new JsFileProcessor(CoffeeCompilerPool, 
+                        IcedCoffeeCompilerPool, 
+                        LiveScriptCompilerPool, 
+                        HoganCompilerPool, 
+                        RetryableFileOpener, PathProvider, jsFile.FilePath, jsFile.CompressionType, jsRootUri));
 
                 var content = GetGroupContent(filesToProcess);
 

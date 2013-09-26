@@ -141,6 +141,8 @@
     <Compile Include="Crusher\JsGroupsProcessor.cs" />
     <Compile Include="Crusher\JsGroupToProcess.cs" />
     <Compile Include="Crusher\JsModule\CoffeeModule.cs" />
+    <Compile Include="Crusher\JsModule\LiveScriptModule.cs" />
+    <Compile Include="Crusher\JsModule\IcedCoffeeModule.cs" />
     <Compile Include="Crusher\JsModule\HoganModule.cs" />
     <Compile Include="Crusher\JsModule\IJsModule.cs" />
     <Compile Include="Crusher\MultiFileMetaData.cs" />
@@ -152,6 +154,7 @@
     <Compile Include="CssSprite\ImageDirectory.cs" />
     <Compile Include="CssSprite\CssSpriteGroupsProcessor.cs" />
     <Compile Include="CssSprite\CssSpriteException.cs" />
+    <Compile Include="Ejs\EjsCompiler.cs" />
     <Compile Include="Helper\Compatability\CountdownEvent .cs" />
     <Compile Include="Helper\Compatability\DictionarySet.cs" />
     <Compile Include="Helper\Compatability\HybridSet.cs" />
@@ -169,10 +172,13 @@
     <Compile Include="Helper\Pooling\Pool.cs" />
     <Compile Include="Hogan\HoganCompiler.cs" />
     <Compile Include="Http\TransmitEntityStrategyForEmbeddedResource.cs" />
+    <Compile Include="IcedCoffee\IcedCoffeeCompiler.cs" />
+    <Compile Include="Jade\JadeCompiler.cs" />
     <Compile Include="Javascript\IJavascriptRuntime.cs" />
     <Compile Include="Javascript\IJavascriptRuntimeGlobalFunction.cs" />
     <Compile Include="Javascript\IJavascriptRuntimeGlobalVariable.cs" />
     <Compile Include="Javascript\V8JavascriptRuntime.cs" />
+    <Compile Include="LiveScript\LiveScriptCompiler.cs" />
     <Compile Include="MsBuild\CrusherMsBuildCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Cache\HttpCacheManager.cs" />
@@ -366,6 +372,18 @@
   <ItemGroup>
     <EmbeddedResource Include="Hogan\Resources\Compiler.js" />
     <EmbeddedResource Include="Hogan\Resources\Template.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="LiveScript\Resources\livescript.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="IcedCoffee\Resources\coffee-script.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Jade\Resources\jade.min.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Ejs\Resources\ejs.min.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

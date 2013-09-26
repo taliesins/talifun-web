@@ -81,11 +81,13 @@
     <Compile Include="AutoMocker.cs" />
     <Compile Include="BehaviourTest.cs" />
     <Compile Include="Coffee\CoffeeCompilerTests.cs" />
+    <Compile Include="Ejs\EjsTemplateCompileTests.cs" />
+    <Compile Include="Jade\JadeTemplateCompileTests.cs" />
     <Compile Include="Crusher\PathProviderTests.cs" />
     <Compile Include="Helper\GraphTests.cs" />
     <Compile Include="Helper\MimeTyperTests.cs" />
     <Compile Include="Helper\HasherTests.cs" />
-    <Compile Include="Hogan\TemplateCompileTests.cs" />
+    <Compile Include="Hogan\HoganTemplateCompileTests.cs" />
     <Compile Include="Http\HttpResponseHeaderHelperTests.cs" />
     <Compile Include="Http\EntityResponseFullTests.cs" />
     <Compile Include="Http\EntityResponseMultiPartTests.cs" />
@@ -94,6 +96,8 @@
     <Compile Include="Http\TransmitEntityStrategyForFileTests.cs" />
     <Compile Include="Http\TransmitEntityStrategyForIISTests.cs" />
     <Compile Include="Http\TransmitEntityStrategyForStreamTests.cs" />
+    <Compile Include="IcedCoffee\IcedCoffeeCompilerTests.cs" />
+    <Compile Include="LiveScript\LiveScriptCompilerTests.cs" />
     <Compile Include="MockManager.cs" />
     <Compile Include="MsBuild\CreateInstanceTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -116,6 +120,7 @@
       <Name>Talifun.Web</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

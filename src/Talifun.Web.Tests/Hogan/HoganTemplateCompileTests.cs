@@ -4,7 +4,7 @@ using Talifun.Web.Hogan;
 namespace Talifun.Web.Tests.Hogan
 {
     [TestFixture]
-    public class TemplateCompileTests
+    public class HoganTemplateCompileTests
     {
         [Test]
         public void CompileHoganTemplate()
