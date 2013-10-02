@@ -81,8 +81,6 @@
     <Compile Include="AutoMocker.cs" />
     <Compile Include="BehaviourTest.cs" />
     <Compile Include="Coffee\CoffeeCompilerTests.cs" />
-    <Compile Include="Ejs\EjsTemplateCompileTests.cs" />
-    <Compile Include="Jade\JadeTemplateCompileTests.cs" />
     <Compile Include="Crusher\PathProviderTests.cs" />
     <Compile Include="Helper\GraphTests.cs" />
     <Compile Include="Helper\MimeTyperTests.cs" />

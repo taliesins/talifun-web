@@ -25,5 +25,9 @@
     
     <input type="button" onclick="TestMessage()" value="Test" />
     </form>
+    
+    <script language="javascript" type="text/javascript">
+            Templates['/Static/Js/test.moustache'](moustacheModel);
+    </script>
 </body>
 </html>

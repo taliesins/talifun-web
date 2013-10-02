@@ -79,6 +79,7 @@
     <Content Include="Static\Css\jquery\jquery-ui-1.8.7.css" />
     <Content Include="Static\Css\test.less.css" />
     <Content Include="Static\Js\additional-validation-methods.min.js" />
+    <Content Include="Static\Js\hogan-2.0.0.min.js" />
     <Content Include="Static\Js\jquery-1.4.4.min.js" />
     <Content Include="Static\Js\jquery-ui-1.8.7.min.js" />
     <Content Include="Static\Js\jquery.flash.min.js" />
@@ -98,6 +99,9 @@
       <Link>Talifun.Web.Crusher.xsd</Link>
       <SubType>Designer</SubType>
     </None>
+    <Content Include="Static\Js\test.coffee" />
+    <None Include="Static\Js\test.moustache" />
+    <None Include="Static\Js\test.iced" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Talifun.Crusher.MsBuild\Talifun.Crusher.MsBuild.csproj">
@@ -142,7 +146,6 @@
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
-
   -->
   <UsingTask TaskName="Talifun.Crusher.MsBuild.CrusherTask" AssemblyFile="$(TargetDir)\Talifun.Crusher.MsBuild.dll" />
   <Target Name="AfterBuild">

@@ -1,0 +1,7 @@
+﻿<div class="entry">
+  <h1>{{title}}</h1>
+
+  {{#with author}}
+  <h2>By {{firstName}} {{lastName}}</h2>
+  {{/with}}
+</div>

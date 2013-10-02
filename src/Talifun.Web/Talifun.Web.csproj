@@ -69,13 +69,6 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\packages\Newtonsoft.Json.5.0.6\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Noesis.Javascript" Condition="'$(PlatformTarget)' != 'x86'">
-      <HintPath>..\..\packages\Noesis.Javascript.0.7.5.0\lib\net40\amd64\Noesis.Javascript.dll</HintPath>
-    </Reference>
-    <Reference Include="Noesis.Javascript, Version=0.0.0.0, Culture=neutral, PublicKeyToken=ae36d046c7f89f85, processorArchitecture=AMD64" Condition="'$(PlatformTarget)' == 'x86'">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Noesis.Javascript.0.7.5.0\lib\net40\x86\Noesis.Javascript.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">
@@ -154,7 +147,6 @@
     <Compile Include="CssSprite\ImageDirectory.cs" />
     <Compile Include="CssSprite\CssSpriteGroupsProcessor.cs" />
     <Compile Include="CssSprite\CssSpriteException.cs" />
-    <Compile Include="Ejs\EjsCompiler.cs" />
     <Compile Include="Helper\Compatability\CountdownEvent .cs" />
     <Compile Include="Helper\Compatability\DictionarySet.cs" />
     <Compile Include="Helper\Compatability\HybridSet.cs" />
@@ -173,7 +165,6 @@
     <Compile Include="Hogan\HoganCompiler.cs" />
     <Compile Include="Http\TransmitEntityStrategyForEmbeddedResource.cs" />
     <Compile Include="IcedCoffee\IcedCoffeeCompiler.cs" />
-    <Compile Include="Jade\JadeCompiler.cs" />
     <Compile Include="Javascript\IJavascriptRuntime.cs" />
     <Compile Include="Javascript\IJavascriptRuntimeGlobalFunction.cs" />
     <Compile Include="Javascript\IJavascriptRuntimeGlobalVariable.cs" />
@@ -379,24 +370,16 @@
   <ItemGroup>
     <EmbeddedResource Include="IcedCoffee\Resources\coffee-script.js" />
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Jade\Resources\jade.min.js" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Ejs\Resources\ejs.min.js" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
-if not exist "$(TargetDir)" md "$(TargetDir)"
-xcopy /s /y "$(SolutionDir)packages\ClearScript.V8.5.3.7.0\tools\native\x86\*.*" "$(TargetDir)"
-if not exist "$(TargetDir)" md "$(TargetDir)"
-xcopy /s /y "$(SolutionDir)packages\ClearScript.V8.5.3.7.0\tools\native\amd64\*.*" "$(TargetDir)"
-    if not exist "$(TargetDir)x86" md "$(TargetDir)x86"
-    xcopy /s /y "$(SolutionDir)packages\Noesis.Javascript.0.7.5.0\NativeBinaries\net40\x86\*.*" "$(TargetDir)x86"
-    if not exist "$(TargetDir)amd64" md "$(TargetDir)amd64"
-    xcopy /s /y "$(SolutionDir)packages\Noesis.Javascript.0.7.5.0\NativeBinaries\net40\amd64\*.*" "$(TargetDir)amd64"</PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
+  <Import Project="..\..\packages\Noesis.Javascript.0.7.9.6\Tools\Noesis.Javascript.targets" Condition="Exists('..\..\packages\Noesis.Javascript.0.7.9.6\Tools\Noesis.Javascript.targets')" />
+  <Target Name="EnsureNoesisJavascriptImported" BeforeTargets="BeforeBuild" Condition="'$(NoesisJavascriptImported)' == ''">
+    <Error Condition="!Exists('..\..\packages\Noesis.Javascript.0.7.9.6\Tools\Noesis.Javascript.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
+    <Error Condition="Exists('..\..\packages\Noesis.Javascript.0.7.9.6\Tools\Noesis.Javascript.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
