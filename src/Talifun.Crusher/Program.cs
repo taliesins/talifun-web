@@ -130,24 +130,12 @@ namespace Talifun.Crusher
 
                 var fileMetaData = new MultiFileMetaData(retryableFileOpener, retryableFileWriter);
 
-                //var cssSpriteSpriteMetaDataFileInfo = new FileInfo("cssSprite.metadata");
-                //IMetaData cssSpriteMetaData = new SingleFileMetaData(cssSpriteSpriteMetaDataFileInfo, retryableFileOpener, retryableFileWriter);
-                //cssSpriteMetaData = new NullMetaData();
-
-                //var jsSpriteMetaDataFileInfo = new FileInfo("js.metadata");
-                //IMetaData jsMetaData = new SingleFileMetaData(jsSpriteMetaDataFileInfo, retryableFileOpener, retryableFileWriter);
-                //jsMetaData = new NullMetaData();
-
-                //var cssSpriteMetaDataFileInfo = new FileInfo("css.metadata");
-                //IMetaData cssMetaData = new SingleFileMetaData(cssSpriteMetaDataFileInfo, retryableFileOpener, retryableFileWriter);
-                //cssMetaData = new NullMetaData();
-
         	    var jsOutput = string.Empty;
         	    var cssOutput = string.Empty;
                 var cssSpriteOutput = string.Empty;
      
                 //We want to be able to use output from css sprites in crushed content
-                var countdownEvents = new CountdownEvent(1);
+                var countdownEvents = new CountdownEvent(3);
 
                 var cssSpriteExceptions = new List<CssSpriteException>();
                 ThreadPool.QueueUserWorkItem(data =>
@@ -171,9 +159,6 @@ namespace Talifun.Crusher
                     manualResetEvent.Signal();
                 }, countdownEvents);
 
-        	    countdownEvents.Wait();
-
-                countdownEvents = new CountdownEvent(2);
                 var jsExceptions = new List<JsException>();
                 ThreadPool.QueueUserWorkItem(data =>
                 {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -17,38 +16,27 @@ namespace Talifun.Web.Crusher
     {
         private const int BufferSize = 32768;
 		private readonly Encoding _encoding = Encoding.UTF8;
-        private readonly string _hashQueryStringKeyName;
-        private readonly CssGroupElementCollection _cssGroups;
-        private readonly JsGroupElementCollection _jsGroups;
         private readonly IPathProvider _pathProvider;
-        private readonly ICssCrusher _cssCrusher;
-        private readonly IJsCrusher _jsCrusher;
+
+        private readonly IRetryableFileOpener _retryableFileOpener;
+        private readonly IHasher _hasher;
+        private readonly IRetryableFileWriter _retryableFileWriter;
+        private readonly ICacheManager _cacheManager;
+        private readonly IMetaData _fileMetaData;
+        private readonly CrusherSection _crusherConfiguration;
 
         private CrusherManager()
         {
-            var crusherConfiguration = CurrentCrusherConfiguration.Current;
-            _hashQueryStringKeyName = crusherConfiguration.QuerystringKeyName;
-            _cssGroups = crusherConfiguration.CssGroups;
-            _jsGroups = crusherConfiguration.JsGroups;
+            _crusherConfiguration = CurrentCrusherConfiguration.Current;
 
-            var retryableFileOpener = new RetryableFileOpener();
-            var hasher = new Md5Hasher(retryableFileOpener);
-			var retryableFileWriter = new RetryableFileWriter(BufferSize, _encoding, retryableFileOpener, hasher);
+            _retryableFileOpener = new RetryableFileOpener();
+            _hasher = new Md5Hasher(_retryableFileOpener);
+			_retryableFileWriter = new RetryableFileWriter(BufferSize, _encoding, _retryableFileOpener, _hasher);
             _pathProvider = new PathProvider();
-            var cssAssetsFileHasher = new CssAssetsFileHasher(_hashQueryStringKeyName, hasher, _pathProvider);
-            var cssPathRewriter = new CssPathRewriter(cssAssetsFileHasher, _pathProvider);
 
-            var cacheManager = new HttpCacheManager();
-
-            var jsSpriteMetaDataFileInfo = new FileInfo("js.metadata");
-            var jsMetaData = new SingleFileMetaData(jsSpriteMetaDataFileInfo, retryableFileOpener, retryableFileWriter);
-
-            var cssSpriteMetaDataFileInfo = new FileInfo("css.metadata");
-            var cssMetaData = new SingleFileMetaData(cssSpriteMetaDataFileInfo, retryableFileOpener, retryableFileWriter);
-
-            _cssCrusher = new CssCrusher(cacheManager, _pathProvider, retryableFileOpener, retryableFileWriter, cssPathRewriter, cssMetaData, crusherConfiguration.WatchAssets);
-            _jsCrusher = new JsCrusher(cacheManager, _pathProvider, retryableFileOpener, retryableFileWriter, jsMetaData);
-
+            _cacheManager = new HttpCacheManager();
+            _fileMetaData = new MultiFileMetaData(_retryableFileOpener, _retryableFileWriter);
+ 
             InitManager();
         }
 
@@ -104,8 +92,10 @@ namespace Talifun.Web.Crusher
                     var manualResetEvent = (CountdownEvent)data;
                     try
                     {
+                        var jsGroups = _crusherConfiguration.JsGroups;
+                        var jsCrusher = new JsCrusher(_cacheManager, _pathProvider, _retryableFileOpener, _retryableFileWriter, _fileMetaData);
                         var groupsProcessor = new JsGroupsProcessor();
-                        groupsProcessor.ProcessGroups(_pathProvider, _jsCrusher, _jsGroups);
+                        groupsProcessor.ProcessGroups(_pathProvider, jsCrusher, jsGroups);
                     }
                     catch (Exception exception)
                     {
@@ -120,8 +110,13 @@ namespace Talifun.Web.Crusher
                     var manualResetEvent = (CountdownEvent)data;
                     try
                     {
+                        var hashQueryStringKeyName = _crusherConfiguration.QuerystringKeyName;
+                        var cssGroups = _crusherConfiguration.CssGroups;
+                        var cssAssetsFileHasher = new CssAssetsFileHasher(hashQueryStringKeyName, _hasher, _pathProvider);
+                        var cssPathRewriter = new CssPathRewriter(cssAssetsFileHasher, _pathProvider);
+                        var cssCrusher = new CssCrusher(_cacheManager, _pathProvider, _retryableFileOpener, _retryableFileWriter, cssPathRewriter, _fileMetaData, _crusherConfiguration.WatchAssets);
                         var groupsProcessor = new CssGroupsProcessor();
-                        groupsProcessor.ProcessGroups(_pathProvider, _cssCrusher, _cssGroups);
+                        groupsProcessor.ProcessGroups(_pathProvider, cssCrusher, cssGroups);
                     }
                     catch (Exception exception)
                     {
@@ -142,16 +137,23 @@ namespace Talifun.Web.Crusher
 
         private void DisposeManager()
         {
-            foreach (CssGroupElement group in _cssGroups)
+            var hashQueryStringKeyName = _crusherConfiguration.QuerystringKeyName;
+            var cssGroups = _crusherConfiguration.CssGroups;
+            var cssAssetsFileHasher = new CssAssetsFileHasher(hashQueryStringKeyName, _hasher, _pathProvider);
+            var cssPathRewriter = new CssPathRewriter(cssAssetsFileHasher, _pathProvider);
+            var cssCrusher = new CssCrusher(_cacheManager, _pathProvider, _retryableFileOpener, _retryableFileWriter, cssPathRewriter, _fileMetaData, _crusherConfiguration.WatchAssets);
+            foreach (CssGroupElement group in cssGroups)
             {
                 var outputUri = new Uri(_pathProvider.ToAbsolute(group.OutputFilePath), UriKind.Relative);
-                _cssCrusher.RemoveGroup(outputUri);
+                cssCrusher.RemoveGroup(outputUri);
             }
 
-            foreach (JsGroupElement group in _jsGroups)
+            var jsGroups = _crusherConfiguration.JsGroups;
+            var jsCrusher = new JsCrusher(_cacheManager, _pathProvider, _retryableFileOpener, _retryableFileWriter, _fileMetaData);
+            foreach (JsGroupElement group in jsGroups)
             {
                 var outputUri = new Uri(_pathProvider.ToAbsolute(group.OutputFilePath), UriKind.Relative);
-                _jsCrusher.RemoveGroup(outputUri);
+                jsCrusher.RemoveGroup(outputUri);
             }
 
             if (AppDomain.CurrentDomain != null)

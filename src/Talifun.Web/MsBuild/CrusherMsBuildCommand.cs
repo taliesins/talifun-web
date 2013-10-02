@@ -117,12 +117,11 @@ namespace Talifun.Web.MsBuild
                 var jsOutput = string.Empty;
                 var cssOutput = string.Empty;
 
-                var countdownEvents = new CountdownEvent(1);
+                var countdownEvents = new CountdownEvent(3);
 
                 ThreadPool.QueueUserWorkItem(data =>
                     {
                         var countdownEvent = (CountdownEvent) data;
-
                         try
                         {
                             if (_cssSpriteConfiguration != null)
@@ -143,9 +142,6 @@ namespace Talifun.Web.MsBuild
                         countdownEvent.Signal();
                     }, countdownEvents);
 
-                countdownEvents.Wait();
-
-                countdownEvents = new CountdownEvent(2);
 
                 ThreadPool.QueueUserWorkItem(data =>
                     {
@@ -158,7 +154,6 @@ namespace Talifun.Web.MsBuild
                                 var jsCrusher = new JsCrusher(_cacheManager, _pathProvider, _retryableFileOpener, _retryableFileWriter, _fileMetaData);
                                 var jsGroups = _crusherConfiguration.JsGroups;
                                 var jsGroupsProcessor = new JsGroupsProcessor();
-
                                 jsOutput = jsGroupsProcessor.ProcessGroups(_pathProvider, jsCrusher, jsGroups).ToString();
 
                                 _logMessage(jsOutput);
@@ -170,6 +165,7 @@ namespace Talifun.Web.MsBuild
                         }
                         countdownEvent.Signal();
                     }, countdownEvents);
+
 
                 ThreadPool.QueueUserWorkItem(data =>
                     {

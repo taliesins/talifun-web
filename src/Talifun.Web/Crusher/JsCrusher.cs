@@ -39,8 +39,8 @@ namespace Talifun.Web.Crusher
             RetryableFileOpener = retryableFileOpener;
             RetryableFileWriter = retryableFileWriter;
             FileMetaData = fileMetaData;
-            YahooYuiJavaScriptCompressorPool = new Pool<Yahoo.Yui.Compressor.JavaScriptCompressor>(64, pool => new Yahoo.Yui.Compressor.JavaScriptCompressor(), LoadingMode.LazyExpanding, AccessMode.Circular);
-            MicrosoftAjaxMinJavaScriptCompressorPool = new Pool<Microsoft.Ajax.Utilities.Minifier>(64, pool => new Microsoft.Ajax.Utilities.Minifier(), LoadingMode.LazyExpanding, AccessMode.Circular);
+            YahooYuiJavaScriptCompressorPool = new Pool<Yahoo.Yui.Compressor.JavaScriptCompressor>(4, pool => new Yahoo.Yui.Compressor.JavaScriptCompressor(), LoadingMode.LazyExpanding, AccessMode.Circular);
+            MicrosoftAjaxMinJavaScriptCompressorPool = new Pool<Microsoft.Ajax.Utilities.Minifier>(44, pool => new Microsoft.Ajax.Utilities.Minifier(), LoadingMode.LazyExpanding, AccessMode.Circular);
             CoffeeCompilerPool = new Pool<Coffee.CoffeeCompiler>(4, pool => new Coffee.CoffeeCompiler(new EmbeddedResourceLoader()), LoadingMode.LazyExpanding, AccessMode.Circular);
             IcedCoffeeCompilerPool = new Pool<IcedCoffee.IcedCoffeeCompiler>(4, pool => new IcedCoffee.IcedCoffeeCompiler(new EmbeddedResourceLoader()), LoadingMode.LazyExpanding, AccessMode.Circular);
             LiveScriptCompilerPool = new Pool<LiveScript.LiveScriptCompiler>(4, pool => new LiveScript.LiveScriptCompiler(new EmbeddedResourceLoader()), LoadingMode.LazyExpanding, AccessMode.Circular);
