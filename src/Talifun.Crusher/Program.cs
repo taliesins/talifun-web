@@ -129,19 +129,21 @@ namespace Talifun.Crusher
 				var cacheManager = new HttpCacheManager();
 
                 var cssSpriteSpriteMetaDataFileInfo = new FileInfo("cssSprite.metadata");
-                var cssSpriteMetaData = new SingleFileMetaData(cssSpriteSpriteMetaDataFileInfo, retryableFileOpener, retryableFileWriter);
+                IMetaData cssSpriteMetaData = new SingleFileMetaData(cssSpriteSpriteMetaDataFileInfo, retryableFileOpener, retryableFileWriter);
+        	    cssSpriteMetaData = new NullMetaData();
 
                 var jsSpriteMetaDataFileInfo = new FileInfo("js.metadata");
-                var jsMetaData = new SingleFileMetaData(jsSpriteMetaDataFileInfo, retryableFileOpener, retryableFileWriter);
+                IMetaData jsMetaData = new SingleFileMetaData(jsSpriteMetaDataFileInfo, retryableFileOpener, retryableFileWriter);
+                jsMetaData = new NullMetaData();
 
                 var cssSpriteMetaDataFileInfo = new FileInfo("css.metadata");
-                var cssMetaData = new SingleFileMetaData(cssSpriteMetaDataFileInfo, retryableFileOpener, retryableFileWriter);
+                IMetaData cssMetaData = new SingleFileMetaData(cssSpriteMetaDataFileInfo, retryableFileOpener, retryableFileWriter);
+                cssMetaData = new NullMetaData();
 
         	    var jsOutput = string.Empty;
         	    var cssOutput = string.Empty;
                 var cssSpriteOutput = string.Empty;
-
-                
+     
                 //We want to be able to use output from css sprites in crushed content
                 var countdownEvents = new CountdownEvent(1);
 

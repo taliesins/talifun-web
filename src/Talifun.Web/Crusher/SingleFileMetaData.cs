@@ -7,7 +7,7 @@ using Talifun.Web.Helper;
 
 namespace Talifun.Web.Crusher
 {
-    public class SingleFileMetaData : IMetaData
+    public class SingleFileMetaData : IMetaData, IDisposable
     {
         private const int PollTime = 2000;
         private readonly Dictionary<string, string> _metaDataForFiles;
@@ -94,7 +94,6 @@ namespace Talifun.Web.Crusher
                 .ToString();
 
             _retryableFileWriter.SaveContentsToFile(metaDataForFiles, _metaDataFile);
-
         }
 
         /// <summary>
@@ -109,6 +108,15 @@ namespace Talifun.Web.Crusher
                 .Aggregate(new StringBuilder(), (ag, n) => ag.Append("?").Append(n));
 
             return sb.ToString();
+        }
+
+        public void Dispose()
+        {
+            if (_timer.Enabled)
+            {
+                _timer.Stop();
+                WriteMetaDataFiles();
+            }
         }
     }
 }
