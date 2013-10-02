@@ -128,17 +128,19 @@ namespace Talifun.Crusher
 				var pathProvider = new PathProvider(applicationPath, physicalApplicationPath);
 				var cacheManager = new HttpCacheManager();
 
-                var cssSpriteSpriteMetaDataFileInfo = new FileInfo("cssSprite.metadata");
-                IMetaData cssSpriteMetaData = new SingleFileMetaData(cssSpriteSpriteMetaDataFileInfo, retryableFileOpener, retryableFileWriter);
-        	    cssSpriteMetaData = new NullMetaData();
+                var fileMetaData = new MultiFileMetaData(retryableFileOpener, retryableFileWriter);
 
-                var jsSpriteMetaDataFileInfo = new FileInfo("js.metadata");
-                IMetaData jsMetaData = new SingleFileMetaData(jsSpriteMetaDataFileInfo, retryableFileOpener, retryableFileWriter);
-                jsMetaData = new NullMetaData();
+                //var cssSpriteSpriteMetaDataFileInfo = new FileInfo("cssSprite.metadata");
+                //IMetaData cssSpriteMetaData = new SingleFileMetaData(cssSpriteSpriteMetaDataFileInfo, retryableFileOpener, retryableFileWriter);
+                //cssSpriteMetaData = new NullMetaData();
 
-                var cssSpriteMetaDataFileInfo = new FileInfo("css.metadata");
-                IMetaData cssMetaData = new SingleFileMetaData(cssSpriteMetaDataFileInfo, retryableFileOpener, retryableFileWriter);
-                cssMetaData = new NullMetaData();
+                //var jsSpriteMetaDataFileInfo = new FileInfo("js.metadata");
+                //IMetaData jsMetaData = new SingleFileMetaData(jsSpriteMetaDataFileInfo, retryableFileOpener, retryableFileWriter);
+                //jsMetaData = new NullMetaData();
+
+                //var cssSpriteMetaDataFileInfo = new FileInfo("css.metadata");
+                //IMetaData cssMetaData = new SingleFileMetaData(cssSpriteMetaDataFileInfo, retryableFileOpener, retryableFileWriter);
+                //cssMetaData = new NullMetaData();
 
         	    var jsOutput = string.Empty;
         	    var cssOutput = string.Empty;
@@ -156,7 +158,7 @@ namespace Talifun.Crusher
                         if (cssSpriteConfiguration != null)
                         {
                             var cssSpriteGroups = cssSpriteConfiguration.CssSpriteGroups;
-                            var cssSpriteCreator = new CssSpriteCreator(cacheManager, retryableFileOpener, pathProvider, retryableFileWriter, cssSpriteMetaData);
+                            var cssSpriteCreator = new CssSpriteCreator(cacheManager, retryableFileOpener, pathProvider, retryableFileWriter, fileMetaData);
                             var cssSpriteGroupsProcessor = new CssSpriteGroupsProcessor();
 
                             cssSpriteOutput = cssSpriteGroupsProcessor.ProcessGroups(pathProvider, cssSpriteCreator, cssSpriteGroups).ToString();
@@ -180,7 +182,7 @@ namespace Talifun.Crusher
                     {
                         if (crusherConfiguration != null)
                         {
-                            var jsCrusher = new JsCrusher(cacheManager, pathProvider, retryableFileOpener, retryableFileWriter, jsMetaData);
+                            var jsCrusher = new JsCrusher(cacheManager, pathProvider, retryableFileOpener, retryableFileWriter, fileMetaData);
                             var jsGroups = crusherConfiguration.JsGroups;
                             var jsGroupsProcessor = new JsGroupsProcessor();
 
@@ -205,7 +207,7 @@ namespace Talifun.Crusher
                             var hashQueryStringKeyName = crusherConfiguration.QuerystringKeyName;
                             var cssAssetsFileHasher = new CssAssetsFileHasher(hashQueryStringKeyName, hasher, pathProvider);
                             var cssPathRewriter = new CssPathRewriter(cssAssetsFileHasher, pathProvider);
-                            var cssCrusher = new CssCrusher(cacheManager, pathProvider, retryableFileOpener, retryableFileWriter, cssPathRewriter, cssMetaData, crusherConfiguration.WatchAssets);
+                            var cssCrusher = new CssCrusher(cacheManager, pathProvider, retryableFileOpener, retryableFileWriter, cssPathRewriter, fileMetaData, crusherConfiguration.WatchAssets);
                             var cssGroups = crusherConfiguration.CssGroups;
                             var cssGroupsCrusher = new CssGroupsProcessor();
                             cssOutput = cssGroupsCrusher.ProcessGroups(pathProvider, cssCrusher, cssGroups).ToString();

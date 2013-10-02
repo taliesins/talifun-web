@@ -20,6 +20,10 @@
     </UpgradeBackupLocation>
     <TargetFrameworkProfile />
     <UseIISExpress>false</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v4.0' ">
     <TargetFrameworkConstant>NET40</TargetFrameworkConstant>
@@ -94,6 +98,9 @@
       <Link>Talifun.Web.Crusher.xsd</Link>
       <SubType>Designer</SubType>
     </None>
+    <Content Include="Static\Js\test.coffee" />
+    <Content Include="Static\Js\test.iced" />
+    <Content Include="Static\Js\test.mustache" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Talifun.Web\Talifun.Web.csproj">
