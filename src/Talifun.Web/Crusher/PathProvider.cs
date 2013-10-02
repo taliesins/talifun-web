@@ -219,19 +219,14 @@ namespace Talifun.Web.Crusher
         /// <returns></returns>
         public Uri MakeRelativeUri(Uri rootPathUri, FileInfo file)
         {
+            var fileUri = new Uri(file.FullName);
+
             if (!rootPathUri.IsAbsoluteUri)
             {
                 rootPathUri = new Uri(MapPath(rootPathUri));
             }
 
-            var relativePath = ToRelative(file);
-            var absoluteUri = relativePath.IsAbsoluteUri
-                      ? relativePath
-                      : new Uri(MapPath(GetAbsoluteUriDirectory(rootPathUri), relativePath));
-
-            var relativeUri = rootPathUri.MakeRelativeUri(absoluteUri);
-
-            return relativeUri;
+            return rootPathUri.MakeRelativeUri(fileUri);
         }
 
         /// <summary>

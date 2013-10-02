@@ -100,7 +100,7 @@
       <SubType>Designer</SubType>
     </None>
     <Content Include="Static\Js\test.coffee" />
-    <None Include="Static\Js\test.moustache" />
+    <None Include="Static\Js\test.mustache" />
     <None Include="Static\Js\test.iced" />
   </ItemGroup>
   <ItemGroup>

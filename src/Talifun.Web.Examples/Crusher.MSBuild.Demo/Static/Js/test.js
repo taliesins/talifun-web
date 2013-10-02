@@ -1,11 +1,11 @@
 ﻿function TestMessage() {
-    alert("Test message result goes here")
+    alert("Test message result goes here");
 }
 
 var moustacheModel = {
     title: "My first post!",
-    author: {
+    author: [{
         firstName: "Charles",
         lastName: "Jolley"
-    }
+    }]
 }
