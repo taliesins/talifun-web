@@ -38,7 +38,8 @@ namespace Talifun.Web.Javascript
                 return string.Empty;
             }
 
-            var argString = string.Join(", ", args.Select(JsonConvert.SerializeObject));
+// ReSharper disable once RedundantTypeArgumentsOfMethod 3.5 needs it
+            var argString = string.Join(", ", args.Select<object, string>(JsonConvert.SerializeObject).ToArray());
 
             return argString;
         }

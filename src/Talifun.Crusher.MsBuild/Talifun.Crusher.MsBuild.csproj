@@ -4,14 +4,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == '' ">v4.0</TargetFrameworkVersion>
     <ProjectGuid>{FB0B818D-1234-4825-84AA-56FF4265E39C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Talifun.Crusher.MsBuild</RootNamespace>
     <AssemblyName>Talifun.Crusher.MsBuild</AssemblyName>
-    <TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == '' ">v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v4.5' ">
+    <TargetFrameworkConstant>NET45</TargetFrameworkConstant>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v4.0' ">
     <TargetFrameworkConstant>NET40</TargetFrameworkConstant>
@@ -43,12 +46,12 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFrameworkConstant)' == 'NET40' ">
+  <ItemGroup Condition=" '$(TargetFrameworkVersion)' == 'v4.0' or '$(TargetFrameworkVersion)' == 'v4.5' ">
     <Reference Include="Microsoft.Build.Framework">
       <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\Microsoft.Build.Framework.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFrameworkConstant)' == 'NET35' ">
+  <ItemGroup Condition=" '$(TargetFrameworkVersion)' != 'v4.0' and '$(TargetFrameworkVersion)' != 'v4.5' ">
     <Reference Include="Microsoft.Build.Framework">
       <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\v3.5\Microsoft.Build.Framework.dll</HintPath>
     </Reference>

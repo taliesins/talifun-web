@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003"> 
+  	<PropertyGroup>
+    	<NoesisJavascriptImported>true</NoesisJavascriptImported>
+  	</PropertyGroup>
+	<ItemGroup Condition="'$(Platform)' == 'x64' AND '$(TargetFrameworkVersion)' == 'v3.5'">
+		<Reference Include="Noesis.Javascript">
+      		<HintPath>$(SolutionDir)packages\Noesis.Javascript.0.7.9.11\ManagedBinaries\net35\amd64\Noesis.Javascript.dll</HintPath>
+    	</Reference>
+	    <None Include="$(SolutionDir)packages\Noesis.Javascript.0.7.9.11\UnmanagedBinaries\net35\Microsoft.VC90.CRT.manifest">
+      		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      		<Visible>false</Visible>
+	    </None>
+	    <None Include="$(SolutionDir)packages\Noesis.Javascript.0.7.9.11\UnmanagedBinaries\net35\msvcm90.dll">
+      		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      		<Visible>false</Visible>
+	    </None>
+	    <None Include="$(SolutionDir)packages\Noesis.Javascript.0.7.9.11\UnmanagedBinaries\net35\msvcp90.dll">
+      		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      		<Visible>false</Visible>
+	    </None>
+	   	<None Include="$(SolutionDir)packages\Noesis.Javascript.0.7.9.11\UnmanagedBinaries\net35\msvcr90.dll">
+      		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      		<Visible>false</Visible>
+	    </None>
+	</ItemGroup>
+	<ItemGroup Condition="('$(Platform)' == 'AnyCpu' OR '$(Platform)' == 'x86') AND '$(TargetFrameworkVersion)' == 'v3.5'">
+		<Reference Include="Noesis.Javascript">
+      		<HintPath>$(SolutionDir)packages\Noesis.Javascript.0.7.9.11\ManagedBinaries\net35\x86\Noesis.Javascript.dll</HintPath>
+    	</Reference>
+	    <None Include="$(SolutionDir)packages\Noesis.Javascript.0.7.9.11\UnmanagedBinaries\net35\x86\Microsoft.VC90.CRT.manifest">
+      		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      		<Visible>false</Visible>
+	    </None>
+	    <None Include="$(SolutionDir)packages\Noesis.Javascript.0.7.9.11\UnmanagedBinaries\net35\x86\msvcm90.dll">
+      		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      		<Visible>false</Visible>
+	    </None>
+	    <None Include="$(SolutionDir)packages\Noesis.Javascript.0.7.9.11\UnmanagedBinaries\net35\x86\msvcp90.dll">
+      		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      		<Visible>false</Visible>
+	    </None>
+	   	<None Include="$(SolutionDir)packages\Noesis.Javascript.0.7.9.11\UnmanagedBinaries\net35\x86\msvcr90.dll">
+      		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      		<Visible>false</Visible>
+	    </None>
+	</ItemGroup>
+		<ItemGroup Condition="'$(Platform)' == 'x64' AND '$(TargetFrameworkVersion)' == 'v4.0'">
+		<Reference Include="Noesis.Javascript">
+      		<HintPath>$(MSBuildThisFileDirectory)..\ManagedBinaries\net40\amd64\Noesis.Javascript.dll</HintPath>
+    	</Reference>
+	    <None Include="$(MSBuildThisFileDirectory)..\UnmanagedBinaries\net40\amd64\msvcp100.dll">
+      		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      		<Visible>false</Visible>
+	    </None>
+	    <None Include="$(MSBuildThisFileDirectory)..\UnmanagedBinaries\net40\amd64\msvcr100.dll">
+      		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      		<Visible>false</Visible>
+	    </None>
+	</ItemGroup>
+	<ItemGroup Condition="('$(Platform)' == 'AnyCpu' OR '$(Platform)' == 'x86') AND '$(TargetFrameworkVersion)' == 'v4.0'">
+		<Reference Include="Noesis.Javascript">
+      		<HintPath>$(MSBuildThisFileDirectory)..\ManagedBinaries\net40\x86\Noesis.Javascript.dll</HintPath>
+    	</Reference>
+	    <None Include="$(MSBuildThisFileDirectory)..\UnmanagedBinaries\net40\x86\msvcp100.dll">
+      		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      		<Visible>false</Visible>
+	    </None>
+	    <None Include="$(MSBuildThisFileDirectory)..\UnmanagedBinaries\net40\x86\msvcr100.dll">
+      		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      		<Visible>false</Visible>
+	    </None>
+	</ItemGroup>
+	<ItemGroup Condition="'$(Platform)' == 'x64' AND '$(TargetFrameworkVersion)' == 'v4.5'">
+		<Reference Include="Noesis.Javascript">
+      		<HintPath>$(MSBuildThisFileDirectory)..\ManagedBinaries\net45\amd64\Noesis.Javascript.dll</HintPath>
+    	</Reference>
+	    <None Include="$(MSBuildThisFileDirectory)..\UnmanagedBinaries\net45\amd64\msvcp110.dll">
+      		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      		<Visible>false</Visible>
+	    </None>
+	    <None Include="$(MSBuildThisFileDirectory)..\UnmanagedBinaries\net45\amd64\msvcr110.dll">
+      		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      		<Visible>false</Visible>
+	    </None>
+	    <None Include="$(MSBuildThisFileDirectory)..\UnmanagedBinaries\net45\amd64\vccorlib110.dll">
+      		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      		<Visible>false</Visible>
+	    </None>
+	</ItemGroup>
+	<ItemGroup Condition="('$(Platform)' == 'AnyCpu' OR '$(Platform)' == 'x86') AND '$(TargetFrameworkVersion)' == 'v4.5'">
+		<Reference Include="Noesis.Javascript">
+      		<HintPath>$(MSBuildThisFileDirectory)..\ManagedBinaries\net45\x86\Noesis.Javascript.dll</HintPath>
+    	</Reference>
+	    <None Include="$(MSBuildThisFileDirectory)..\UnmanagedBinaries\net45\x86\msvcp110.dll">
+      		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      		<Visible>false</Visible>
+	    </None>
+	    <None Include="$(MSBuildThisFileDirectory)..\UnmanagedBinaries\net45\x86\msvcr110.dll">
+      		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      		<Visible>false</Visible>
+	    </None>
+	    <None Include="$(MSBuildThisFileDirectory)..\UnmanagedBinaries\net45\x86\vccorlib110.dll">
+      		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      		<Visible>false</Visible>
+	    </None>
+	</ItemGroup>
+</Project>

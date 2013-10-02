@@ -13,6 +13,9 @@
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v4.5' ">
+    <TargetFrameworkConstant>NET45</TargetFrameworkConstant>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v4.0' ">
     <TargetFrameworkConstant>NET40</TargetFrameworkConstant>
   </PropertyGroup>
