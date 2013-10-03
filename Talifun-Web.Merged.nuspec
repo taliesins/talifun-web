@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Talifun.Web.Merged</id>
-    <version>2.7.0.0</version>
+    <version>3.0.0.0</version>
     <title>Talifun.Web.Merged</title>
     <authors>Taliesin Sisson</authors>
     <owners>Talifun Ltd</owners>
@@ -17,14 +17,11 @@
   </metadata>
   <files>
   	<file src="bin\4.0\merged\Talifun.Web.dll" target="lib/net40" />
-    <file src="bin\4.0\Talifun.Crusher.MsBuild.dll" target="tools/net40" />
-    <file src="tools\net40\talifun.crusher.Msbuild.targets" target="tools/net40" />
-  	<file src="bin\4.0\Talifun.Crusher.exe" target="tools/net40" />
-  	<file src="bin\4.0\Talifun.Crusher.exe.config" target="tools/net40" />
+    <file src="bin\4.0\msvcp100.dll" target="lib/net40" />
+    <file src="bin\4.0\msvcr100.dll" target="lib/net40" />
   	<file src="bin\3.5\merged\Talifun.Web.dll" target="lib/net35" />
-    <file src="bin\3.5\Talifun.Crusher.MsBuild.dll" target="tools/net35" />
-    <file src="tools\net35\talifun.crusher.Msbuild.targets" target="tools/net35" />
-  	<file src="bin\3.5\Talifun.Crusher.exe" target="tools/net35" />
-  	<file src="bin\3.5\Talifun.Crusher.exe.config" target="tools/net35" />	
+    <file src="bin\3.5\msvcm90.dll" target="lib/net35" />
+    <file src="bin\3.5\msvcp90.dll" target="lib/net35" />
+    <file src="bin\3.5\msvcr90.dll" target="lib/net35" />	
   </files>  
 </package>

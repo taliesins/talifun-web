@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Talifun.Web</id>
-    <version>2.7.0.0</version>
+    <version>3.0.0.0</version>
     <title>Talifun.Web</title>
     <authors>Taliesin Sisson</authors>
     <owners>Talifun Ltd</owners>
@@ -19,18 +19,11 @@
       <dependency id="DotlessClientOnly" version="1.3.1.0" />
       <dependency id="YUICompressor.NET" version="2.3.0.0" />
       <dependency id="Talifun.FileWatcher" version="1.7.5.0" />
+      <dependency id="Noesis.Javascript" version="0.7.9.11" />
     </dependencies>
   </metadata>
   <files>
   	<file src="bin\4.0\Talifun.Web.dll" target="lib/net40" />
-    <file src="bin\4.0\Talifun.Crusher.MsBuild.dll" target="tools/net40" />
-    <file src="tools\net40\talifun.crusher.Msbuild.targets" target="tools/net40" />
-  	<file src="bin\4.0\Talifun.Crusher.exe" target="tools/net40" />
-  	<file src="bin\4.0\Talifun.Crusher.exe.config" target="tools/net40" />
   	<file src="bin\3.5\Talifun.Web.dll" target="lib/net35" />
-    <file src="bin\3.5\Talifun.Crusher.MsBuild.dll" target="tools/net35" />
-    <file src="tools\net35\talifun.crusher.Msbuild.targets" target="tools/net35" />
-  	<file src="bin\3.5\Talifun.Crusher.exe" target="tools/net35" />
-  	<file src="bin\3.5\Talifun.Crusher.exe.config" target="tools/net35" />	
   </files>  
 </package>
