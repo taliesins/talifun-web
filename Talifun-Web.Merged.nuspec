@@ -17,9 +17,11 @@
   </metadata>
   <files>
   	<file src="bin\4.0\merged\Talifun.Web.dll" target="lib/net40" />
+    <file src="bin\4.0\Noesis.Javascript.dll" target="tools/net40" />
     <file src="bin\4.0\msvcp100.dll" target="lib/net40" />
     <file src="bin\4.0\msvcr100.dll" target="lib/net40" />
   	<file src="bin\3.5\merged\Talifun.Web.dll" target="lib/net35" />
+    <file src="bin\3.5\Noesis.Javascript.dll" target="lib/net35" />
     <file src="bin\3.5\msvcm90.dll" target="lib/net35" />
     <file src="bin\3.5\msvcp90.dll" target="lib/net35" />
     <file src="bin\3.5\msvcr90.dll" target="lib/net35" />	
