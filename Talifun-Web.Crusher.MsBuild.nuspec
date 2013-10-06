@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Talifun.Web.Crusher.MsBuild</id>
+    <version>3.0.0.0</version>
+    <authors>Taliesin Sisson</authors>
+    <owners>Talifun Ltd</owners>
+	  <title>Talifun.Web.Crusher.MsBuild</title>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+    <projectUrl>http://www.talifun.com/products/talifun-web/crusher-module</projectUrl>
+    <iconUrl>http://code.google.com/p/talifun-web/logo</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>An ms build task that can: compresses images into a single image, and then creates a css file to split image into sprites; compresses js into a single file, and css into a single file. </description>
+	  <summary>An ms build task that makes it easily to implemented best practices and increase performance of asp.net webforms and asp.net mvc websites.</summary>
+    <language>en-GB</language>
+	  <tags>talifun http msbuild task js css minify crush combine compress css sprite image graphic picture</tags>
+  </metadata>
+  <files>
+    <file src="Transforms\Talifun.Crusher.MsBuild.web.config.transform" target="content\web.config.transform" />
+
+    <file src="bin\3.5\merged\Talifun.Web.dll" target="tools/net35" />
+    <file src="bin\3.5\Talifun.Crusher.MsBuild.dll" target="tools/net35" />
+    <file src="bin\3.5\Noesis.Javascript.dll" target="tools/net35" />
+    <file src="bin\3.5\msvcm90.dll" target="tools/net35" />
+    <file src="bin\3.5\msvcp90.dll" target="tools/net35" />
+    <file src="bin\3.5\msvcr90.dll" target="tools/net35" />
+
+    <file src="tools\net35\install.ps1" target="tools\net35\install.ps1" />
+    <file src="tools\net35\uninstall.ps1" target="tools\net35\uninstall.ps1" />
+    <file src="tools\net35\talifun.crusher.msbuild.targets" target="tools\net35\talifun.crusher.msbuild.targets" />
+
+    <file src="bin\4.0\merged\Talifun.Web.dll" target="tools/net40" />
+    <file src="bin\4.0\Talifun.Crusher.MsBuild.dll" target="tools/net40" />
+    <file src="bin\4.0\Noesis.Javascript.dll" target="tools/net40" />
+    <file src="bin\4.0\msvcp100.dll" target="tools/net40" />
+    <file src="bin\4.0\msvcr100.dll" target="tools/net40" />
+
+    <file src="tools\net40\install.ps1" target="tools\net40\install.ps1" />
+    <file src="tools\net40\uninstall.ps1" target="tools\net40\uninstall.ps1" />
+    <file src="tools\net40\talifun.crusher.msbuild.targets" target="tools\net40\talifun.crusher.msbuild.targets" />
+  </files>
+</package>

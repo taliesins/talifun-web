@@ -95,7 +95,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Talifun.Web\Crusher\Config\Talifun.Web.Crusher.xsd">
+    <None Include="..\..\Talifun.Web.Configuration\Crusher\Talifun.Web.Crusher.xsd">
       <Link>Talifun.Web.Crusher.xsd</Link>
       <SubType>Designer</SubType>
     </None>

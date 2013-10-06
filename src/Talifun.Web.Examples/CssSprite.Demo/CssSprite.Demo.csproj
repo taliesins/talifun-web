@@ -85,7 +85,7 @@
     <Folder Include="Static\Css\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Talifun.Web\CssSprite\Config\Talifun.Web.CssSprite.xsd">
+    <None Include="..\..\Talifun.Web.Configuration\CssSprite\Talifun.Web.CssSprite.xsd">
       <Link>Talifun.Web.CssSprite.xsd</Link>
       <SubType>Designer</SubType>
     </None>

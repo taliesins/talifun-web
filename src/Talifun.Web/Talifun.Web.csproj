@@ -63,12 +63,6 @@
     <Reference Include="EcmaScript.NET, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\EcmaScript.Net.1.0.1.0\lib\net20\EcmaScript.NET.dll</HintPath>
     </Reference>
-    <Reference Include="EnvDTE, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <Reference Include="EnvDTE80, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <Reference Include="EnvDTE90, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Program Files\Microsoft Visual Studio 9.0\Common7\IDE\PublicAssemblies\EnvDTE90.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">
@@ -113,10 +107,6 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Coffee\CoffeeCompiler.cs" />
-    <Compile Include="Crusher\Config\JsDirectoryElementCollection.cs" />
-    <Compile Include="Crusher\Config\JsDirectoryElement.cs" />
-    <Compile Include="Crusher\Config\CssDirectoryElementCollection.cs" />
-    <Compile Include="Crusher\Config\CssDirectoryElement.cs" />
     <Compile Include="Crusher\AggregateException.cs" />
     <Compile Include="Crusher\CsFileToWatchComparer.cs" />
     <Compile Include="Crusher\CssAsset.cs" />
@@ -147,8 +137,6 @@
     <Compile Include="Crusher\MultiFileMetaData.cs" />
     <Compile Include="Crusher\NullMetaData.cs" />
     <Compile Include="Crusher\SingleFileMetaData.cs" />
-    <Compile Include="CssSprite\Config\ImageDirectoryElement.cs" />
-    <Compile Include="CssSprite\Config\ImageDirectoryElementCollection.cs" />
     <Compile Include="CssSprite\CssSpriteGroupToProcess.cs" />
     <Compile Include="CssSprite\ImageDirectory.cs" />
     <Compile Include="CssSprite\CssSpriteGroupsProcessor.cs" />
@@ -180,9 +168,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Cache\HttpCacheManager.cs" />
     <Compile Include="Compress\CompressionModuleHelper.cs" />
-    <Compile Include="Configuration\CurrentConfigurationElementCollection.cs" />
-    <Compile Include="Configuration\CurrentConfigurationManager.cs" />
-    <Compile Include="Configuration\NamedConfigurationElement.cs" />
     <Compile Include="Crusher\CssAssetsFileHasher.cs" />
     <Compile Include="Crusher\CssCacheItem.cs" />
     <Compile Include="Crusher\CssCrushedOutput.cs" />
@@ -197,12 +182,6 @@
     <Compile Include="Crusher\JsCrushedOutput.cs" />
     <Compile Include="Crusher\JsFileProcessor.cs" />
     <Compile Include="Crusher\PathProvider.cs" />
-    <Compile Include="CssSprite\Config\CssSpriteGroupElement.cs" />
-    <Compile Include="CssSprite\Config\CssSpriteGroupElementCollection.cs" />
-    <Compile Include="CssSprite\Config\CssSpriteSection.cs" />
-    <Compile Include="CssSprite\Config\CurrentCssSpriteConfiguration.cs" />
-    <Compile Include="CssSprite\Config\ImageFileElement.cs" />
-    <Compile Include="CssSprite\Config\ImageFileElementCollection.cs" />
     <Compile Include="CssSprite\CssSpriteCacheItem.cs" />
     <Compile Include="CssSprite\CssSpriteCreator.cs" />
     <Compile Include="CssSprite\CssSpriteManager.cs" />
@@ -273,22 +252,10 @@
     <Compile Include="Compress\Quadruplet.cs" />
     <Compile Include="Compress\SR.cs" />
     <Compile Include="Compress\WebResourceCompressionModule.cs" />
-    <Compile Include="Crusher\Config\CssFileElement.cs" />
-    <Compile Include="Crusher\Config\CssFileElementCollection.cs" />
-    <Compile Include="Crusher\Config\CssGroupElement.cs" />
-    <Compile Include="Crusher\Config\CssGroupElementCollection.cs" />
-    <Compile Include="Crusher\Config\CurrentCrusherConfiguration.cs" />
-    <Compile Include="Crusher\Config\JsFileElement.cs" />
-    <Compile Include="Crusher\Config\JsFileElementCollection.cs" />
-    <Compile Include="Crusher\Config\JsGroupElement.cs" />
-    <Compile Include="Crusher\Config\JsGroupElementCollection.cs" />
-    <Compile Include="Crusher\Config\CrusherSection.cs" />
     <Compile Include="Crusher\CssCrusher.cs" />
     <Compile Include="Crusher\JsCrusher.cs" />
-    <Compile Include="Crusher\CssCompressionType.cs" />
     <Compile Include="Crusher\CssControl.cs" />
     <Compile Include="Crusher\CssFile.cs" />
-    <Compile Include="Crusher\JsCompressionType.cs" />
     <Compile Include="Crusher\JsControl.cs" />
     <Compile Include="Crusher\JsFile.cs" />
     <Compile Include="Crusher\CrusherManager.cs" />
@@ -326,12 +293,6 @@
     <Compile Include="StaticFile\WebServerDetector.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Crusher\Config\Talifun.Web.Crusher.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="CssSprite\Config\Talifun.Web.CssSprite.xsd">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="IpAddressAuthentication\Config\Talifun.Web.IpAddressAuthentication.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -358,6 +319,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="IcedCoffee\Resources\coffee-script.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Talifun.Web.Configuration\Talifun.Web.Configuration.csproj">
+      <Project>{19088f57-724c-4448-b242-0ffe4ccdcb51}</Project>
+      <Name>Talifun.Web.Configuration</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

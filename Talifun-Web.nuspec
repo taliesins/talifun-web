@@ -24,6 +24,8 @@
   </metadata>
   <files>
   	<file src="bin\4.0\Talifun.Web.dll" target="lib/net40" />
+    <file src="bin\4.0\Talifun.Web.Configuration.dll" target="lib/net40" />
   	<file src="bin\3.5\Talifun.Web.dll" target="lib/net35" />
+    <file src="bin\3.5\Talifun.Web.Configuration.dll" target="lib/net35" />
   </files>  
 </package>

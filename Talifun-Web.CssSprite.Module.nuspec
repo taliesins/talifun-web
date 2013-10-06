@@ -15,10 +15,10 @@
     <language>en-GB</language>
 	  <tags>talifun http module css sprite image graphic picture combine</tags>
     <dependencies>
-      <dependency id="Talifun.Web" version="2.7.0.0" />
+      <dependency id="Talifun.Web" version="3.0.0.0" />
     </dependencies>	
   </metadata>
   <files>
-	<file src="Transforms\Talifun.Web.CssSprite.web.config.transform" target="content\web.config.transform" />
+	 <file src="Transforms\Talifun.Web.CssSprite.web.config.transform" target="content\web.config.transform" />
   </files>
 </package>
