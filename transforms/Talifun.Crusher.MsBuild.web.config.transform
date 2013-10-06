@@ -1,4 +1,7 @@
 <configuration>
+	<configSections>
+		<section name="Crusher" type="Talifun.Web.Crusher.Config.CrusherSection, Talifun.Web.Configuration" requirePermission="false" allowDefinition="MachineToApplication" />
+  	</configSections>
 	<CssSprite xmlns="urn:cssSprite">
 		<cssSpriteGroups>
 			<!-- Css sprite group to create -->

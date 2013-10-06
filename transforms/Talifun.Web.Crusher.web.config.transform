@@ -1,6 +1,6 @@
 <configuration>
 	<configSections>
-		<section name="Crusher" type="Talifun.Web.Crusher.Config.CrusherSection, Talifun.Web" requirePermission="false" allowDefinition="MachineToApplication"/>
+		<section name="Crusher" type="Talifun.Web.Crusher.Config.CrusherSection, Talifun.Web,Configuration" requirePermission="false" allowDefinition="MachineToApplication"/>
 	</configSections>
 	<Crusher querystringKeyName="etag">
 		<!-- outputFilePath is the identifier for the cssGroup, so make sure its unique for each cssGroup  -->

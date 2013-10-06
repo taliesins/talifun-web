@@ -18,23 +18,23 @@
   <files>
     <file src="Transforms\Talifun.Crusher.MsBuild.web.config.transform" target="content\web.config.transform" />
 
+    <file src="bin\3.5\Talifun.Web.Configuration.dll" target="lib/net35" />
     <file src="bin\3.5\merged\Talifun.Web.dll" target="tools/net35" />
     <file src="bin\3.5\Talifun.Crusher.MsBuild.dll" target="tools/net35" />
     <file src="bin\3.5\Noesis.Javascript.dll" target="tools/net35" />
     <file src="bin\3.5\msvcm90.dll" target="tools/net35" />
     <file src="bin\3.5\msvcp90.dll" target="tools/net35" />
     <file src="bin\3.5\msvcr90.dll" target="tools/net35" />
-
     <file src="tools\net35\install.ps1" target="tools\net35\install.ps1" />
     <file src="tools\net35\uninstall.ps1" target="tools\net35\uninstall.ps1" />
     <file src="tools\net35\talifun.crusher.msbuild.targets" target="tools\net35\talifun.crusher.msbuild.targets" />
 
+    <file src="bin\4.0\Talifun.Web.Configuration.dll" target="lib/net40" />
     <file src="bin\4.0\merged\Talifun.Web.dll" target="tools/net40" />
     <file src="bin\4.0\Talifun.Crusher.MsBuild.dll" target="tools/net40" />
     <file src="bin\4.0\Noesis.Javascript.dll" target="tools/net40" />
     <file src="bin\4.0\msvcp100.dll" target="tools/net40" />
     <file src="bin\4.0\msvcr100.dll" target="tools/net40" />
-
     <file src="tools\net40\install.ps1" target="tools\net40\install.ps1" />
     <file src="tools\net40\uninstall.ps1" target="tools\net40\uninstall.ps1" />
     <file src="tools\net40\talifun.crusher.msbuild.targets" target="tools\net40\talifun.crusher.msbuild.targets" />
