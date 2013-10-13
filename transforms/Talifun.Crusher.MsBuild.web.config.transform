@@ -34,13 +34,13 @@
 			<!--
 			<cssGroup name="SiteCss" debug="false" appendHashToCssAsset="true" outputFilePath="~/Content/Css/crushed.site.css">
 				<files>
-					<file name="Default" filePath="~/Content/Css/site.css" compressionType="Hybrid" />
-					<file name="JQueryUI" filePath="~/Content/Css/base/jquery.ui.all.css" compressionType="Hybrid" />
+					<file name="Default" filePath="~/Content/Css/site.css" compressionType="YahooYui" />
+					<file name="JQueryUI" filePath="~/Content/Css/base/jquery.ui.all.css" compressionType="YahooYui" />
 				</files>
 			</cssGroup>
 			<cssGroup name="PrintSiteCss" Media="print" debug="false" appendHashToCssAsset="true" outputFilePath="~/Content/Css/crushed.print.site.css">
 				<files>
-					<file name="Default" filePath="~/Content/Css/print.site.css" compressionType="Hybrid" />
+					<file name="Default" filePath="~/Content/Css/print.site.css" compressionType="YahooYui" />
 				</files>
 			</cssGroup>
 			-->

@@ -4,17 +4,18 @@
     	<CrusherMsBuildImported>true</CrusherMsBuildImported>
   	</PropertyGroup>
 
-	<UsingTask TaskName="Talifun.Crusher.MsBuild.CrusherTask" AssemblyFile="Talifun.Crusher.MsBuild.dll" />
-	
+	<UsingTask TaskName="Talifun.Crusher.MsBuild.CrusherTask" AssemblyFile="net35\Talifun.Crusher.MsBuild.dll" Condition="'$(TargetFrameworkVersion)' == 'v3.5'"/>
 	<Target Name="Crusher" AfterTargets="Build" Condition="'$(TargetFrameworkVersion)' == 'v3.5'">
 		<CrusherTask ConfigFilePath="$(ProjectDir)web.config" BinDirectoryPath="$(SolutionDir)packages\Talifun.Crusher.3.0.0.0\tools\net35" />
 	</Target>
 
+	<UsingTask TaskName="Talifun.Crusher.MsBuild.CrusherTask" AssemblyFile="net40\Talifun.Crusher.MsBuild.dll" Condition="'$(TargetFrameworkVersion)' == 'v4.0'"/>
 	<Target Name="Crusher" AfterTargets="Build" Condition="''$(TargetFrameworkVersion)' == 'v4.0'">
-		<CrusherTask ConfigFilePath="$(ProjectDir)web.config" BinDirectoryPath="$(MSBuildThisFileDirectory)..\tools\net40" />
+		<CrusherTask ConfigFilePath="$(ProjectDir)web.config" BinDirectoryPath="$(MSBuildThisFileDirectory)\net40" />
 	</Target>
 
+	<UsingTask TaskName="Talifun.Crusher.MsBuild.CrusherTask" AssemblyFile="net45\Talifun.Crusher.MsBuild.dll" Condition="'$(TargetFrameworkVersion)' == 'v4.5'"/>
 	<Target Name="Crusher" AfterTargets="Build" Condition="'$(TargetFrameworkVersion)' == 'v4.5'">
-		<CrusherTask ConfigFilePath="$(ProjectDir)web.config" BinDirectoryPath="$(MSBuildThisFileDirectory)..\tools\net45" />
+		<CrusherTask ConfigFilePath="$(ProjectDir)web.config" BinDirectoryPath="$(MSBuildThisFileDirectory)\net45" />
 	</Target>
 </Project>

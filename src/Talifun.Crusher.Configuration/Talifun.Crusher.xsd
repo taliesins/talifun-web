@@ -277,17 +277,24 @@
 				<xs:element name="cssGroups">
 					<xs:complexType >
 						<xs:sequence>
-							<xs:element name="cssGroup"  type="cssGroup"  minOccurs="0" maxOccurs="unbounded"></xs:element>
+							<xs:element name="cssGroup"  type="cssGroup"  minOccurs="0" maxOccurs="unbounded"/>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="jsGroups">
 					<xs:complexType >
 						<xs:sequence>
-							<xs:element name="jsGroup"  type="jsGroup"  minOccurs="0" maxOccurs="unbounded"></xs:element>
+							<xs:element name="jsGroup"  type="jsGroup"  minOccurs="0" maxOccurs="unbounded"/>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
+        <xs:element name="cssSpriteGroups">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="cssSpriteGroup" type="cssSpriteGroup" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
 			</xs:all>
       <xs:attribute name="querystringKeyName" type="xs:string">
         <xs:annotation>
@@ -382,18 +389,4 @@
       </xs:annotation>
     </xs:attribute>
   </xs:complexType>
-
-  <xs:element name="CssSprite">
-    <xs:complexType>
-      <xs:all>
-        <xs:element name="cssSpriteGroups">
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element name="cssSpriteGroup" type="cssSpriteGroup" minOccurs="0" maxOccurs="unbounded"/>
-            </xs:sequence>
-          </xs:complexType>
-        </xs:element>
-      </xs:all>
-    </xs:complexType>
-  </xs:element>
 </xs:schema>
