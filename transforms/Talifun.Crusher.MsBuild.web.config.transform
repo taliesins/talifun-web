@@ -1,6 +1,6 @@
 <configuration>
 	<configSections>
-		<section name="Crusher" type="Talifun.Crusher.Config.CrusherSection, Talifun.Crusher.Configuration" requirePermission="false" allowDefinition="MachineToApplication" />
+		<section name="Crusher" type="Talifun.Crusher.Configuration.CrusherSection, Talifun.Crusher.Configuration" requirePermission="false" allowDefinition="MachineToApplication" />
   	</configSections>
 	<Crusher querystringKeyName="etag" xmlns="urn:crusher">
 		<cssSpriteGroups>

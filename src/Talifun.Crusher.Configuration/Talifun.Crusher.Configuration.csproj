@@ -64,11 +64,6 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Cache\HttpCacheManager.cs" />
-    <Compile Include="Cache\ICacheManager.cs" />
-    <Compile Include="Configuration\CurrentConfigurationElementCollection.cs" />
-    <Compile Include="Configuration\CurrentConfigurationManager.cs" />
-    <Compile Include="Configuration\NamedConfigurationElement.cs" />
     <Compile Include="CrusherHelper.cs" />
     <Compile Include="CrusherSection.cs" />
     <Compile Include="Css\CssCompressionType.cs" />
@@ -98,6 +93,12 @@
     <None Include="Talifun.Crusher.xsd">
       <SubType>Designer</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Talifun.Web\Talifun.Web.csproj">
+      <Project>{2c8de86f-8f4b-430e-88b2-0db2725aa90f}</Project>
+      <Name>Talifun.Web</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
