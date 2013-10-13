@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == '' ">v4.0</TargetFrameworkVersion>
+    <ProjectGuid>{0AF5FFFB-FF98-4845-8F51-728CDC586DD5}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Talifun.Crusher.CommandLine</RootNamespace>
+    <AssemblyName>Talifun.Crusher.CommandLine</AssemblyName>
+    <TargetFrameworkProfile />
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v4.5' ">
+    <TargetFrameworkConstant>NET45</TargetFrameworkConstant>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v4.0' ">
+    <TargetFrameworkConstant>NET40</TargetFrameworkConstant>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v3.5' ">
+    <TargetFrameworkConstant>NET35</TargetFrameworkConstant>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\$(Configuration)\$(TargetFrameworkVersion)</OutputPath>
+    <BaseIntermediateOutputPath>obj\$(Configuration)\$(TargetFrameworkVersion)</BaseIntermediateOutputPath>
+    <DefineConstants>DEBUG;TRACE;$(TargetFrameworkConstant)</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\$(Configuration)\$(TargetFrameworkVersion)</OutputPath>
+    <BaseIntermediateOutputPath>obj\$(Configuration)\$(TargetFrameworkVersion)</BaseIntermediateOutputPath>
+    <DefineConstants>TRACE;$(TargetFrameworkConstant)</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Options\Option.cs" />
+    <Compile Include="Options\OptionAction.cs" />
+    <Compile Include="Options\OptionContext.cs" />
+    <Compile Include="Options\OptionException.cs" />
+    <Compile Include="Options\OptionSet.cs" />
+    <Compile Include="Options\OptionValueCollection.cs" />
+    <Compile Include="Options\OptionValueType.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Talifun.Crusher.Configuration\Talifun.Crusher.Configuration.csproj">
+      <Project>{19088f57-724c-4448-b242-0ffe4ccdcb51}</Project>
+      <Name>Talifun.Crusher.Configuration</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Talifun.Crusher\Talifun.Crusher.csproj">
+      <Project>{4d67f843-a351-43d6-a90a-91926adb96f0}</Project>
+      <Name>Talifun.Crusher</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Talifun.Web\Talifun.Web.csproj">
+      <Project>{2c8de86f-8f4b-430e-88b2-0db2725aa90f}</Project>
+      <Name>Talifun.Web</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <Target Name="AfterBuild" />
+</Project>

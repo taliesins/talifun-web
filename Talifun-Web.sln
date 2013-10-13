@@ -35,9 +35,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talifun.Web.UrlRewriter", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compress.Demo", "src\Talifun.Web.Examples\Compress.Demo\Compress.Demo.csproj", "{F4AB8CB0-90E3-46D6-93E1-8C796F388E68}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crusher.Demo", "src\Talifun.Web.Examples\Crusher.Demo\Crusher.Demo.csproj", "{0F576746-2042-433F-8543-FCB9321FDEF0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crusher.Module.Demo", "src\Talifun.Web.Examples\Crusher.Demo\Crusher.Module.Demo.csproj", "{0F576746-2042-433F-8543-FCB9321FDEF0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CssSprite.Demo", "src\Talifun.Web.Examples\CssSprite.Demo\CssSprite.Demo.csproj", "{B28274C1-B220-4D3B-9CB4-DD3A5D877B02}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crusher.Module.CssSprite.Demo", "src\Talifun.Web.Examples\CssSprite.Demo\Crusher.Module.CssSprite.Demo.csproj", "{B28274C1-B220-4D3B-9CB4-DD3A5D877B02}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogUrl.Demo", "src\Talifun.Web.Examples\LogUrl.Demo\LogUrl.Demo.csproj", "{04C7820F-E87A-4E09-BBAB-CEF8F73152B6}"
 EndProject
@@ -53,7 +53,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UrlRewriter.Demo", "src\Tal
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talifun.Web.Tests", "src\Talifun.Web.Tests\Talifun.Web.Tests.csproj", "{7C661FBC-E6BE-4C1B-9002-E17CEA4531F9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talifun.Crusher", "src\Talifun.Crusher\Talifun.Crusher.csproj", "{0AF5FFFB-FF98-4845-8F51-728CDC586DD5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talifun.Crusher.CommandLine", "src\Talifun.Crusher.CommandLine\Talifun.Crusher.CommandLine.csproj", "{0AF5FFFB-FF98-4845-8F51-728CDC586DD5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StaticFile.Demo", "src\Talifun.Web.Mvc.Examples\StaticFile.Demo\StaticFile.Demo.csproj", "{4F726217-D691-422B-8929-147178B38DF4}"
 EndProject
@@ -63,7 +63,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crusher.MsBuild.Demo", "src
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talifun.Crusher.MsBuild", "src\Talifun.Crusher.MsBuild\Talifun.Crusher.MsBuild.csproj", "{FB0B818D-1234-4825-84AA-56FF4265E39C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talifun.Web.Configuration", "src\Talifun.Web.Configuration\Talifun.Web.Configuration.csproj", "{19088F57-724C-4448-B242-0FFE4CCDCB51}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talifun.Crusher.Configuration", "src\Talifun.Crusher.Configuration\Talifun.Crusher.Configuration.csproj", "{19088F57-724C-4448-B242-0FFE4CCDCB51}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talifun.Crusher", "src\Talifun.Crusher\Talifun.Crusher.csproj", "{4D67F843-A351-43D6-A90A-91926ADB96F0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talifun.Crusher.Module", "src\Talifun.Crusher.Module\Talifun.Crusher.Module.csproj", "{9985B159-5CD3-47CC-9193-5C1672A88A92}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Talifun.Crusher.Tests", "Talifun.Crusher.Tests\Talifun.Crusher.Tests.csproj", "{207C542A-8A74-461A-AF12-010E3977802A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -241,6 +247,36 @@ Global
 		{19088F57-724C-4448-B242-0FFE4CCDCB51}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{19088F57-724C-4448-B242-0FFE4CCDCB51}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{19088F57-724C-4448-B242-0FFE4CCDCB51}.Release|x86.ActiveCfg = Release|Any CPU
+		{4D67F843-A351-43D6-A90A-91926ADB96F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D67F843-A351-43D6-A90A-91926ADB96F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D67F843-A351-43D6-A90A-91926ADB96F0}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{4D67F843-A351-43D6-A90A-91926ADB96F0}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{4D67F843-A351-43D6-A90A-91926ADB96F0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4D67F843-A351-43D6-A90A-91926ADB96F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D67F843-A351-43D6-A90A-91926ADB96F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D67F843-A351-43D6-A90A-91926ADB96F0}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{4D67F843-A351-43D6-A90A-91926ADB96F0}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{4D67F843-A351-43D6-A90A-91926ADB96F0}.Release|x86.ActiveCfg = Release|Any CPU
+		{9985B159-5CD3-47CC-9193-5C1672A88A92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9985B159-5CD3-47CC-9193-5C1672A88A92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9985B159-5CD3-47CC-9193-5C1672A88A92}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{9985B159-5CD3-47CC-9193-5C1672A88A92}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{9985B159-5CD3-47CC-9193-5C1672A88A92}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9985B159-5CD3-47CC-9193-5C1672A88A92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9985B159-5CD3-47CC-9193-5C1672A88A92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9985B159-5CD3-47CC-9193-5C1672A88A92}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{9985B159-5CD3-47CC-9193-5C1672A88A92}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{9985B159-5CD3-47CC-9193-5C1672A88A92}.Release|x86.ActiveCfg = Release|Any CPU
+		{207C542A-8A74-461A-AF12-010E3977802A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{207C542A-8A74-461A-AF12-010E3977802A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{207C542A-8A74-461A-AF12-010E3977802A}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{207C542A-8A74-461A-AF12-010E3977802A}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{207C542A-8A74-461A-AF12-010E3977802A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{207C542A-8A74-461A-AF12-010E3977802A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{207C542A-8A74-461A-AF12-010E3977802A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{207C542A-8A74-461A-AF12-010E3977802A}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{207C542A-8A74-461A-AF12-010E3977802A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{207C542A-8A74-461A-AF12-010E3977802A}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

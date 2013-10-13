@@ -57,11 +57,14 @@
     <Reference Include="System.Configuration" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="BadCssSprite.aspx" />
+    <Content Include="ConventionCssSprite.aspx" />
     <Content Include="ConventionPage.aspx" />
     <Content Include="DebugConventionPage.aspx" />
     <Content Include="CrushedPage.aspx" />
     <Content Include="DebugCrushedPage.aspx" />
     <Content Include="Default.aspx" />
+    <Content Include="GoodCssSprite.aspx" />
     <Content Include="Static\Css\default.css" />
     <Content Include="Static\Css\jquery\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Static\Css\jquery\images\ui-bg_flat_75_ffffff_40x100.png" />
@@ -78,6 +81,19 @@
     <Content Include="Static\Css\jquery\images\ui-icons_cd0a0a_256x240.png" />
     <Content Include="Static\Css\jquery\jquery-ui-1.8.7.css" />
     <Content Include="Static\Css\test.less.css" />
+    <Content Include="Static\Image\bad\background-nav-ages-11-14.gif" />
+    <Content Include="Static\Image\bad\logo.gif" />
+    <Content Include="Static\Image\bad\Main.jpg" />
+    <Content Include="Static\Image\good\01.png" />
+    <Content Include="Static\Image\good\02.png" />
+    <Content Include="Static\Image\good\03.png" />
+    <Content Include="Static\Image\good\04.png" />
+    <Content Include="Static\Image\good\05.png" />
+    <Content Include="Static\Image\good\06.png" />
+    <Content Include="Static\Image\good\07.png" />
+    <Content Include="Static\Image\good\08.png" />
+    <Content Include="Static\Image\good\09.png" />
+    <Content Include="Static\Image\good\10.png" />
     <Content Include="Static\Js\additional-validation-methods.min.js" />
     <Content Include="Static\Js\hogan-2.0.0.min.js" />
     <Content Include="Static\Js\jquery-1.4.4.min.js" />
@@ -95,7 +111,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Talifun.Web.Configuration\Crusher\Talifun.Web.Crusher.xsd">
+    <None Include="..\..\Talifun.Crusher.Configuration\Talifun.Crusher.xsd">
       <Link>Talifun.Web.Crusher.xsd</Link>
       <SubType>Designer</SubType>
     </None>

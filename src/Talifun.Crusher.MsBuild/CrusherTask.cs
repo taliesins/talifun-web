@@ -11,8 +11,8 @@ namespace Talifun.Crusher.MsBuild
     public class CrusherTask : MarshalByRefObject, ITask
     {
         private const string SenderName = "Crusher";
-        private const string CrusherAssemblyName = "Talifun.Web";
-        private const string CrusherBuildFullName = "Talifun.Web.MsBuild.CrusherMsBuildCommand";
+        private const string CrusherAssemblyName = "Talifun.Crusher";
+        private const string CrusherBuildFullName = "Talifun.Crusher.MsBuild.CrusherMsBuildCommand";
 
         [Required]
         public string ConfigFilePath { get; set; }
@@ -84,12 +84,16 @@ namespace Talifun.Crusher.MsBuild
                 return configFilePath;
             }
 
-            var projectFilePath = Path.GetDirectoryName(BuildEngine.ProjectFileOfTaskNode);
-            configFilePath = Path.Combine(projectFilePath, "web.config");
-
-            if (File.Exists(configFilePath))
+            var projectFilePath = string.Empty;
+            if (!string.IsNullOrEmpty(BuildEngine.ProjectFileOfTaskNode))
             {
-                return configFilePath;
+                projectFilePath = Path.GetDirectoryName(BuildEngine.ProjectFileOfTaskNode);
+                configFilePath = Path.Combine(projectFilePath, "web.config");
+
+                if (File.Exists(configFilePath))
+                {
+                    return configFilePath;
+                }
             }
 
             projectFilePath = Environment.CurrentDirectory;

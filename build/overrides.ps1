@@ -13,6 +13,6 @@ properties {
     $solution.name = "Talifun-Web"
     $solution.file = "$($base.dir)\$($solution.name).sln"
     $talifunweb = ($solution.name -replace "-", ".") + ".dll"
-    $talifunwebAssemblies = @("Talifun.Web.dll", "Talifun.Web.Configuration.dll", "Talifun.FileWatcher.dll","AjaxMin.dll", "dotless.ClientOnly.dll", "EcmaScript.NET.dll", "Yahoo.Yui.Compressor.dll")
+    $talifunwebAssemblies = @("Talifun.FileWatcher.dll","AjaxMin.dll", "dotless.ClientOnly.dll", "EcmaScript.NET.dll", "Yahoo.Yui.Compressor.dll")
     $ilmerge.targets["$talifunweb"] = $talifunwebAssemblies
 }

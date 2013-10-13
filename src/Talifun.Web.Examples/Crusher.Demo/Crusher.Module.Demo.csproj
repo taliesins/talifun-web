@@ -1,0 +1,162 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0F576746-2042-433F-8543-FCB9321FDEF0}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Crusher.Module.Demo</RootNamespace>
+    <AssemblyName>Crusher.Module.Demo</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>4.0</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <TargetFrameworkProfile />
+    <UseIISExpress>false</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v4.0' ">
+    <TargetFrameworkConstant>NET40</TargetFrameworkConstant>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v3.5' ">
+    <TargetFrameworkConstant>NET35</TargetFrameworkConstant>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;$(TargetFrameworkConstant)</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;$(TargetFrameworkConstant)</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Configuration" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="BadCssSprite.aspx" />
+    <Content Include="ConventionCssSprite.aspx" />
+    <Content Include="ConventionPage.aspx" />
+    <Content Include="DebugConventionPage.aspx" />
+    <Content Include="CrushedPage.aspx" />
+    <Content Include="DebugCrushedPage.aspx" />
+    <Content Include="Default.aspx" />
+    <Content Include="GoodCssSprite.aspx" />
+    <Content Include="Static\Css\default.css" />
+    <Content Include="Static\Css\jquery\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Static\Css\jquery\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Static\Css\jquery\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Static\Css\jquery\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Static\Css\jquery\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Static\Css\jquery\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Static\Css\jquery\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Static\Css\jquery\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Static\Css\jquery\images\ui-icons_222222_256x240.png" />
+    <Content Include="Static\Css\jquery\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Static\Css\jquery\images\ui-icons_454545_256x240.png" />
+    <Content Include="Static\Css\jquery\images\ui-icons_888888_256x240.png" />
+    <Content Include="Static\Css\jquery\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Static\Css\jquery\jquery-ui-1.8.7.css" />
+    <Content Include="Static\Css\test.less.css" />
+    <Content Include="Static\Image\bad\background-nav-ages-11-14.gif" />
+    <Content Include="Static\Image\bad\logo.gif" />
+    <Content Include="Static\Image\bad\Main.jpg" />
+    <Content Include="Static\Image\good\01.png" />
+    <Content Include="Static\Image\good\02.png" />
+    <Content Include="Static\Image\good\03.png" />
+    <Content Include="Static\Image\good\04.png" />
+    <Content Include="Static\Image\good\05.png" />
+    <Content Include="Static\Image\good\06.png" />
+    <Content Include="Static\Image\good\07.png" />
+    <Content Include="Static\Image\good\08.png" />
+    <Content Include="Static\Image\good\09.png" />
+    <Content Include="Static\Image\good\10.png" />
+    <Content Include="Static\Js\additional-validation-methods.min.js" />
+    <Content Include="Static\Js\jquery-1.4.4.min.js" />
+    <Content Include="Static\Js\jquery-ui-1.8.7.min.js" />
+    <Content Include="Static\Js\jquery.flash.min.js" />
+    <Content Include="Static\Js\jquery.validate.min.js" />
+    <Content Include="Static\Js\test.js" />
+    <Content Include="UncrushedPage.aspx" />
+    <Content Include="UrlCrushedPage.aspx" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Talifun.Crusher.Configuration\Talifun.Crusher.xsd">
+      <Link>Talifun.Web.Crusher.xsd</Link>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="Static\Js\test.coffee" />
+    <Content Include="Static\Js\test.iced" />
+    <Content Include="Static\Js\test.mustache" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Talifun.Crusher.Module\Talifun.Crusher.Module.csproj">
+      <Project>{9985b159-5cd3-47cc-9193-5c1672a88a92}</Project>
+      <Name>Talifun.Crusher.Module</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Condition="'$(VSToolsPath)' != ''" Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Import Condition="'$(VSToolsPath)' != ''" Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>4162</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>
+          </IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

@@ -3,15 +3,15 @@
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == '' ">v4.0</TargetFrameworkVersion>
-    <ProjectGuid>{0AF5FFFB-FF98-4845-8F51-728CDC586DD5}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{4D67F843-A351-43D6-A90A-91926ADB96F0}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Talifun.Crusher</RootNamespace>
     <AssemblyName>Talifun.Crusher</AssemblyName>
-    <TargetFrameworkProfile />
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v4.5' ">
     <TargetFrameworkConstant>NET45</TargetFrameworkConstant>
@@ -23,7 +23,6 @@
     <TargetFrameworkConstant>NET35</TargetFrameworkConstant>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -34,7 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\$(Configuration)\$(TargetFrameworkVersion)</OutputPath>
@@ -44,36 +42,177 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="dotless.ClientOnly">
+      <HintPath>..\..\packages\DotlessClientOnly.1.3.1.0\lib\dotless.ClientOnly.dll</HintPath>
+    </Reference>
+    <Reference Include="EcmaScript.NET, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EcmaScript.Net.1.0.1.0\lib\net20\EcmaScript.NET.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
-    <Reference Include="System.Core" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Yahoo.Yui.Compressor, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\YUICompressor.NET.2.3.0.0\lib\NET20\Yahoo.Yui.Compressor.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFrameworkVersion)' == 'v4.5' ">
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="Talifun.FileWatcher">
+      <HintPath>..\..\packages\Talifun.FileWatcher.1.7.5.0\lib\net40\Talifun.FileWatcher.dll</HintPath>
+    </Reference>
+    <Reference Include="AjaxMin, Version=4.97.4951.28478, Culture=neutral, PublicKeyToken=21ef50ce11b5d80f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\AjaxMin.4.97.4951.28483\lib\net40\AjaxMin.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\packages\Newtonsoft.Json.5.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFrameworkVersion)' == 'v4.0'">
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="Talifun.FileWatcher">
+      <HintPath>..\..\packages\Talifun.FileWatcher.1.7.5.0\lib\net40\Talifun.FileWatcher.dll</HintPath>
+    </Reference>
+    <Reference Include="AjaxMin, Version=4.97.4951.28478, Culture=neutral, PublicKeyToken=21ef50ce11b5d80f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\AjaxMin.4.97.4951.28483\lib\net40\AjaxMin.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\packages\Newtonsoft.Json.5.0.6\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFrameworkVersion)' != 'v4.0' and '$(TargetFrameworkVersion)' != 'v4.5' ">
+    <Reference Include="Talifun.FileWatcher">
+      <HintPath>..\..\packages\Talifun.FileWatcher.1.7.5.0\lib\net35\Talifun.FileWatcher.dll</HintPath>
+    </Reference>
+    <Reference Include="AjaxMin">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\AjaxMin.4.97.4951.28483\lib\net35\AjaxMin.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\packages\Newtonsoft.Json.5.0.6\lib\net35\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Options\Option.cs" />
-    <Compile Include="Options\OptionAction.cs" />
-    <Compile Include="Options\OptionContext.cs" />
-    <Compile Include="Options\OptionException.cs" />
-    <Compile Include="Options\OptionSet.cs" />
-    <Compile Include="Options\OptionValueCollection.cs" />
-    <Compile Include="Options\OptionValueType.cs" />
-    <Compile Include="Program.cs" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Coffee\CoffeeCompiler.cs" />
+    <Compile Include="Crusher\AggregateException.cs" />
+    <Compile Include="Crusher\CrusherHelper.cs" />
+    <Compile Include="Crusher\CrusherManager.cs" />
+    <Compile Include="Crusher\CsFileToWatchComparer.cs" />
+    <Compile Include="Crusher\CssAsset.cs" />
+    <Compile Include="Crusher\CssAssetsFileHasher.cs" />
+    <Compile Include="Crusher\CssCacheItem.cs" />
+    <Compile Include="Crusher\CssControl.cs" />
+    <Compile Include="Crusher\CssCrushedOutput.cs" />
+    <Compile Include="Crusher\CssCrusher.cs" />
+    <Compile Include="Crusher\CssDirectory.cs" />
+    <Compile Include="Crusher\CssException.cs" />
+    <Compile Include="Crusher\CssFile.cs" />
+    <Compile Include="Crusher\CssFileProcessor.cs" />
+    <Compile Include="Crusher\CssFileToWatch.cs" />
+    <Compile Include="Crusher\CssGroupsProcessor.cs" />
+    <Compile Include="Crusher\CssGroupToProcess.cs" />
+    <Compile Include="Crusher\CssModule\CssAssetsHashModule.cs" />
+    <Compile Include="Crusher\CssModule\DotLessModule.cs" />
+    <Compile Include="Crusher\CssModule\ICssModule.cs" />
+    <Compile Include="Crusher\CssModule\RelativePathModule.cs" />
+    <Compile Include="Crusher\CssPathRewriter.cs" />
+    <Compile Include="Crusher\ICssAssetsFileHasher.cs" />
+    <Compile Include="Crusher\ICssCrusher.cs" />
+    <Compile Include="Crusher\ICssGroupsProcessor.cs" />
+    <Compile Include="Crusher\ICssPathRewriter.cs" />
+    <Compile Include="Crusher\IJsCrusher.cs" />
+    <Compile Include="Crusher\IJsGroupsProcessor.cs" />
+    <Compile Include="Crusher\IMetaData.cs" />
+    <Compile Include="Crusher\IPathProvider.cs" />
+    <Compile Include="Crusher\JsCacheItem.cs" />
+    <Compile Include="Crusher\JsControl.cs" />
+    <Compile Include="Crusher\JsCrushedOutput.cs" />
+    <Compile Include="Crusher\JsCrusher.cs" />
+    <Compile Include="Crusher\JsDirectory.cs" />
+    <Compile Include="Crusher\JsException.cs" />
+    <Compile Include="Crusher\JsFile.cs" />
+    <Compile Include="Crusher\JsFileProcessor.cs" />
+    <Compile Include="Crusher\JsFileToWatch.cs" />
+    <Compile Include="Crusher\JsFileToWatchEqualityComparer.cs" />
+    <Compile Include="Crusher\JsGroupsProcessor.cs" />
+    <Compile Include="Crusher\JsGroupToProcess.cs" />
+    <Compile Include="Crusher\JsModule\CoffeeModule.cs" />
+    <Compile Include="Crusher\JsModule\HoganModule.cs" />
+    <Compile Include="Crusher\JsModule\IcedCoffeeModule.cs" />
+    <Compile Include="Crusher\JsModule\IJsModule.cs" />
+    <Compile Include="Crusher\JsModule\LiveScriptModule.cs" />
+    <Compile Include="Crusher\MultiFileMetaData.cs" />
+    <Compile Include="Crusher\NullMetaData.cs" />
+    <Compile Include="Crusher\PathProvider.cs" />
+    <Compile Include="Crusher\SingleFileMetaData.cs" />
+    <Compile Include="CssSprite\CssSpriteCacheItem.cs" />
+    <Compile Include="CssSprite\CssSpriteCreator.cs" />
+    <Compile Include="CssSprite\CssSpriteException.cs" />
+    <Compile Include="CssSprite\CssSpriteGroupsProcessor.cs" />
+    <Compile Include="CssSprite\CssSpriteGroupToProcess.cs" />
+    <Compile Include="CssSprite\CssSpriteManager.cs" />
+    <Compile Include="CssSprite\ICssSpriteCreator.cs" />
+    <Compile Include="CssSprite\ImageDirectory.cs" />
+    <Compile Include="CssSprite\ImageFile.cs" />
+    <Compile Include="CssSprite\SpriteElement.cs" />
+    <Compile Include="CssSprite\SquarenessComparer.cs" />
+    <Compile Include="Hogan\HoganCompiler.cs" />
+    <Compile Include="IcedCoffee\IcedCoffeeCompiler.cs" />
+    <Compile Include="Javascript\IJavascriptRuntime.cs" />
+    <Compile Include="Javascript\IJavascriptRuntimeGlobalFunction.cs" />
+    <Compile Include="Javascript\IJavascriptRuntimeGlobalVariable.cs" />
+    <Compile Include="Javascript\V8JavascriptRuntime.cs" />
+    <Compile Include="LiveScript\LiveScriptCompiler.cs" />
+    <Compile Include="MsBuild\CrusherMsBuildCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <EmbeddedResource Include="Coffee\Resources\coffee-script.js" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Talifun.Web.Configuration\Talifun.Web.Configuration.csproj">
+    <EmbeddedResource Include="Hogan\Resources\Compiler.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Hogan\Resources\Template.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="IcedCoffee\Resources\coffee-script.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Talifun.Crusher.Configuration\Talifun.Crusher.Configuration.csproj">
       <Project>{19088f57-724c-4448-b242-0ffe4ccdcb51}</Project>
-      <Name>Talifun.Web.Configuration</Name>
+      <Name>Talifun.Crusher.Configuration</Name>
     </ProjectReference>
     <ProjectReference Include="..\Talifun.Web\Talifun.Web.csproj">
-      <Project>{2C8DE86F-8F4B-430E-88B2-0DB2725AA90F}</Project>
+      <Project>{2c8de86f-8f4b-430e-88b2-0db2725aa90f}</Project>
       <Name>Talifun.Web</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="LiveScript\Resources\livescript.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\..\packages\Noesis.Javascript.0.7.9.11\Tools\Noesis.Javascript.targets" Condition="Exists('..\..\packages\Noesis.Javascript.0.7.9.11\Tools\Noesis.Javascript.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
@@ -81,5 +220,4 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <Target Name="AfterBuild" />
 </Project>
