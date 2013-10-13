@@ -112,7 +112,6 @@
   <ItemGroup>
     <Compile Include="Coffee\CoffeeCompiler.cs" />
     <Compile Include="Crusher\AggregateException.cs" />
-    <Compile Include="Crusher\CrusherHelper.cs" />
     <Compile Include="Crusher\CrusherManager.cs" />
     <Compile Include="Crusher\CsFileToWatchComparer.cs" />
     <Compile Include="Crusher\CssAsset.cs" />

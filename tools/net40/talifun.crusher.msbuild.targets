@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003"> 
-	<UsingTask TaskName="Talifun.Crusher.MsBuild.CrusherTask" AssemblyFile="Talifun.Crusher.MsBuild.dll" />
-	<Target Name="Crusher" AfterTargets="Build">
-		<CrusherTask ConfigFilePath="$(ProjectDir)web.config" BinDirectoryPath="$(TargetDir)" />
-	</Target>
-</Project>

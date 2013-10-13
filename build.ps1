@@ -21,6 +21,7 @@ $psakeModule = $psakeLocations[0].FullName
 $psakeModuleDirectory = $psakeLocations[0].DirectoryName
 
 . $buildPath\bootstrap.ps1 $buildPath
+. $psakeModule -buildFile $buildFile -taskList $taskList -framework '4.5' -docs:$docs -parameters $parameters -properties $properties -scriptPath $psakeModuleDirectory
 . $psakeModule -buildFile $buildFile -taskList $taskList -framework '4.0' -docs:$docs -parameters $parameters -properties $properties -scriptPath $psakeModuleDirectory
 . $psakeModule -buildFile $buildFile -taskList $taskList -framework '3.5' -docs:$docs -parameters $parameters -properties $properties -scriptPath $psakeModuleDirectory
 . $psakeModule -buildFile $buildFile -taskList Package -framework $framework -docs:$docs -parameters $parameters -properties $properties -scriptPath $psakeModuleDirectory

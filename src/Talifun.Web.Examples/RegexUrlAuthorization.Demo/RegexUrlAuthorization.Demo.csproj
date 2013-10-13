@@ -20,6 +20,10 @@
     </UpgradeBackupLocation>
     <TargetFrameworkProfile />
     <UseIISExpress>false</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v4.0' ">
     <TargetFrameworkConstant>NET40</TargetFrameworkConstant>
@@ -66,6 +70,7 @@
       <Link>Talifun.Web.RegexUrlAuthorization.xsd</Link>
       <SubType>Designer</SubType>
     </None>
+    <None Include="Properties\PublishProfiles\Package.pubxml" />
     <None Include="test.pdf" />
   </ItemGroup>
   <ItemGroup>

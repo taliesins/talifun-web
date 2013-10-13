@@ -1,0 +1,79 @@
+<configuration>
+	<configSections>
+		<section name="Crusher" type="Talifun.Crusher.Config.CrusherSection, Talifun.Crusher.Configuration" requirePermission="false" allowDefinition="MachineToApplication" />
+  	</configSections>
+	<Crusher querystringKeyName="etag" xmlns="urn:crusher">
+		<cssSpriteGroups>
+			<!-- Css sprite group to create -->
+			<!--
+			<cssSpriteGroup name="MenuIconsSprite" imageOutputFilePath="~/Content/Images/MenuIcons.png" cssOutputFilePath="~/Content/Css/MenuIcons.css">
+				<files>
+					<file name="AddIcon" filePath="~/Content/Images/AddIcon.png"/>
+					<file name="AddIconHover" filePath="~/Content/Images/AddIconHover.png"/>
+					<file name="AddIconSelected" filePath="~/Content/Images/AddIconSelected.png"/>
+					<file name="EditIcon" filePath="~/Content/Images/EditIcon.png"/>
+					<file name="EditIconHover" filePath="~/Content/Images/EditIconHover.png"/>
+					<file name="EditIconSelected" filePath="~/Content/Images/EditIconSelected.png"/>
+					<file name="DeleteIcon" filePath="~/Content/Images/DeleteIcon.png"/>
+					<file name="DeleteIconHover" filePath="~/Content/Images/DeleteIconHover.png"/>
+					<file name="DeleteIconSelected" filePath="~/Content/Images/DeleteIconSelected.png"/>
+				</files>
+			</cssSpriteGroup>
+			<cssSpriteGroup name="HeadingsSprite" imageOutputFilePath="~/Content/Images/Headings.png" cssOutputFilePath="~/Content/Css/Headings.css">
+				<files>
+					<file name="AddHeading" filePath="~/Content/Images/AddHeading.png"/>
+					<file name="EditHeading" filePath="~/Content/Images/EditHeading.png"/>
+					<file name="DeleteHeading" filePath="~/Content/Images/DeleteHeading.png"/>
+				</files>
+			</cssSpriteGroup>
+			-->
+		</cssSpriteGroups>
+		<!-- outputFilePath is the identifier for the cssGroup, so make sure its unique for each cssGroup  -->
+		<cssGroups>
+			<!-- Css group to crush -->
+			<!--
+			<cssGroup name="SiteCss" debug="false" appendHashToCssAsset="true" outputFilePath="~/Content/Css/crushed.site.css">
+				<files>
+					<file name="Default" filePath="~/Content/Css/site.css" compressionType="Hybrid" />
+					<file name="JQueryUI" filePath="~/Content/Css/base/jquery.ui.all.css" compressionType="Hybrid" />
+				</files>
+			</cssGroup>
+			<cssGroup name="PrintSiteCss" Media="print" debug="false" appendHashToCssAsset="true" outputFilePath="~/Content/Css/crushed.print.site.css">
+				<files>
+					<file name="Default" filePath="~/Content/Css/print.site.css" compressionType="Hybrid" />
+				</files>
+			</cssGroup>
+			-->
+		</cssGroups>
+		<!-- outputFilePath is the identifier for the jsGroup, so make sure its unique for each jsGroup  -->
+		<jsGroups>
+			<!-- Js group to crush  -->
+			<!--
+			<jsGroup name="SiteJs" debug="false" outputFilePath="~/Scripts/crushed.site.js">
+					<files>
+							<file name="JQuery" filePath="~/Scripts/jquery-1.5.1.js" compressionType="Min"/>
+							<file name="JQueryUI" filePath="~/Scripts/jquery-ui-1.8.11.js" compressionType="Min"/>
+							<file name="JQueryUnobtrusiveAjax" filePath="~/Scripts/jquery.unobtrusive-ajax.js" compressionType="Min"/>
+							<file name="JQueryValidate" filePath="~/Scripts/jquery.validate.js" compressionType="Min"/>
+							<file name="JQueryValidateUnobtrusive" filePath="~/Scripts/jquery.validate.unobtrusive.js" compressionType="Min"/>
+							<file name="Modernizr" filePath="~/Scripts/modernizr-1.7.js" compressionType="Min"/>
+							
+							<file name="MicrosoftAjax" filePath="~/Scripts/MicrosoftAjax.debug.js" compressionType="Min"/>
+							<file name="MicrosoftMvcAjax" filePath="~/Scripts/MicrosoftMvcAjax.debug.js" compressionType="Min"/>
+							<file name="MicrosoftMvcValidation" filePath="~/Scripts/MicrosoftMvcValidation.debug.js" compressionType="Min"/>
+					</files>
+			</jsGroup>
+			-->
+		</jsGroups>
+	</Crusher>
+  <system.web>
+    <pages>
+      <controls>
+        <add tagPrefix="talifun" namespace="Talifun.Crusher" assembly="Talifun.Crusher"/>
+      </controls>
+    </pages>
+    <httpModules>
+      <add name="CrusherModule" type="Talifun.Crusher.Module.CrusherModule, Talifun.Crusher.Module"/>
+    </httpModules>
+  </system.web>
+</configuration>

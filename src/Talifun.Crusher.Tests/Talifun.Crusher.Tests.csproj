@@ -31,6 +31,7 @@
     <DefineConstants>DEBUG;TRACE;$(TargetFrameworkConstant)</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -41,6 +42,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup Condition=" '$(TargetFrameworkConstant)' == 'NET40' or '$(TargetFrameworkConstant)' == 'NET45'">
     <Reference Include="Microsoft.Build.Framework">
@@ -54,7 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="nunit.framework">
-      <HintPath>..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
+      <HintPath>..\..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -77,21 +79,23 @@
     <Content Include="App.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\src\Talifun.Crusher.MsBuild\Talifun.Crusher.MsBuild.csproj">
+    <ProjectReference Include="..\Talifun.Crusher.MsBuild\Talifun.Crusher.MsBuild.csproj">
       <Project>{FB0B818D-1234-4825-84AA-56FF4265E39C}</Project>
       <Name>Talifun.Crusher.MsBuild</Name>
     </ProjectReference>
-    <ProjectReference Include="..\src\Talifun.Crusher\Talifun.Crusher.csproj">
+    <ProjectReference Include="..\Talifun.Crusher\Talifun.Crusher.csproj">
       <Project>{4d67f843-a351-43d6-a90a-91926adb96f0}</Project>
       <Name>Talifun.Crusher</Name>
     </ProjectReference>
-    <ProjectReference Include="..\src\Talifun.Web\Talifun.Web.csproj">
+    <ProjectReference Include="..\Talifun.Web\Talifun.Web.csproj">
       <Project>{2c8de86f-8f4b-430e-88b2-0db2725aa90f}</Project>
       <Name>Talifun.Web</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -49,7 +49,7 @@ Write-Output "Create-IlmergePackage"
       $assemblies = @(Get-ChildItem -path "$($build.dir)\*.dll" | Where-Object {$assemblies -contains $_.Name} | Select-Object $_.FullName)
       $targetPlatform = ""
       Write-Output "$ilmerge_name = $assemblies"
-      if($framework -eq "4.0")
+      if($framework -eq "4.0" -or $framework -eq "4.5")
       {
         $targetPlatform = "/targetplatform:'v4,C:\Windows\Microsoft.NET\Framework\v4.0.30319'"
       } 
