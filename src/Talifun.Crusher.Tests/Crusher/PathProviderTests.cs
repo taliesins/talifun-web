@@ -8,6 +8,36 @@ namespace Talifun.Crusher.Tests.Crusher
     public class PathProviderTests
     {
         [Test]
+        public void ResolveUrlWhenApplicationPathIsRoot()
+        {
+            var applicationPath = @"/";
+            var physicalApplicationPath = @"c:\inetpub\wwwroot\";
+            var pathProvider = new PathProvider(applicationPath, physicalApplicationPath);
+
+            var expectedResult = new Uri("/js/jquery.js", UriKind.Relative);
+            var relativeUrl = "~/js/jquery.js";
+
+            var relativePath = pathProvider.ResolveUrl(relativeUrl);
+
+            Assert.AreEqual(expectedResult, relativePath);
+        }
+
+        [Test]
+        public void ResolveUrlWhenApplicationPathIsNotRoot()
+        {
+            var applicationPath = @"/TestApp/";
+            var physicalApplicationPath = @"c:\inetpub\wwwroot\";
+            var pathProvider = new PathProvider(applicationPath, physicalApplicationPath);
+
+            var expectedResult = new Uri("/TestApp/js/jquery.js", UriKind.Relative);
+            var relativeUrl = "~/js/jquery.js";
+
+            var relativePath = pathProvider.ResolveUrl(relativeUrl);
+
+            Assert.AreEqual(expectedResult, relativePath);
+        }
+
+        [Test]
         public void ToRelativeReturnsRelativePathWhenApplicationPathIsRoot()
         {
             var applicationPath = @"/";

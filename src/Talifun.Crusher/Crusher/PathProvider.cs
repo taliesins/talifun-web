@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using System.Web;
 using System.Web.Hosting;
 
@@ -11,7 +12,7 @@ namespace Talifun.Crusher.Crusher
         protected string PhysicalApplicationPath;
 
         public PathProvider()
-            : this("/", GetPhysicalApplicationPath())
+            : this(GetAppDomainAppVirtualPath(), GetPhysicalApplicationPath())
         {
         }
 
@@ -24,6 +25,11 @@ namespace Talifun.Crusher.Crusher
         private static string GetPhysicalApplicationPath()
         {
             return !string.IsNullOrEmpty(HostingEnvironment.ApplicationPhysicalPath) ? HostingEnvironment.ApplicationPhysicalPath : Environment.CurrentDirectory;
+        }
+
+        private static string GetAppDomainAppVirtualPath()
+        {
+            return HttpRuntime.AppDomainAppVirtualPath??"/";
         }
 
         public virtual string MapPath(Uri uri)
@@ -247,6 +253,67 @@ namespace Talifun.Crusher.Crusher
                 rootUri = new Uri(path, UriKind.Absolute);
             }
             return rootUri;
+        }
+
+        public string ResolveUrl(string relativeUrl)
+        {
+            if (relativeUrl == null) throw new ArgumentNullException("relativeUrl");
+
+            if (relativeUrl.Length == 0 || relativeUrl[0] == '/' || relativeUrl[0] == '\\')
+                return relativeUrl;
+
+            var idxOfScheme = relativeUrl.IndexOf(@"://", StringComparison.Ordinal);
+            if (idxOfScheme != -1)
+            {
+                var idxOfQM = relativeUrl.IndexOf('?');
+                if (idxOfQM == -1 || idxOfQM > idxOfScheme) return relativeUrl;
+            }
+
+            var sbUrl = new StringBuilder();
+            sbUrl.Append(ApplicationPath);
+            if (sbUrl.Length == 0 || sbUrl[sbUrl.Length - 1] != '/') sbUrl.Append('/');
+
+            // found question mark already? query string, do not touch!
+            var foundQM = false;
+            bool foundSlash; // the latest char was a slash?
+            if (relativeUrl.Length > 1
+                && relativeUrl[0] == '~'
+                && (relativeUrl[1] == '/' || relativeUrl[1] == '\\'))
+            {
+                relativeUrl = relativeUrl.Substring(2);
+                foundSlash = true;
+            }
+            else
+            {
+                foundSlash = false;
+            }
+            foreach (var c in relativeUrl)
+            {
+                if (!foundQM)
+                {
+                    if (c == '?')
+                    {
+                        foundQM = true;
+                    }
+                    else
+                    {
+                        if (c == '/' || c == '\\')
+                        {
+                            if (foundSlash)
+                            {
+                                continue;
+                            }
+                            sbUrl.Append('/');
+                            foundSlash = true;
+                            continue;
+                        }
+                        else if (foundSlash) foundSlash = false;
+                    }
+                }
+                sbUrl.Append(c);
+            }
+
+            return sbUrl.ToString();
         }
     }
 }

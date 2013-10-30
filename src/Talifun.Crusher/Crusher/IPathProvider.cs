@@ -5,6 +5,8 @@ namespace Talifun.Crusher.Crusher
 {
     public interface IPathProvider
     {
+        string ResolveUrl(string relativeUrl);
+
         string MapPath(string uri);
         string MapPath(Uri uri);
         string MapPath(Uri rootPath, string url);
