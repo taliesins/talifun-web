@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Text;
 using System.Threading;
 using Talifun.Crusher.Configuration;
+using Talifun.Crusher.Configuration.Css;
+using Talifun.Crusher.Configuration.Js;
+using Talifun.Crusher.Configuration.Sprites;
 using Talifun.Crusher.Crusher;
 using Talifun.Crusher.CssSprite;
 using Talifun.Web;
@@ -19,6 +23,8 @@ namespace Talifun.Crusher.MsBuild
         private readonly string _configPath;
         private readonly Action<string> _logMessage;
         private readonly Action<string> _logError;
+        private readonly Action<string[]> _setCrushedFilePaths;
+        
         private const string CrusherSectionName = "Crusher";
         private const int BufferSize = 32768;
         private static readonly Encoding Encoding = Encoding.UTF8;
@@ -30,7 +36,7 @@ namespace Talifun.Crusher.MsBuild
         private readonly ICacheManager _cacheManager;
         private readonly CrusherSection _crusherConfiguration;
 
-        public CrusherMsBuildCommand(string applicationPath, string binDirectoryPath, string configPath, Action<string> logMessage, Action<string> logError)
+        public CrusherMsBuildCommand(string applicationPath, string binDirectoryPath, string configPath, Action<string> logMessage, Action<string> logError, Action<string[]> setCrushedFilePaths)
         {
             if (string.IsNullOrEmpty(applicationPath))
             {
@@ -57,11 +63,17 @@ namespace Talifun.Crusher.MsBuild
                 throw new ArgumentNullException("logError");
             }
 
+            if (setCrushedFilePaths == null)
+            {
+                throw new ArgumentNullException("setCrushedFilePaths");
+            }
+
             _applicationPath = applicationPath;
             _binDirectoryPath = binDirectoryPath;
             _configPath = configPath;
             _logMessage = logMessage;
             _logError = logError;
+            _setCrushedFilePaths = setCrushedFilePaths;
 
             _retryableFileOpener = new RetryableFileOpener();
             _hasher = new Md5Hasher(_retryableFileOpener);
@@ -95,13 +107,15 @@ namespace Talifun.Crusher.MsBuild
 
         public object Clone()
         {
+            var filePaths = new List<string>();
+
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
             try
             {
                 var cssSpriteOutput = string.Empty;
                 var jsOutput = string.Empty;
                 var cssOutput = string.Empty;
-
+                
                 var countdownEvents = new CountdownEvent(3);
 
                 ThreadPool.QueueUserWorkItem(data =>
@@ -117,6 +131,15 @@ namespace Talifun.Crusher.MsBuild
 
                                 cssSpriteOutput = cssSpriteGroupsProcessor.ProcessGroups(_pathProvider, cssSpriteCreator, cssSpriteGroups).ToString();
 
+                                var cssFilePaths = new List<string>();
+                                foreach (CssSpriteGroupElement cssSpriteGroup in cssSpriteGroups)
+                                {
+                                    cssFilePaths.Add(cssSpriteGroup.CssOutputFilePath);
+                                    cssFilePaths.Add(cssSpriteGroup.ImageOutputFilePath);
+                                }
+
+                                filePaths.AddRange(cssFilePaths);
+
                                 _logMessage(cssSpriteOutput);
                             }
                         }
@@ -126,7 +149,6 @@ namespace Talifun.Crusher.MsBuild
                         }
                         countdownEvent.Signal();
                     }, countdownEvents);
-
 
                 ThreadPool.QueueUserWorkItem(data =>
                     {
@@ -141,6 +163,14 @@ namespace Talifun.Crusher.MsBuild
                                 var jsGroupsProcessor = new JsGroupsProcessor();
                                 jsOutput = jsGroupsProcessor.ProcessGroups(_pathProvider, jsCrusher, jsGroups).ToString();
 
+                                var jsFilePaths = new List<string>();
+                                foreach (JsGroupElement jsGroup in jsGroups)
+                                {
+                                    jsFilePaths.Add(jsGroup.OutputFilePath);
+                                }
+
+                                filePaths.AddRange(jsFilePaths);
+
                                 _logMessage(jsOutput);
                             }
                         }
@@ -150,7 +180,6 @@ namespace Talifun.Crusher.MsBuild
                         }
                         countdownEvent.Signal();
                     }, countdownEvents);
-
 
                 ThreadPool.QueueUserWorkItem(data =>
                     {
@@ -167,6 +196,14 @@ namespace Talifun.Crusher.MsBuild
                                 var cssGroups = _crusherConfiguration.CssGroups;
                                 var cssGroupsCrusher = new CssGroupsProcessor();
                                 cssOutput = cssGroupsCrusher.ProcessGroups(_pathProvider, cssCrusher, cssGroups).ToString();
+
+                                var cssFilePaths = new List<string>();
+                                foreach (CssGroupElement cssGroup in cssGroups)
+                                {
+                                    cssFilePaths.Add(cssGroup.OutputFilePath);
+                                }
+
+                                filePaths.AddRange(cssFilePaths);
 
                                 _logMessage(cssOutput);
                             }
@@ -188,6 +225,8 @@ namespace Talifun.Crusher.MsBuild
             {
                 AppDomain.CurrentDomain.UnhandledException -= OnUnhandledException;
             }
+
+            _setCrushedFilePaths(filePaths.ToArray());
 
             return null;
         }

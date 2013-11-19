@@ -20,6 +20,9 @@ namespace Talifun.Crusher.MsBuild
         [Required]
         public string BinDirectoryPath { get; set; }
 
+        [Output]
+        public string[] OutputFilePaths { get; private set; }
+
         private void LogMessage(string message)
         {
             BuildEngine.LogMessageEvent(new BuildMessageEventArgs(string.Format("{0}: {1}", SenderName, message), "", SenderName, MessageImportance.High));
@@ -28,6 +31,11 @@ namespace Talifun.Crusher.MsBuild
         private void LogError(string message)
         {
             BuildEngine.LogErrorEvent(new BuildErrorEventArgs("", "", "", 0, 0, 0, 0, string.Format("{0}: {1}", SenderName, message), "", SenderName));
+        }
+
+        private void SetCrushedFilePaths(string[] filePaths)
+        {
+            OutputFilePaths = filePaths;
         }
 
         public bool Execute()
@@ -148,7 +156,8 @@ namespace Talifun.Crusher.MsBuild
             var crusherAssemblyPath = Path.Combine(binDirectoryPath, CrusherAssemblyName + ".dll");
             Action<string> logMessage = LogMessage;
             Action<string> logError = LogError;
-            var constructorArguments = new object[] { applicationPath, binDirectoryPath, configPath, logMessage, logError };
+            Action<string[]> setCrushedFilePaths = SetCrushedFilePaths;
+            var constructorArguments = new object[] { applicationPath, binDirectoryPath, configPath, logMessage, logError, setCrushedFilePaths};
 
             var setup = new AppDomainSetup
             {

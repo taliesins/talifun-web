@@ -126,10 +126,18 @@
     <None Include="Static\Js\test.iced" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Talifun.Crusher.Configuration\Talifun.Crusher.Configuration.csproj">
+      <Project>{19088f57-724c-4448-b242-0ffe4ccdcb51}</Project>
+      <Name>Talifun.Crusher.Configuration</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Talifun.Crusher.MsBuild\Talifun.Crusher.MsBuild.csproj">
       <Project>{fb0b818d-1234-4825-84aa-56ff4265e39c}</Project>
       <Name>Talifun.Crusher.MsBuild</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Talifun.Crusher\Talifun.Crusher.csproj">
+      <Project>{4d67f843-a351-43d6-a90a-91926adb96f0}</Project>
+      <Name>Talifun.Crusher</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Talifun.Web\Talifun.Web.csproj">
       <Project>{2C8DE86F-8F4B-430E-88B2-0DB2725AA90F}</Project>
@@ -151,7 +159,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>30273</DevelopmentServerPort>
+          <DevelopmentServerPort>26215</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>
           </IISUrl>
@@ -171,6 +179,9 @@
   -->
   <UsingTask TaskName="Talifun.Crusher.MsBuild.CrusherTask" AssemblyFile="$(TargetDir)\Talifun.Crusher.MsBuild.dll" />
   <Target Name="AfterBuild">
-    <CrusherTask ConfigFilePath="$(ProjectDir)web.config" BinDirectoryPath="$(TargetDir)" />
+    <CrusherTask ConfigFilePath="$(ProjectDir)web.config" BinDirectoryPath="$(TargetDir)" >
+      <Output TaskParameter="OutputFilePaths" ItemName="OutputFilePaths"/>
+    </CrusherTask>
+    <Message Text="We have @(OutputFilePaths)" Importance="high"/>
   </Target>
 </Project>

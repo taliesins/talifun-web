@@ -4,18 +4,56 @@
     	<CrusherMsBuildImported>true</CrusherMsBuildImported>
   	</PropertyGroup>
 
-	<UsingTask TaskName="Talifun.Crusher.MsBuild.CrusherTask" AssemblyFile="net35\Talifun.Crusher.MsBuild.dll" Condition="'$(TargetFrameworkVersion)' == 'v3.5'"/>
-	<Target Name="Crusher" AfterTargets="Build" Condition="'$(TargetFrameworkVersion)' == 'v3.5'">
-		<CrusherTask ConfigFilePath="$(ProjectDir)web.config" BinDirectoryPath="$(SolutionDir)packages\Talifun.Crusher.3.0.0.0\tools\net35" />
+  	<PropertyGroup>
+		<CopyAllFilesToSingleFolderForPackageDependsOn>
+		CrusherGeneratedFiles;
+		$(CopyAllFilesToSingleFolderForPackageDependsOn);
+		</CopyAllFilesToSingleFolderForPackageDependsOn>
+	</PropertyGroup>
+
+  	<PropertyGroup>
+		<CopyAllFilesToSingleFolderForMsdeployDependsOn>
+		CrusherGeneratedFiles;
+		$(CopyAllFilesToSingleFolderForMsdeployDependsOn);
+		</CopyAllFilesToSingleFolderForMsdeployDependsOn>
+	</PropertyGroup>
+
+	<Choose>
+		<When Condition="'$(TargetFrameworkVersion)' == 'v3.5'">
+			<PropertyGroup>
+				<CrusherBinDirectoryPath>$(SolutionDir)packages\Talifun.Crusher.3.0.0.0\tools\net35</CrusherBinDirectoryPath>
+				<AssemblyFile>net35\Talifun.Crusher.MsBuild.dll</AssemblyFile>
+			</PropertyGroup>
+		</When>
+		<When Condition="'$(TargetFrameworkVersion)' == 'v4.0'">
+			<PropertyGroup>
+				<CrusherBinDirectoryPath>$(MSBuildThisFileDirectory)\net40</CrusherBinDirectoryPath>
+				<AssemblyFile>net40\Talifun.Crusher.MsBuild.dll</AssemblyFile>
+			</PropertyGroup>
+		</When>
+		<When Condition="'$(TargetFrameworkVersion)' == 'v4.5'">
+			<PropertyGroup>
+				<CrusherBinDirectoryPath>$(MSBuildThisFileDirectory)\net45</CrusherBinDirectoryPath>
+				<AssemblyFile>net45\Talifun.Crusher.MsBuild.dll</AssemblyFile>
+			</PropertyGroup>
+		</When>
+	</Choose>
+
+
+	<UsingTask TaskName="Talifun.Crusher.MsBuild.CrusherTask" AssemblyFile="$(AssemblyFile)"/>
+		<Target Name="Crusher" AfterTargets="Build" >
+		<CrusherTask ConfigFilePath="$(ProjectDir)web.config" BinDirectoryPath="$(CrusherBinDirectoryPath)" >
+			<Output TaskParameter="OutputFilePaths" ItemName="OutputFilePaths"/>
+		</CrusherTask>
 	</Target>
 
-	<UsingTask TaskName="Talifun.Crusher.MsBuild.CrusherTask" AssemblyFile="net40\Talifun.Crusher.MsBuild.dll" Condition="'$(TargetFrameworkVersion)' == 'v4.0'"/>
-	<Target Name="Crusher" AfterTargets="Build" Condition="''$(TargetFrameworkVersion)' == 'v4.0'">
-		<CrusherTask ConfigFilePath="$(ProjectDir)web.config" BinDirectoryPath="$(MSBuildThisFileDirectory)\net40" />
-	</Target>
 
-	<UsingTask TaskName="Talifun.Crusher.MsBuild.CrusherTask" AssemblyFile="net45\Talifun.Crusher.MsBuild.dll" Condition="'$(TargetFrameworkVersion)' == 'v4.5'"/>
-	<Target Name="Crusher" AfterTargets="Build" Condition="'$(TargetFrameworkVersion)' == 'v4.5'">
-		<CrusherTask ConfigFilePath="$(ProjectDir)web.config" BinDirectoryPath="$(MSBuildThisFileDirectory)\net45" />
+	<Target Name="CrusherGeneratedFiles">
+		<ItemGroup>
+			<_CustomFiles Include="@(OutputFilePaths)" />
+			<FilesForPackagingFromProject Include="%(_CustomFiles.Identity)">
+				<DestinationRelativePath>%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
+			</FilesForPackagingFromProject>
+		</ItemGroup>
 	</Target>
 </Project>

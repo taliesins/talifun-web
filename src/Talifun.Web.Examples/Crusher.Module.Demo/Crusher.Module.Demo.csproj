@@ -125,6 +125,10 @@
     <None Include="Properties\PublishProfiles\Package.pubxml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Talifun.Crusher.Configuration\Talifun.Crusher.Configuration.csproj">
+      <Project>{19088f57-724c-4448-b242-0ffe4ccdcb51}</Project>
+      <Name>Talifun.Crusher.Configuration</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Talifun.Crusher.Module\Talifun.Crusher.Module.csproj">
       <Project>{9985b159-5cd3-47cc-9193-5c1672a88a92}</Project>
       <Name>Talifun.Crusher.Module</Name>
