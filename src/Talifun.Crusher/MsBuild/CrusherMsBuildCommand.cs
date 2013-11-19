@@ -134,8 +134,8 @@ namespace Talifun.Crusher.MsBuild
                                 var cssFilePaths = new List<string>();
                                 foreach (CssSpriteGroupElement cssSpriteGroup in cssSpriteGroups)
                                 {
-                                    cssFilePaths.Add(cssSpriteGroup.CssOutputFilePath);
-                                    cssFilePaths.Add(cssSpriteGroup.ImageOutputFilePath);
+                                    cssFilePaths.Add(new Uri(_pathProvider.MapPath(cssSpriteGroup.CssOutputFilePath)).LocalPath);
+                                    cssFilePaths.Add(new Uri(_pathProvider.MapPath(cssSpriteGroup.ImageOutputFilePath)).LocalPath);
                                 }
 
                                 filePaths.AddRange(cssFilePaths);
@@ -166,7 +166,7 @@ namespace Talifun.Crusher.MsBuild
                                 var jsFilePaths = new List<string>();
                                 foreach (JsGroupElement jsGroup in jsGroups)
                                 {
-                                    jsFilePaths.Add(jsGroup.OutputFilePath);
+                                    jsFilePaths.Add(new Uri(_pathProvider.MapPath(jsGroup.OutputFilePath)).LocalPath);
                                 }
 
                                 filePaths.AddRange(jsFilePaths);
@@ -200,7 +200,7 @@ namespace Talifun.Crusher.MsBuild
                                 var cssFilePaths = new List<string>();
                                 foreach (CssGroupElement cssGroup in cssGroups)
                                 {
-                                    cssFilePaths.Add(cssGroup.OutputFilePath);
+                                    cssFilePaths.Add(new Uri(_pathProvider.MapPath(cssGroup.OutputFilePath)).LocalPath);
                                 }
 
                                 filePaths.AddRange(cssFilePaths);

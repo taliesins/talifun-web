@@ -177,11 +177,38 @@
   <Target Name="BeforeBuild">
   </Target>
   -->
+
+  <PropertyGroup>
+    <CrusherMsBuildImported>true</CrusherMsBuildImported>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <CopyAllFilesToSingleFolderForPackageDependsOn>
+      CrusherGeneratedFiles;
+      $(CopyAllFilesToSingleFolderForPackageDependsOn);
+    </CopyAllFilesToSingleFolderForPackageDependsOn>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <CopyAllFilesToSingleFolderForMsdeployDependsOn>
+      CrusherGeneratedFiles;
+      $(CopyAllFilesToSingleFolderForMsdeployDependsOn);
+    </CopyAllFilesToSingleFolderForMsdeployDependsOn>
+  </PropertyGroup>
+
   <UsingTask TaskName="Talifun.Crusher.MsBuild.CrusherTask" AssemblyFile="$(TargetDir)\Talifun.Crusher.MsBuild.dll" />
   <Target Name="AfterBuild">
     <CrusherTask ConfigFilePath="$(ProjectDir)web.config" BinDirectoryPath="$(TargetDir)" >
       <Output TaskParameter="OutputFilePaths" ItemName="OutputFilePaths"/>
     </CrusherTask>
-    <Message Text="We have @(OutputFilePaths)" Importance="high"/>
+
+    <ItemGroup>
+      <_CustomFiles Include="$(OutputFilePaths)" />
+      <FilesForPackagingFromProject Include="%(_CustomFiles.Identity)">
+        <DestinationRelativePath>%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
+      </FilesForPackagingFromProject>
+    </ItemGroup>
+    <Message Text="Files included in publish: @(OutputFilePaths)" Importance="high"/>
+    <Message Text="Files included in publish relative: @(_CustomFiles)" Importance="high"/>
   </Target>
 </Project>
