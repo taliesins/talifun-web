@@ -23,6 +23,9 @@ namespace Talifun.Crusher.MsBuild
         [Output]
         public string[] OutputFilePaths { get; private set; }
 
+        [Output]
+        public string[] OutputFileRelativePaths { get; private set; }
+
         private void LogMessage(string message)
         {
             BuildEngine.LogMessageEvent(new BuildMessageEventArgs(string.Format("{0}: {1}", SenderName, message), "", SenderName, MessageImportance.High));
@@ -33,9 +36,14 @@ namespace Talifun.Crusher.MsBuild
             BuildEngine.LogErrorEvent(new BuildErrorEventArgs("", "", "", 0, 0, 0, 0, string.Format("{0}: {1}", SenderName, message), "", SenderName));
         }
 
-        private void SetCrushedFilePaths(string[] filePaths)
+        private void SetOutputFilePaths(string[] filePaths)
         {
             OutputFilePaths = filePaths;
+        }
+
+        private void SetOutputFileRelativePaths(string[] filePaths)
+        {
+            OutputFileRelativePaths = filePaths;
         }
 
         public bool Execute()
@@ -156,8 +164,9 @@ namespace Talifun.Crusher.MsBuild
             var crusherAssemblyPath = Path.Combine(binDirectoryPath, CrusherAssemblyName + ".dll");
             Action<string> logMessage = LogMessage;
             Action<string> logError = LogError;
-            Action<string[]> setCrushedFilePaths = SetCrushedFilePaths;
-            var constructorArguments = new object[] { applicationPath, binDirectoryPath, configPath, logMessage, logError, setCrushedFilePaths};
+            Action<string[]> setOutputFilePaths = SetOutputFilePaths;
+            Action<string[]> setOutputFileRelativePaths = SetOutputFileRelativePaths;
+            var constructorArguments = new object[] { applicationPath, binDirectoryPath, configPath, logMessage, logError, setOutputFilePaths, setOutputFileRelativePaths};
 
             var setup = new AppDomainSetup
             {

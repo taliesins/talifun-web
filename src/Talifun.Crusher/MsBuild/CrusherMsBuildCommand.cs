@@ -23,7 +23,8 @@ namespace Talifun.Crusher.MsBuild
         private readonly string _configPath;
         private readonly Action<string> _logMessage;
         private readonly Action<string> _logError;
-        private readonly Action<string[]> _setCrushedFilePaths;
+        private readonly Action<string[]> _setOutputFilePaths;
+        private readonly Action<string[]> _setOutputFileRelativePaths;
         
         private const string CrusherSectionName = "Crusher";
         private const int BufferSize = 32768;
@@ -36,7 +37,7 @@ namespace Talifun.Crusher.MsBuild
         private readonly ICacheManager _cacheManager;
         private readonly CrusherSection _crusherConfiguration;
 
-        public CrusherMsBuildCommand(string applicationPath, string binDirectoryPath, string configPath, Action<string> logMessage, Action<string> logError, Action<string[]> setCrushedFilePaths)
+        public CrusherMsBuildCommand(string applicationPath, string binDirectoryPath, string configPath, Action<string> logMessage, Action<string> logError, Action<string[]> setOutputFilePaths, Action<string[]> setOutputFileRelativePaths)
         {
             if (string.IsNullOrEmpty(applicationPath))
             {
@@ -63,9 +64,14 @@ namespace Talifun.Crusher.MsBuild
                 throw new ArgumentNullException("logError");
             }
 
-            if (setCrushedFilePaths == null)
+            if (setOutputFilePaths == null)
             {
-                throw new ArgumentNullException("setCrushedFilePaths");
+                throw new ArgumentNullException("setOutputFilePaths");
+            }
+
+            if (setOutputFileRelativePaths == null)
+            {
+                throw new ArgumentNullException("setOutputFileRelativePaths");
             }
 
             _applicationPath = applicationPath;
@@ -73,7 +79,8 @@ namespace Talifun.Crusher.MsBuild
             _configPath = configPath;
             _logMessage = logMessage;
             _logError = logError;
-            _setCrushedFilePaths = setCrushedFilePaths;
+            _setOutputFilePaths = setOutputFilePaths;
+            _setOutputFileRelativePaths = setOutputFileRelativePaths;
 
             _retryableFileOpener = new RetryableFileOpener();
             _hasher = new Md5Hasher(_retryableFileOpener);
@@ -105,9 +112,15 @@ namespace Talifun.Crusher.MsBuild
             return crusherSection;
         }
 
+        private string MakeRelative(string uri)
+        {
+            return uri;
+        }
+
         public object Clone()
         {
             var filePaths = new List<string>();
+            var fileRelativePaths = new List<string>();
 
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
             try
@@ -132,13 +145,18 @@ namespace Talifun.Crusher.MsBuild
                                 cssSpriteOutput = cssSpriteGroupsProcessor.ProcessGroups(_pathProvider, cssSpriteCreator, cssSpriteGroups).ToString();
 
                                 var cssFilePaths = new List<string>();
+                                var cssFileRelativePaths = new List<string>();
                                 foreach (CssSpriteGroupElement cssSpriteGroup in cssSpriteGroups)
                                 {
                                     cssFilePaths.Add(new Uri(_pathProvider.MapPath(cssSpriteGroup.CssOutputFilePath)).LocalPath);
                                     cssFilePaths.Add(new Uri(_pathProvider.MapPath(cssSpriteGroup.ImageOutputFilePath)).LocalPath);
+
+                                    cssFileRelativePaths.Add(MakeRelative(cssSpriteGroup.CssOutputFilePath));
+                                    cssFileRelativePaths.Add(MakeRelative(cssSpriteGroup.ImageOutputFilePath));
                                 }
 
                                 filePaths.AddRange(cssFilePaths);
+                                fileRelativePaths.AddRange(cssFileRelativePaths);
 
                                 _logMessage(cssSpriteOutput);
                             }
@@ -164,12 +182,15 @@ namespace Talifun.Crusher.MsBuild
                                 jsOutput = jsGroupsProcessor.ProcessGroups(_pathProvider, jsCrusher, jsGroups).ToString();
 
                                 var jsFilePaths = new List<string>();
+                                var jsFileRelativePaths = new List<string>();
                                 foreach (JsGroupElement jsGroup in jsGroups)
                                 {
                                     jsFilePaths.Add(new Uri(_pathProvider.MapPath(jsGroup.OutputFilePath)).LocalPath);
+                                    jsFileRelativePaths.Add(MakeRelative(jsGroup.OutputFilePath));
                                 }
 
                                 filePaths.AddRange(jsFilePaths);
+                                fileRelativePaths.AddRange(jsFileRelativePaths);
 
                                 _logMessage(jsOutput);
                             }
@@ -198,12 +219,16 @@ namespace Talifun.Crusher.MsBuild
                                 cssOutput = cssGroupsCrusher.ProcessGroups(_pathProvider, cssCrusher, cssGroups).ToString();
 
                                 var cssFilePaths = new List<string>();
+                                var cssFileRelativePaths = new List<string>();
+
                                 foreach (CssGroupElement cssGroup in cssGroups)
                                 {
                                     cssFilePaths.Add(new Uri(_pathProvider.MapPath(cssGroup.OutputFilePath)).LocalPath);
+                                    cssFileRelativePaths.Add(MakeRelative(cssGroup.OutputFilePath));
                                 }
 
                                 filePaths.AddRange(cssFilePaths);
+                                fileRelativePaths.AddRange(cssFileRelativePaths);
 
                                 _logMessage(cssOutput);
                             }
@@ -226,7 +251,7 @@ namespace Talifun.Crusher.MsBuild
                 AppDomain.CurrentDomain.UnhandledException -= OnUnhandledException;
             }
 
-            _setCrushedFilePaths(filePaths.ToArray());
+            _setOutputFilePaths(filePaths.ToArray());
 
             return null;
         }
