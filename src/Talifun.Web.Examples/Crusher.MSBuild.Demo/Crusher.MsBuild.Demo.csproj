@@ -204,8 +204,8 @@
     </CrusherTask>
       
     <ItemGroup>
-      <_CustomFiles Include="$(OutputFilePaths)" />
-      <FilesForPackagingFromProject Include="%(_CustomFiles.Identity)">
+      <_PostBuildLibraries Include="$(OutputFilePaths)" />
+      <FilesForPackagingFromProject Include="%(_PostBuildLibraries.Identity)">
         <DestinationRelativePath>%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
       </FilesForPackagingFromProject>
     </ItemGroup>

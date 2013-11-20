@@ -21,7 +21,7 @@
 	<Choose>
 		<When Condition="'$(TargetFrameworkVersion)' == 'v3.5'">
 			<PropertyGroup>
-				<CrusherBinDirectoryPath>$(SolutionDir)packages\Talifun.Crusher.3.0.0.3\tools\net35</CrusherBinDirectoryPath>
+				<CrusherBinDirectoryPath>$(SolutionDir)packages\Talifun.Crusher.3.0.0.4\tools\net35</CrusherBinDirectoryPath>
 				<AssemblyFile>net35\Talifun.Crusher.MsBuild.dll</AssemblyFile>
 			</PropertyGroup>
 		</When>
@@ -39,7 +39,7 @@
 		</When>
 		<Otherwise>
 			<PropertyGroup>
-				<CrusherBinDirectoryPath>$(SolutionDir)packages\Talifun.Crusher.3.0.0.3\tools\net35</CrusherBinDirectoryPath>
+				<CrusherBinDirectoryPath>$(SolutionDir)packages\Talifun.Crusher.3.0.0.4\tools\net35</CrusherBinDirectoryPath>
 				<AssemblyFile>net35\Talifun.Crusher.MsBuild.dll</AssemblyFile>
 			</PropertyGroup>			
 		</Otherwise>
@@ -49,17 +49,15 @@
 	<Target Name="Crusher" AfterTargets="Build" >
 		<CrusherTask ConfigFilePath="$(ProjectDir)web.config" BinDirectoryPath="$(CrusherBinDirectoryPath)" >
 			<Output TaskParameter="OutputFilePaths" ItemName="OutputFilePaths"/>
+			<Output TaskParameter="OutputFileRelativePaths" ItemName="OutputFileRelativePaths"/>
 		</CrusherTask>
 	</Target>
 
 	<Target Name="CrusherGeneratedFiles">
-		<Message Text="=== Start CustomCollectFiles ===" Importance="high" />
 		<ItemGroup>
-			<_CustomFiles Include="@(OutputFilePaths)" />
-			<FilesForPackagingFromProject Include="%(_CustomFiles.Identity)">
-				<DestinationRelativePath>%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
+			<FilesForPackagingFromProject Include="@(OutputFileRelativePaths)">
+				<DestinationRelativePath>%(RelativeDir)%(Filename)%(Extension)</DestinationRelativePath>
 			</FilesForPackagingFromProject>
 		</ItemGroup>
-		<Message Text="=== Finish CustomCollectFiles ===" Importance="high" />
 	</Target>
 </Project>
