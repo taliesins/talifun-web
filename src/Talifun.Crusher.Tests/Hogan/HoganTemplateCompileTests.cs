@@ -20,7 +20,7 @@ namespace Talifun.Crusher.Tests.Hogan
             var embeddedResourceLoader = new EmbeddedResourceLoader();
             var hoganCompiler = new HoganCompiler(embeddedResourceLoader);
 
-            const string expectedCompiledTemplate = @"{code: function (c,p,i) { var t=this;t.b(i=i||"""");t.b(""<div class=\""entry\"">\r"");t.b(""\n"" + i);t.b(""  <h1>"");t.b(t.v(t.f(""title"",c,p,0)));t.b(""</h1>\r"");t.b(""\n"" + i);t.b(""\r"");t.b(""\n"" + i);if(t.s(t.f(""author"",c,p,1),c,p,0,58,104,""{{ }}"")){t.rs(c,p,function(c,p,t){t.b(""  <h2>By "");t.b(t.v(t.f(""firstName"",c,p,0)));t.b("" "");t.b(t.v(t.f(""lastName"",c,p,0)));t.b(""</h2>\r"");t.b(""\n"" + i);});c.pop();}t.b(""</div>"");return t.fl(); },partials: {}, subs: {  }}";
+            const string expectedCompiledTemplate = @"{code: function (c,p,i) { var t=this;t.b(i=i||"""");t.b(""<div class=\""entry\"">"");t.b(""\n"" + i);t.b(""  <h1>"");t.b(t.v(t.f(""title"",c,p,0)));t.b(""</h1>"");t.b(""\n"");t.b(""\n"" + i);if(t.s(t.f(""author"",c,p,1),c,p,0,55,99,""{{ }}"")){t.rs(c,p,function(c,p,t){t.b(""  <h2>By "");t.b(t.v(t.f(""firstName"",c,p,0)));t.b("" "");t.b(t.v(t.f(""lastName"",c,p,0)));t.b(""</h2>"");t.b(""\n"" + i);});c.pop();}t.b(""</div>"");return t.fl(); },partials: {}, subs: {  }}";
 
             var compiledTemplate = hoganCompiler.Compile(template);
 

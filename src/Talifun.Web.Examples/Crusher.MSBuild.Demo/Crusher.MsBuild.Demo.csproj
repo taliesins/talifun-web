@@ -200,6 +200,7 @@
   <Target Name="AfterBuild">
     <CrusherTask ConfigFilePath="$(ProjectDir)web.config" BinDirectoryPath="$(TargetDir)" >
       <Output TaskParameter="OutputFilePaths" ItemName="OutputFilePaths"/>
+      <Output TaskParameter="OutputFileRelativePaths" ItemName="OutputFileRelativePaths"/>
     </CrusherTask>
       
     <ItemGroup>
@@ -210,6 +211,6 @@
     </ItemGroup>
     
     <Message Text="Files included in publish: @(OutputFilePaths)" Importance="high"/>
-    <Message Text="Files included in publish relative: @(_CustomFiles)" Importance="high"/>
+    <Message Text="Files included in publish relative: @(OutputFileRelativePaths)" Importance="high"/>
   </Target>
 </Project>

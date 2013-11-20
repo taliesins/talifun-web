@@ -114,6 +114,15 @@ namespace Talifun.Crusher.MsBuild
 
         private string MakeRelative(string uri)
         {
+            if (uri.StartsWith("~"))
+            {
+                uri = uri.Substring(1);
+            }
+
+            if (uri.StartsWith("/"))
+            {
+                uri = uri.Substring(1);
+            }
             return uri;
         }
 
@@ -252,6 +261,7 @@ namespace Talifun.Crusher.MsBuild
             }
 
             _setOutputFilePaths(filePaths.ToArray());
+            _setOutputFileRelativePaths(fileRelativePaths.ToArray());
 
             return null;
         }
