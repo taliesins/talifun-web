@@ -52,8 +52,9 @@
 			<Output TaskParameter="OutputFileRelativePaths" ItemName="OutputFileRelativePaths"/>
 		</CrusherTask>
 
-		<Copy SourceFiles="@(OutputFileRelativePaths)" DestinationFolder="$(OutDir)%(RelativeDir)" SkipUnchangedFiles="true" />
-	    <Copy Condition="'$(WebProjectOutputDir)' != ''" SourceFiles="@(OutputFileRelativePaths)" DestinationFolder="$(WebProjectOutputDir)\%(RelativeDir)" SkipUnchangedFiles="true"/>
+		<Copy Condition="'$(OutDir)' != '$(OutputPath)' and '$(WebProjectOutputDir)' == ''" SourceFiles="@(OutputFileRelativePaths)" DestinationFolder="$(OutDir)%(RelativeDir)" SkipUnchangedFiles="true" />
+
+	    <Copy Condition="'$(OutDir)' != '$(OutputPath)' and '$(WebProjectOutputDir)' != ''" SourceFiles="@(OutputFileRelativePaths)" DestinationFolder="$(WebProjectOutputDir)\%(RelativeDir)" SkipUnchangedFiles="true"/>
 	</Target>
 
 	<Target Name="CrusherGeneratedFiles">
