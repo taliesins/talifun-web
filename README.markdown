@@ -8,9 +8,9 @@ Apache 2.0 - see LICENSE.txt
 
 # RESOURCES
 ## Help
-* Homepage: [http://www.talifun.com/products/talifun-web/](http://www.talifun.com/products/talifun-web/)
-* Documentation: [http://www.talifun.com/products/talifun-web/](http://www.talifun.com/products/talifun-web/)
-* Forum: [http://www.talifun.com/products/talifun-web/](http://www.talifun.com/products/talifun-web/)
+* Homepage: [http://www.talifun.com/talifun-web/](http://www.talifun.com/talifun-web/)
+* Documentation: [http://www.talifun.com/talifun-web/](http://www.talifun.com/talifun-web/)
+* Forum: [http://www.talifun.com/talifun-web/](http://www.talifun.com/talifun-web/)
 
 ## Source
 Clone to repository locally: `git clone git@github.com:taliesins/talifun-web.git`
