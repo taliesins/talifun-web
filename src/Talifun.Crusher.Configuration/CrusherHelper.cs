@@ -11,6 +11,7 @@ using Talifun.Crusher.Configuration.Css;
 using Talifun.Crusher.Configuration.Js;
 using Talifun.Crusher.Configuration.Sprites;
 using Talifun.Web;
+using Talifun.Web.Helper;
 
 namespace Talifun.Crusher.Configuration
 {
@@ -24,11 +25,14 @@ namespace Talifun.Crusher.Configuration
 
         protected readonly IRetryableFileOpener RetryableFileOpener;
         protected readonly IHasher Hasher;
+        protected readonly IFileContains FileContains;
         private static string CrusherHelperType = typeof(CrusherHelper).ToString();
         private static string CssType = "css";
         private static string JsType = "js";
         private static string SpriteImageType = "spriteImage";
         private static string SpriteCssType = "spriteCss";
+
+        private static Regex AnonymousAmdModuleRegex = new Regex("define\\(\\[", RegexOptions.Compiled);
 
         private CrusherHelper()
         {
@@ -39,6 +43,7 @@ namespace Talifun.Crusher.Configuration
             CssSpriteGroups = CurrentCrusherConfiguration.Current.CssSpriteGroups;
             RetryableFileOpener = new RetryableFileOpener();
             Hasher = new Md5Hasher(RetryableFileOpener);
+            FileContains = new FileContains(RetryableFileOpener);
         }
 
         private static CrusherHelper Instance
@@ -258,9 +263,33 @@ namespace Talifun.Crusher.Configuration
                     foreach (var fileInfo in files)
                     {
                         var etag = Hasher.Hash(fileInfo);
-                        var url = this.ResolveUrl(ToRelative(fileInfo.FullName).ToString());
+                        var relativePath = ToRelative(fileInfo.FullName).ToString();
+                        var url = this.ResolveUrl(relativePath);
+
+                        var isAnonymousModule = FileContains.Contains(fileInfo, AnonymousAmdModuleRegex);
+
+                        if (isAnonymousModule)
+                        {
+                            var moduleName = Path.ChangeExtension(fileInfo.Name, "");
+                            if (moduleName.EndsWith("."))
+                            {
+                                moduleName = moduleName.Substring(0, moduleName.Length - 1);
+                            }
+
+                            if (moduleName.StartsWith("~"))
+                            {
+                                moduleName = moduleName.Substring(1);
+                            }
+
+                            scriptLinksBuilder.Append("<script language=\"javascript\" type=\"text/javascript\">if(define.amd){define.amd.name='" + moduleName + "';}</script>");
+                        }
 
                         scriptLinksBuilder.Append("<script language=\"javascript\" type=\"text/javascript\" src=\"" + url + "?" + QuerystringKeyName + "=" + etag + "\"></script>");
+
+                        if (isAnonymousModule)
+                        {
+                            scriptLinksBuilder.Append("<script language=\"javascript\" type=\"text/javascript\">if(define.amd){define.amd.name=null;}</script>");
+                        }
                     }
                     scriptLinks = scriptLinksBuilder.ToString();
                 }

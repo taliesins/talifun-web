@@ -121,7 +121,7 @@ namespace Talifun.Crusher.Tests.Crusher
             Assert.AreEqual(expectedResult, relativePath);
         }
 
-                [Test]
+        [Test]
         public void MapPathReturnsAbsoluteDirectoryWhenApplicationPathIsNotRoot()
         {
             var applicationPath = @"/TestApp/";
@@ -133,6 +133,24 @@ namespace Talifun.Crusher.Tests.Crusher
             var relativePath = new Uri(pathProvider.MapPath(uri)).LocalPath;
 
             Assert.AreEqual(expectedResult, relativePath);
+        }
+
+        [Test]
+        public void T()
+        {
+            var moduleName = "~/Scripts/knockout.mapping-latest.";
+
+            if (moduleName.EndsWith("."))
+            {
+                moduleName = moduleName.Substring(0, moduleName.Length - 1);
+            }
+
+            if (moduleName.StartsWith("~"))
+            {
+                moduleName = moduleName.Substring(1);
+            }
+
+            var y = moduleName;
         }
     }
 }

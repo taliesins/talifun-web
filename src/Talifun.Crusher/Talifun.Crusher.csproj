@@ -152,6 +152,7 @@
     <Compile Include="Crusher\JsFileToWatchEqualityComparer.cs" />
     <Compile Include="Crusher\JsGroupsProcessor.cs" />
     <Compile Include="Crusher\JsGroupToProcess.cs" />
+    <Compile Include="Crusher\JsModule\AnonymousAmdModule.cs" />
     <Compile Include="Crusher\JsModule\CoffeeModule.cs" />
     <Compile Include="Crusher\JsModule\HoganModule.cs" />
     <Compile Include="Crusher\JsModule\IcedCoffeeModule.cs" />

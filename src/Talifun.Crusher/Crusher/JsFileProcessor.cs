@@ -30,7 +30,8 @@ namespace Talifun.Crusher.Crusher
                 new CoffeeModule(coffeeCompilerPool),
                 new IcedCoffeeModule(icedCoffeeCompilerPool),
                 new LiveScriptModule(liveScriptCompilerPool),
-                new HoganModule(pathProvider, hoganCompilerPool)
+                new HoganModule(pathProvider, hoganCompilerPool),
+                new AnonymousAmdModule(pathProvider)
             };
         }
 

@@ -92,10 +92,12 @@
     <Compile Include="Helper\Compatability\Set.cs" />
     <Compile Include="Helper\Compatability\SetExtensions.cs" />
     <Compile Include="Helper\EmbeddedResourceLoader.cs" />
+    <Compile Include="Helper\FileContains.cs" />
     <Compile Include="Helper\Graph.cs" />
     <Compile Include="Helper\Compatability\HashedSet.cs" />
     <Compile Include="Helper\Compatability\Lazy.cs" />
     <Compile Include="Helper\IEmbeddedResourceLoader.cs" />
+    <Compile Include="Helper\IFileContains.cs" />
     <Compile Include="Helper\ParallelExecute.cs" />
     <Compile Include="Helper\Pooling\AccessMode.cs" />
     <Compile Include="Helper\Pooling\LoadingMode.cs" />
