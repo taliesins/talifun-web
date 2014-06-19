@@ -5,6 +5,7 @@ using System.Threading;
 using Talifun.Crusher.Configuration.Js;
 using Talifun.Crusher.Crusher.JsModule;
 using Talifun.Web;
+using Talifun.Web.Helper;
 using Talifun.Web.Helper.Pooling;
 
 namespace Talifun.Crusher.Crusher
@@ -31,7 +32,7 @@ namespace Talifun.Crusher.Crusher
                 new IcedCoffeeModule(icedCoffeeCompilerPool),
                 new LiveScriptModule(liveScriptCompilerPool),
                 new HoganModule(pathProvider, hoganCompilerPool),
-                new AnonymousAmdModule(pathProvider)
+                new AnonymousAmdModule(new AmdModule(_retryableFileOpener))
             };
         }
 

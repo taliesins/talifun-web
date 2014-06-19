@@ -1,35 +1,25 @@
 ﻿using System;
 using System.IO;
-using System.Text.RegularExpressions;
+using Talifun.Web.Helper;
 
 namespace Talifun.Crusher.Crusher.JsModule
 {
     public class AnonymousAmdModule : IJsModule
     {
-        private readonly IPathProvider _pathProvider;
+        private readonly IAmdModule _amdModule;
 
-        public AnonymousAmdModule(IPathProvider pathProvider)
+        public AnonymousAmdModule(IAmdModule amdModule)
         {
-            _pathProvider = pathProvider;
+            _amdModule = amdModule;
         }
-
-        private static readonly Regex AnonymousAmdModuleRegex = new Regex("define\\(\\[", RegexOptions.Compiled);
+     
         public string Process(Uri jsRootPathUri, FileInfo file, string fileContents)
         {
-            if (AnonymousAmdModuleRegex.IsMatch(fileContents))
+            if (_amdModule.IsAnonymousAmdModule(fileContents))
             {
-                var moduleName = Path.ChangeExtension(file.Name, "");
-                if (moduleName.EndsWith("."))
-                {
-                    moduleName = moduleName.Substring(0, moduleName.Length - 1);
-                }
+                var moduleName = _amdModule.GetModuleName(file.Name);
 
-                if (moduleName.StartsWith("~"))
-                {
-                    moduleName = moduleName.Substring(1);
-                }
-
-                fileContents = ";if(define.amd){define.amd.name='" + moduleName + "';};" + fileContents + ";if(define.amd){define.amd.name=null;};";
+                fileContents = _amdModule.GetModuleHeader(moduleName) + fileContents + _amdModule.GetModuleFooter();
             }
             return fileContents;
         }

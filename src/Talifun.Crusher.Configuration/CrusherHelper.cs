@@ -25,14 +25,12 @@ namespace Talifun.Crusher.Configuration
 
         protected readonly IRetryableFileOpener RetryableFileOpener;
         protected readonly IHasher Hasher;
-        protected readonly IFileContains FileContains;
+        protected readonly IAmdModule AmdModule;
         private static string CrusherHelperType = typeof(CrusherHelper).ToString();
         private static string CssType = "css";
         private static string JsType = "js";
         private static string SpriteImageType = "spriteImage";
         private static string SpriteCssType = "spriteCss";
-
-        private static Regex AnonymousAmdModuleRegex = new Regex("define\\(\\[", RegexOptions.Compiled);
 
         private CrusherHelper()
         {
@@ -43,7 +41,7 @@ namespace Talifun.Crusher.Configuration
             CssSpriteGroups = CurrentCrusherConfiguration.Current.CssSpriteGroups;
             RetryableFileOpener = new RetryableFileOpener();
             Hasher = new Md5Hasher(RetryableFileOpener);
-            FileContains = new FileContains(RetryableFileOpener);
+            AmdModule = new AmdModule(RetryableFileOpener);
         }
 
         private static CrusherHelper Instance
@@ -266,29 +264,20 @@ namespace Talifun.Crusher.Configuration
                         var relativePath = ToRelative(fileInfo.FullName).ToString();
                         var url = this.ResolveUrl(relativePath);
 
-                        var isAnonymousModule = FileContains.Contains(fileInfo, AnonymousAmdModuleRegex);
+                        var isAnonymousModule = AmdModule.IsAnonymousAmdModule(fileInfo);
 
                         if (isAnonymousModule)
                         {
-                            var moduleName = Path.ChangeExtension(fileInfo.Name, "");
-                            if (moduleName.EndsWith("."))
-                            {
-                                moduleName = moduleName.Substring(0, moduleName.Length - 1);
-                            }
+                            var moduleName = AmdModule.GetModuleName(fileInfo.Name);
 
-                            if (moduleName.StartsWith("~"))
-                            {
-                                moduleName = moduleName.Substring(1);
-                            }
-
-                            scriptLinksBuilder.Append("<script language=\"javascript\" type=\"text/javascript\">if(define.amd){define.amd.name='" + moduleName + "';}</script>");
+                            scriptLinksBuilder.Append("<script language=\"javascript\" type=\"text/javascript\">" + AmdModule.GetModuleHeader(moduleName) + "</script>");
                         }
 
                         scriptLinksBuilder.Append("<script language=\"javascript\" type=\"text/javascript\" src=\"" + url + "?" + QuerystringKeyName + "=" + etag + "\"></script>");
 
                         if (isAnonymousModule)
                         {
-                            scriptLinksBuilder.Append("<script language=\"javascript\" type=\"text/javascript\">if(define.amd){define.amd.name=null;}</script>");
+                            scriptLinksBuilder.Append("<script language=\"javascript\" type=\"text/javascript\">" + AmdModule.GetModuleFooter() + "</script>");
                         }
                     }
                     scriptLinks = scriptLinksBuilder.ToString();
