@@ -32,14 +32,13 @@ namespace Talifun.Web.Helper
                 moduleName = moduleName.Substring(0, moduleName.Length - 1);
             }
 
-            if (moduleName.EndsWith(".min"))
-            {
-                moduleName = moduleName.Substring(0, moduleName.Length - 4);
-            }
+            var regex = new Regex(@"(.*)(\-\d+(\.\d+)+|\.min|\.debug)$");
+            var match = regex.Match(moduleName);
 
-            if (moduleName.EndsWith(".debug"))
+            while (match.Success)
             {
-                moduleName = moduleName.Substring(0, moduleName.Length - 6);
+                moduleName = match.Groups[0].Value;
+                match = regex.Match(moduleName);
             }
 
             return moduleName;
@@ -47,12 +46,12 @@ namespace Talifun.Web.Helper
 
         public string GetModuleHeader(string moduleName)
         {
-            return ";if(define.amd){define.amd.name='" + moduleName + "';};";
+            return ";if(define&&define.amd){define.amd.name='" + moduleName + "';};";
         }
 
         public string GetModuleFooter()
         {
-            return ";if(define.amd){define.amd.name=null;};";
+            return ";if(define&&define.amd){define.amd.name=null;};";
         }
     }
 }
