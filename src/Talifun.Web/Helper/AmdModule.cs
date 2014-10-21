@@ -37,7 +37,7 @@ namespace Talifun.Web.Helper
 
             while (match.Success)
             {
-                moduleName = match.Groups[0].Value;
+                moduleName = match.Groups[1].Value;
                 match = regex.Match(moduleName);
             }
 
