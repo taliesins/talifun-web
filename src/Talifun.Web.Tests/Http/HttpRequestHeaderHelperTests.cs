@@ -849,7 +849,7 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
+            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01, DateTimeKind.Utc);
             var headerValue = string.Empty;
             var headerType = HttpRequestHeader.IfModifiedSince;
             var headerName = (string)headerType;
@@ -870,7 +870,7 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
+            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01, DateTimeKind.Utc);
             var headerValue = lastModified.AddSeconds(-1).ToString("r");
             var headerType = HttpRequestHeader.IfModifiedSince;
             var headerName = (string)headerType;
@@ -892,7 +892,7 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
+            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01, DateTimeKind.Utc);
             var headerValue = lastModified.AddSeconds(1).ToString("r");
             var headerType = HttpRequestHeader.IfModifiedSince;
             var headerName = (string)headerType;
@@ -914,7 +914,7 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
+            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01, DateTimeKind.Utc);
             var headerValue = "invalid";
             var headerType = HttpRequestHeader.IfModifiedSince;
             var headerName = (string)headerType;
@@ -938,7 +938,7 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
+            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01, DateTimeKind.Utc);
             var headerValue = string.Empty;
             var headerType = HttpRequestHeader.IfUnmodifiedSince;
             var headerName = (string)headerType;
@@ -959,7 +959,7 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
+            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01, DateTimeKind.Utc);
             var headerValue = lastModified.AddSeconds(1).ToString("r");
             var headerType = HttpRequestHeader.IfUnmodifiedSince;
             var headerName = (string)headerType;
@@ -981,7 +981,7 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
+            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01, DateTimeKind.Utc);
             var headerValue = lastModified.AddSeconds(-1).ToString("r");
             var headerType = HttpRequestHeader.IfUnmodifiedSince;
             var headerName = (string)headerType;
@@ -1003,7 +1003,7 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
+            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01, DateTimeKind.Utc);
             var headerValue = "Invalid";
             var headerType = HttpRequestHeader.IfUnmodifiedSince;
             var headerName = (string)headerType;
@@ -1026,7 +1026,7 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
+            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01, DateTimeKind.Utc);
             var headerValue = string.Empty;
             var headerType = HttpRequestHeader.UnlessModifiedSince;
             var headerName = (string)headerType;
@@ -1047,7 +1047,7 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
+            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01, DateTimeKind.Utc);
             var headerValue = lastModified.AddSeconds(1).ToString("r");
             var headerType = HttpRequestHeader.UnlessModifiedSince;
             var headerName = (string)headerType;
@@ -1069,7 +1069,7 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
+            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01, DateTimeKind.Utc);
             var headerValue = lastModified.AddSeconds(-1).ToString("r");
             var headerType = HttpRequestHeader.UnlessModifiedSince;
             var headerName = (string)headerType;
@@ -1091,7 +1091,7 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
+            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01, DateTimeKind.Utc);
             var headerValue = "Invalid";
             var headerType = HttpRequestHeader.UnlessModifiedSince;
             var headerName = (string)headerType;
@@ -1116,7 +1116,7 @@ namespace Talifun.Web.Tests.Http
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
             var headers = MockRepository.GenerateMock<NameValueCollection>();
             httpRequest.Stub(x => x.Headers).Return(headers);
-            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
+            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01, DateTimeKind.Utc);
             var etag = "1234567";
             var headerValue = string.Empty;
             var headerType = HttpRequestHeader.Range;
@@ -1142,7 +1142,7 @@ namespace Talifun.Web.Tests.Http
             var headers = MockRepository.GenerateMock<NameValueCollection>();
             httpRequest.Stub(x => x.Headers).Return(headers);
 
-            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
+            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01, DateTimeKind.Utc);
             var etag = "1234567";
 
             var rangeRequestHeaderValue = "bytes=500-600,601-999";
@@ -1174,7 +1174,7 @@ namespace Talifun.Web.Tests.Http
             var headers = MockRepository.GenerateMock<NameValueCollection>();
             httpRequest.Stub(x => x.Headers).Return(headers);
 
-            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
+            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01, DateTimeKind.Utc);
             var etag = "1234567";
 
             var rangeRequestHeaderValue = "bytes=500-600,601-999";
@@ -1207,7 +1207,7 @@ namespace Talifun.Web.Tests.Http
             var headers = MockRepository.GenerateMock<NameValueCollection>();
             httpRequest.Stub(x => x.Headers).Return(headers);
 
-            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
+            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01, DateTimeKind.Utc);
             var etag = "1234567";
 
             var rangeRequestHeaderValue = "bytes=500-600,601-999";
@@ -1240,7 +1240,7 @@ namespace Talifun.Web.Tests.Http
             var headers = MockRepository.GenerateMock<NameValueCollection>();
             httpRequest.Stub(x => x.Headers).Return(headers);
 
-            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
+            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01, DateTimeKind.Utc);
             var etag = "1234567";
 
             var rangeRequestHeaderValue = "bytes=500-600,601-999";
@@ -1273,7 +1273,7 @@ namespace Talifun.Web.Tests.Http
             var headers = MockRepository.GenerateMock<NameValueCollection>();
             httpRequest.Stub(x => x.Headers).Return(headers);
 
-            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
+            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01, DateTimeKind.Utc);
             var etag = "1234567";
 
             var rangeRequestHeaderValue = "bytes=500-600,601-999";

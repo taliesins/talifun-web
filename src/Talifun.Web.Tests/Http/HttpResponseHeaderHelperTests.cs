@@ -224,7 +224,7 @@ namespace Talifun.Web.Tests.Http
             var expiryDate = now.Add(maxAge);
             var cachability = HttpCacheability.Public;
             var cacheExtensions = "must-revalidate, proxy-revalidate";
-            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
+            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01, DateTimeKind.Utc);
 
             var webServerType = WebServerType.Unknown;
             
