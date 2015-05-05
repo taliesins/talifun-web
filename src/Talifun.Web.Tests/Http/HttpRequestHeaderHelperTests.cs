@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -892,7 +892,7 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
+            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01, DateTimeKind.Utc);
             var headerValue = lastModified.AddSeconds(1).ToString("r");
             var headerType = HttpRequestHeader.IfModifiedSince;
             var headerName = (string)headerType;
@@ -914,7 +914,7 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
+            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01, DateTimeKind.Utc);
             var headerValue = "invalid";
             var headerType = HttpRequestHeader.IfModifiedSince;
             var headerName = (string)headerType;
@@ -959,7 +959,7 @@ namespace Talifun.Web.Tests.Http
         {
             //Arrange
             var httpRequest = MockRepository.GenerateMock<HttpRequestBase>();
-            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01);
+            var lastModified = new DateTime(2010, 01, 01, 01, 01, 01, DateTimeKind.Utc);
             var headerValue = lastModified.AddSeconds(1).ToString("r");
             var headerType = HttpRequestHeader.IfUnmodifiedSince;
             var headerName = (string)headerType;
